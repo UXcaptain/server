@@ -21,7 +21,7 @@
         "@logtail/pino": "^0.5.0",
         "@prisma/client": "^6.4.1",
         "@quixo3/prisma-session-store": "^3.1.13",
-        "axios": "^1.7.7",
+        "axios": "^1.8.3",
         "bcryptjs": "^3.0.2",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
