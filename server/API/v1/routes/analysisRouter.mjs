@@ -1,14 +1,12 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
-import { createAnalysis } from '../../../controllers/analysisController.mjs';
+import { createAnalysis, getAllAnalyses } from '../../../controllers/analysisController.mjs';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 
 export const analysisRouter = Router();
 
-analysisRouter.get('/', (req, res) => {
-  res.json('analysisRouter works');
-});
+analysisRouter.get('/', getAllAnalyses);
 
 analysisRouter.post('/create', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
 

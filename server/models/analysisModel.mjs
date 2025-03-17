@@ -29,3 +29,18 @@ export const createAnalysisInDb = async (data) => {
     throw new Error('Database error during analysis creation');
   }
 };
+
+export const getAllAnalysesFromDb = async (ownerId) => {
+  try {
+    const analyses = await prisma.analysis.findMany({
+      where: {
+        owner_id: ownerId,
+      },
+    });
+
+    return analyses;
+  } catch (error) {
+    logError('Error retrieving analyses from the database', error);
+    throw new Error('Database error during analysis retrieval');
+  }
+};

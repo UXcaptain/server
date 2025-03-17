@@ -1,4 +1,5 @@
-import { createAnalysisInDb } from '../models/analysisModel.mjs';
+import { createAnalysisInDb, getAllAnalysesFromDb } from '../models/analysisModel.mjs';
+
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
 
@@ -29,6 +30,28 @@ export const createAnalysis = async (req, res) => {
     return res.status(500).send({
       success: false,
       message: 'analysis could not be created',
+    });
+  }
+};
+
+export const getAllAnalyses = async (req, res) => {
+  try {
+    const ownerId = 'e505360a-7c30-4f7a-b858-8057e9ce49bc';
+
+    const analyses = await getAllAnalysesFromDb(ownerId);
+
+    return res.status(200).send({
+      success: true,
+      message: 'analyses retrieved successfully',
+      analysisCount: analyses.length,
+      analyses: analyses,
+    });
+  } catch (error) {
+    logError('error retrieving analyses', error);
+
+    return res.status(500).send({
+      success: false,
+      message: 'analyses could not be retrieved',
     });
   }
 };
