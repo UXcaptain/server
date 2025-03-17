@@ -8,7 +8,7 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  expressjs-server:
+  server:
     build:
       context: .
     environment:
@@ -17,8 +17,8 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
       PINOJS_SOURCE_TOKEN: ${PINOJS_SOURCE_TOKEN}
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@db:5432/public
-      PRISMA_POSTGRES_CONNECTION_DIRECT_URL: postgresql://postgres:prismaORM124!@db:5432/public
+      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@uxmonkeys-db:5432/public
+      PRISMA_POSTGRES_CONNECTION_DIRECT_URL: postgresql://postgres:prismaORM124!@uxmonkeys-db:5432/public
       MONGODB_USERNAME: ${MONGODB_USERNAME}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_URI: ${MONGODB_URI}
@@ -36,7 +36,7 @@ services:
           action: sync+restart #* Synchronize code changes and restart the server
           target: /usr/src/app/
     depends_on:
-      db:
+      uxmonkeys-db:
         condition: service_started
 
   # front-end:
@@ -44,14 +44,14 @@ services:
   #   ports:
   #     - 80:80
   #   restart: always # Added restart policy for front-end service
-  db:
+  uxmonkeys-db:
     image: postgres:16.8
-    restart: always
+    restart: on-failure
     # profiles: ["development"]
     user: 
       postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - uxmonkeys-db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=public
       - POSTGRES_USER=postgres
@@ -62,5 +62,5 @@ services:
     
 
 volumes:
-  db-data:
+  uxmonkeys-db-data:
 
