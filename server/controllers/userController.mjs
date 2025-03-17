@@ -127,7 +127,7 @@ export const createUser = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
-      message: 'Invalid userId',
+      message: 'Validation error on createUser',
       errors: req.sanitizedErrors,
     });
   }

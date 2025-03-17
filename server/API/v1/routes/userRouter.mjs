@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { checkSchema } from 'express-validator';
 import { authenticationChecker } from '../../../middlewares/authenticationChecker.mjs';
 import { getProfile, deleteUser } from '../../../controllers/userController.mjs';
 import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
