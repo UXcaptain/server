@@ -20,13 +20,10 @@ export const createAnalysisInDb = async (data) => {
       },
     });
 
-    return {
-      success: true,
-      response: analysisCreationInDbResponse,
-    };
+    return analysisCreationInDbResponse;
   } catch (error) {
     logError('Error creating analysis in the database', error);
-    throw new Error('Database error during analysis creation');
+    throw new Error('DatabaseError: Failed to create analysis');
   }
 };
 
@@ -41,6 +38,21 @@ export const getAllAnalysesFromDb = async (ownerId) => {
     return analyses;
   } catch (error) {
     logError('Error retrieving analyses from the database', error);
-    throw new Error('Database error during analysis retrieval');
+    throw new Error('DatabaseError: Failed to retrieve all analyses');
+  }
+};
+
+export const getAnalysisDetailsById = async (analysisId) => {
+  try {
+    const analysis = await prisma.analysis.findUnique({
+      where: {
+        id: analysisId,
+      },
+    });
+
+    return analysis;
+  } catch (error) {
+    logError('Error getting analysisDetailsById', error);
+    throw new Error('DatabaseError: Failed to retrieve analysis');
   }
 };

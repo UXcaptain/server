@@ -1,10 +1,10 @@
 {
-    "name": "express-js-template",
-    "version": "0.0.1",
+    "name": "user-research-platform",
+    "version": "alpha",
     "engines": {
         "node": ">=22.0.0"
     },
-    "description": "Template for Expressjs projects",
+    "description": "Platform for user research projects",
     "main": "app.mjs",
     "scripts": {
         "start": "node ./server/app.mjs",
