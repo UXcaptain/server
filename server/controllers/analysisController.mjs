@@ -13,7 +13,7 @@ export const createAnalysis = async (req, res) => {
   }
 
   try {
-    const analysisOwner = 'e505360a-7c30-4f7a-b858-8057e9ce49bc';
+    const analysisOwner = '7c20abab-ca61-4e02-8067-bb24e5b9ea9a';
     // const analysisOwner = req.user.id;
 
     const analysis = new Analysis(req.body, analysisOwner);
@@ -36,7 +36,7 @@ export const createAnalysis = async (req, res) => {
 
 export const getAllAnalyses = async (req, res) => {
   try {
-    const ownerId = 'e505360a-7c30-4f7a-b858-8057e9ce49bc';
+    const ownerId = '7c20abab-ca61-4e02-8067-bb24e5b9ea9a';
     // const analysisOwner = req.user.id;
 
     const analyses = await getAllAnalysesFromDb(ownerId);
