@@ -1,6 +1,7 @@
 import cors from 'cors';
 
 const origin = [
+  true,
   'http://localhost:80',
   'http://localhost:5173',
   'http://localhost:5374',
