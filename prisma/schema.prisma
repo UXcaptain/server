@@ -9,15 +9,16 @@ datasource db {
 }
 
 model User {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  password        String
-  role            userRoles @default(customer)
-  created_at      DateTime  @default(now())
-  last_updated_at DateTime  @updatedAt
-  last_login_at   DateTime?
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  role          userRoles @default(customer)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  last_login_at DateTime?
 
-  Analysis Analysis[]
+  Analysis         Analysis[]
+  analysisRequests AnalysisRequests[]
 
   @@index([id, email])
 }
@@ -42,21 +43,45 @@ enum userRoles {
 }
 
 model Analysis {
-  id                         String   @id @default(uuid())
-  owner                      User     @relation(fields: [owner_id], references: [id])
+  id                         String             @id @default(uuid())
+  owner                      User               @relation(fields: [owner_id], references: [id])
   owner_id                   String
   analysis_name              String
   analysis_tasks             Json
   analysis_url               String
-  analysis_status            analysisStatus @default(draft)
-  created_at                 DateTime @default(now())
+  analysis_status            analysisStatus     @default(draft)
+  created_at                 DateTime           @default(now())
+  updated_at                 DateTime           @updatedAt
+  current_participants_count Int                @default(0)
   max_number_of_participants Int
+  analysis_requests          AnalysisRequests[]
 
-  @@index([id, owner_id])
+  @@index([owner_id])
 }
 
 enum analysisStatus {
-  draft
-  in_progress
-  completed
+  draft // analysis has been created but not yet published
+  published // analysis has been published and participants can join the analysis
+  completed // analysis has been completed and no more participants are accepted
+}
+
+model AnalysisRequests {
+  id          Int                             @id @default(autoincrement())
+  analysis    Analysis                        @relation(fields: [analysis_id], references: [id])
+  analysis_id String
+  user        User                            @relation(fields: [user_id], references: [id])
+  user_id     String
+  status      analysisRequestCompletionStatus @default(in_progress)
+  created_at  DateTime                        @default(now())
+  updated_at  DateTime                        @updatedAt
+
+  @@index([created_at, status])
+}
+
+enum analysisRequestCompletionStatus {
+  in_progress // participant has started the analysis
+  cancelled // analysis has been started by the participant but not submitted in time - Serves to prevent the participant from participating AGAIN in the analysis
+  submitted // participant has submitted the analysis by the user
+  accepted // analysis has been accepted by the customer/admin and payment should be given
+  rejected // analysis has been rejected by the customer/admin and payment should NOT be given
 }
