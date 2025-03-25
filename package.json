@@ -1,8 +1,7 @@
 {
     "name": "user-research-platform",
-    "version": "alpha",
     "engines": {
-        "node": ">=22.0.0"
+        "node": "22.x"
     },
     "description": "Platform for user research projects",
     "main": "app.mjs",
