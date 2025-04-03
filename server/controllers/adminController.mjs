@@ -7,12 +7,12 @@ import {
 
 export const getAllCustomers = async (req, res) => {
   try {
-    const query = await getAllCustomersInDb();
+    const getAllCustomerQuery = await getAllCustomersInDb();
 
     res.status(200).json({
       success: true,
-      userCount: query.length,
-      users: query,
+      userCount: getAllCustomerQuery.length,
+      users: getAllCustomerQuery,
     });
   } catch (error) {
     logError('Error getting all customers', error);
@@ -27,9 +27,9 @@ export const getOneUserById = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const queryResult = await getUserById(userId);
+    const getOneUserByIdQuery = await getUserById(userId);
 
-    if (queryResult === null) {
+    if (getOneUserByIdQuery === null) {
       return res.status(400).json({
         success: false,
         message: 'User not found',
@@ -38,7 +38,7 @@ export const getOneUserById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      user: queryResult,
+      user: getOneUserByIdQuery,
     });
   } catch (error) {
     return res.status(502).json({
@@ -60,12 +60,12 @@ export const deleteOneUserById = async (req, res) => {
       });
     }
 
-    const deletedUser = await deleteUserInDb(userId);
+    const deleteUserQuery = await deleteUserInDb(userId);
 
     return res.status(200).json({
       success: true,
       message: 'User successfully deleted',
-      userId: deletedUser.user.id,
+      userId: deleteUserQuery.user.id,
     });
   } catch (error) {
     return res.status(502).json({
