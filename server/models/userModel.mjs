@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../config/generated/prisma/client/index.js';
+import { posthogUserUpdatedPassword, posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.mjs';
 import {
   logUserCreatedInDB,
   logError,
   logPasswordUpdated,
 } from '../config/loggerFunctions.mjs';
-import { posthogUserSignedUp } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ export const createUserInDB = async (user) => {
 
     logUserCreatedInDB(createUserInDbQuery.id, user);
 
-    posthogUserSignedUp(user);
+    posthogUserSignedUp(createUserInDbQuery);
 
     return createUserInDbQuery;
   } catch (error) {
@@ -85,6 +85,8 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
 
     logPasswordUpdated(userId);
 
+    posthogUserUpdatedPassword(userId);
+
     return updatePasswordQuery;
   } catch (error) {
     logError('Error updating user password', error, { userId: userId });
@@ -97,6 +99,12 @@ export const getAllCustomersInDb = async () => {
   try {
     const getAllCustomersQuery = await prisma.user.findMany({
       where: { role: 'customer' },
+      omit: {
+        password: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
     });
 
     return getAllCustomersQuery;
@@ -114,11 +122,9 @@ export const deleteUserInDb = async (userId) => {
       },
     });
 
-    return {
-      success: true,
-      message: 'User deleted',
-      user: deleteUserQuery,
-    };
+    posthogUserDeleteAccount(userId);
+
+    return deleteUserQuery;
   } catch (error) {
     logError('Error deleting user', error);
     throw error;

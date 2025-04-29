@@ -10,13 +10,23 @@ import {
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
 
-export const getProfile = async (req, res) => {
-  req.user.password = undefined;
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user.id;
 
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
+    const user = await getUserById(userId);
+
+    res.status(200).json({
+      success: true,
+      user: user,
+    });
+  } catch (error) {
+    logError('Error getting user profile', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting user profile',
+    });
+  }
 };
 
 export const deleteUser = async (req, res) => {
@@ -28,81 +38,8 @@ export const deleteUser = async (req, res) => {
       message: 'User deleted successfully',
     });
   } catch (error) {
+    logError('Error deleting user', error);
     return res.status(500).json({
-      success: false,
-      message: 'Error deleting user',
-    });
-  }
-};
-
-export const updateUserPassword = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(400).json({
-      success: false,
-      message: req.sanitizedErrors,
-    });
-  }
-  const {
-    currentPassword,
-    newPassword,
-  } = req.body;
-
-  try {
-    const userId = req.user.id;
-    const user = await getUserById(userId);
-
-    if (user === null) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found',
-      });
-    }
-    const storedPasswordHash = user.password;
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Compare current password with stored hash
-    const isMatch = await bcrypt.compare(currentPassword, storedPasswordHash);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        ERR_CODE: 'INCORRECT_PASSWORD',
-        message: 'Current password is incorrect',
-      });
-    }
-
-    // Update password in database
-    const updatedUser = await updateUserPasswordInDB(userId, hashedPassword);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Password updated successfully',
-      result: updatedUser,
-    });
-  } catch (error) {
-    logError('Error updating user password', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error updating password',
-    });
-  }
-};
-
-export const deleteAccount = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const deletedUser = await deleteUserInDb(userId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'user successfully deleted',
-      userId: deletedUser.user.id,
-    });
-  } catch (error) {
-    return res.status(502).json({
       success: false,
       message: 'Error deleting user',
     });
@@ -146,6 +83,51 @@ export const createUser = async (req, res) => {
       success: false,
       ERR_CODE: 'USER_CREATION_ERROR',
       message: 'An error occurred while creating the user - Please try again in a few minutes',
+    });
+  }
+};
+
+export const checkPasswordResetTokenExpirationDate = async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token is required',
+      });
+    }
+
+    const passwordResetTokenData = await getPasswordResetTokenData(token);
+
+    if (!passwordResetTokenData) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token not found',
+      });
+    }
+
+    const {
+      token_expires: tokenExpirationDate,
+    } = passwordResetTokenData;
+
+    if (new Date(tokenExpirationDate) < new Date()) {
+      return res.status(401).json({
+        success: false,
+        message: 'Token expired - Please request a new password reset link',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Token is valid',
+      tokenData: passwordResetTokenData,
+    });
+  } catch (error) {
+    logError('Error checking password reset token expiration date', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred while checking the token',
     });
   }
 };
@@ -208,6 +190,62 @@ export const updateRecoveredUserPassword = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'An error occurred, please try again later',
+    });
+  }
+};
+
+export const updateUserPassword = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(400).json({
+      success: false,
+      message: req.sanitizedErrors,
+    });
+  }
+
+  const {
+    currentPassword,
+    newPassword,
+  } = req.body;
+
+  try {
+    const userId = req.user.id;
+    const user = await getUserById(userId);
+
+    if (user === null) {
+      return res.status(401).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+    const storedPasswordHash = user.password;
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Compare current password with stored hash
+    const isMatch = await bcrypt.compare(currentPassword, storedPasswordHash);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        ERR_CODE: 'INCORRECT_PASSWORD',
+        message: 'Current password is incorrect',
+      });
+    }
+
+    // Update password in database
+    const updatedUser = await updateUserPasswordInDB(userId, hashedPassword);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Password updated successfully',
+      result: updatedUser,
+    });
+  } catch (error) {
+    logError('Error updating user password', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating password',
     });
   }
 };

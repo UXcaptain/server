@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { logError } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
@@ -53,5 +53,21 @@ export const deletePasswordResetTokens = async (userId) => {
 
     // throw error //* NOT throwing an error since req-res
     //*  flow should not be interrupted with this cleanup operation
+  }
+};
+
+export const deleteExpiredPasswordResetTokens = async () => {
+  try {
+    await prisma.password_reset_tokens.deleteMany({
+      where: {
+        token_expires: {
+          lt: new Date(),
+        },
+      },
+    });
+  } catch (error) {
+    logError('Error deleting expired password reset tokens', error);
+
+    throw error;
   }
 };

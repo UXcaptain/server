@@ -8,7 +8,7 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  uxmonkeys-server:
     build:
       context: .
     environment:
@@ -22,11 +22,14 @@ services:
       MONGODB_USERNAME: ${MONGODB_USERNAME}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_URI: ${MONGODB_URI}
-      MONGODB_CONNECTIONSTRING: ${MONGODB_CONNECTIONSTRING}
+      MONGODB_CONNECTION_STRING: ${MONGODB_CONNECTION_STRING}
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
-      TELEGRAM_BOT_FLIGHTDEALS_CHAT_ID: ${TELEGRAM_BOT_FLIGHTDEALS_CHAT_ID}
       TELEGRAM_BOT_LOGS_CHAT_ID: ${TELEGRAM_BOT_LOGS_CHAT_ID}
       FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_MONTHLY_PRICE_ID: ${STRIPE_MONTHLY_PRICE_ID}
+      STRIPE_BIANNUAL_PRICE_ID: ${STRIPE_BIANNUAL_PRICE_ID}
+      STRIPE_ANNUAL_PRICE_ID: ${STRIPE_ANNUAL_PRICE_ID}
       PORT: ${PORT}
     ports:
       - 3000:3000
@@ -64,8 +67,7 @@ services:
       #   target: /usr/src/app/
   uxmonkeys-db:
     image: postgres:16.8
-    restart: on-failure
-    # profiles: ["development"]
+    restart: always
     user: 
       postgres
     volumes:
@@ -74,7 +76,6 @@ services:
       - POSTGRES_DB=public
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prismaORM124!
-      # - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 5432:5432
     

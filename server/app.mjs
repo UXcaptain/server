@@ -6,6 +6,9 @@ import { helmetMiddleware } from './middlewares/helmet.mjs';
 import { apiRouter } from './API/apiRouter.mjs';
 import { storeSessions } from './middlewares/storeExpressSessions.mjs';
 import { indexRouter } from './routers/indexRouter.mjs';
+import { limiter } from './middlewares/express-rate-limiter.mjs';
+import { slowLimiter } from './middlewares/express-slow-down.mjs';
+import { startCronJobs } from './cron/jobsContainer.mjs';
 
 const app = express();
 
@@ -13,6 +16,8 @@ const app = express();
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
 app.use(cookieParserMiddleware);
+app.use(slowLimiter);
+app.use(limiter);
 
 //* Middleware to create parse request (read req.body from form data & JSON) & parse query
 app.use(express.urlencoded());
@@ -40,6 +45,8 @@ const server = app.listen(process.env.PORT, () => {
 // eslint-disable-next-line no-console
   console.log(`Server running at http://localhost:${process.env.PORT}/`);
 });
+
+startCronJobs();
 
 const gracefulShutdown = () => {
   console.log('Received shutdown signal, closing server...');
