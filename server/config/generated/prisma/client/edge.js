@@ -228,7 +228,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../../../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../../../../.env"
   },
   "relativePath": "../../../../../prisma",
@@ -238,12 +238,11 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "PRISMA_POSTGRES_CONNECTION_STRING",
-        "value": null
+        "value": "postgresql://prisma.nzivrctznmkrnkyhetur:prismapassword@aws-0-eu-west-3.pooler.supabase.com:6543/postgres?pgbouncer=true"
       }
     }
   },
