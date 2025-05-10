@@ -67,7 +67,7 @@ services:
       #   target: /usr/src/app/
   uxmonkeys-db:
     image: postgres:16.8
-    restart: always
+    restart: on_failure
     user: 
       postgres
     volumes:
