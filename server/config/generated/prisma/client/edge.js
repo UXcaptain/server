@@ -238,11 +238,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "PRISMA_POSTGRES_CONNECTION_STRING",
-        "value": "postgresql://prisma.nzivrctznmkrnkyhetur:prismapassword@aws-0-eu-west-3.pooler.supabase.com:6543/postgres?pgbouncer=true"
+        "value": null
       }
     }
   },
