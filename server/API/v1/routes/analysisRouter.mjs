@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
-import { createAnalysis, getAllAnalyses, getSinglesAnalysisDetails } from '../../../controllers/analysisController.mjs';
+import {
+  createAnalysis,
+  getAllAnalyses,
+  getSinglesAnalysisDetails,
+} from '../../../controllers/analysisController.mjs';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 

@@ -26,3 +26,6 @@ staging.env
 # test results
 
 /test-results
+server/middlewares/permissionByRoleChecker.mjs
+server/middlewares/authenticationChecker.mjs
+server/middlewares/subscriptionChecker.mjs
