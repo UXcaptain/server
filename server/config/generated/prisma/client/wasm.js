@@ -167,13 +167,14 @@ exports.Prisma.AnalysisScalarFieldEnum = {
   max_number_of_participants: 'max_number_of_participants'
 };
 
-exports.Prisma.AnalysisRequestsScalarFieldEnum = {
+exports.Prisma.AnalysisEntriesScalarFieldEnum = {
   id: 'id',
   analysis_id: 'analysis_id',
   user_id: 'user_id',
   status: 'status',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  analysis_url: 'analysis_url'
 };
 
 exports.Prisma.SortOrder = {
@@ -211,7 +212,7 @@ exports.analysisStatus = exports.$Enums.analysisStatus = {
   completed: 'completed'
 };
 
-exports.analysisRequestCompletionStatus = exports.$Enums.analysisRequestCompletionStatus = {
+exports.analysisEntryCompletionStatus = exports.$Enums.analysisEntryCompletionStatus = {
   in_progress: 'in_progress',
   cancelled: 'cancelled',
   submitted: 'submitted',
@@ -225,7 +226,7 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   Subscription: 'Subscription',
   Analysis: 'Analysis',
-  AnalysisRequests: 'AnalysisRequests'
+  AnalysisEntries: 'AnalysisEntries'
 };
 
 /**

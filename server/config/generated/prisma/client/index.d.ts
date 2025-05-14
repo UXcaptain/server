@@ -39,10 +39,10 @@ export type Subscription = $Result.DefaultSelection<Prisma.$SubscriptionPayload>
  */
 export type Analysis = $Result.DefaultSelection<Prisma.$AnalysisPayload>
 /**
- * Model AnalysisRequests
+ * Model AnalysisEntries
  * 
  */
-export type AnalysisRequests = $Result.DefaultSelection<Prisma.$AnalysisRequestsPayload>
+export type AnalysisEntries = $Result.DefaultSelection<Prisma.$AnalysisEntriesPayload>
 
 /**
  * Enums
@@ -65,7 +65,7 @@ export const analysisStatus: {
 export type analysisStatus = (typeof analysisStatus)[keyof typeof analysisStatus]
 
 
-export const analysisRequestCompletionStatus: {
+export const analysisEntryCompletionStatus: {
   in_progress: 'in_progress',
   cancelled: 'cancelled',
   submitted: 'submitted',
@@ -73,7 +73,7 @@ export const analysisRequestCompletionStatus: {
   rejected: 'rejected'
 };
 
-export type analysisRequestCompletionStatus = (typeof analysisRequestCompletionStatus)[keyof typeof analysisRequestCompletionStatus]
+export type analysisEntryCompletionStatus = (typeof analysisEntryCompletionStatus)[keyof typeof analysisEntryCompletionStatus]
 
 }
 
@@ -85,9 +85,9 @@ export type analysisStatus = $Enums.analysisStatus
 
 export const analysisStatus: typeof $Enums.analysisStatus
 
-export type analysisRequestCompletionStatus = $Enums.analysisRequestCompletionStatus
+export type analysisEntryCompletionStatus = $Enums.analysisEntryCompletionStatus
 
-export const analysisRequestCompletionStatus: typeof $Enums.analysisRequestCompletionStatus
+export const analysisEntryCompletionStatus: typeof $Enums.analysisEntryCompletionStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -265,14 +265,14 @@ export class PrismaClient<
   get analysis(): Prisma.AnalysisDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.analysisRequests`: Exposes CRUD operations for the **AnalysisRequests** model.
+   * `prisma.analysisEntries`: Exposes CRUD operations for the **AnalysisEntries** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more AnalysisRequests
-    * const analysisRequests = await prisma.analysisRequests.findMany()
+    * // Fetch zero or more AnalysisEntries
+    * const analysisEntries = await prisma.analysisEntries.findMany()
     * ```
     */
-  get analysisRequests(): Prisma.AnalysisRequestsDelegate<ExtArgs, ClientOptions>;
+  get analysisEntries(): Prisma.AnalysisEntriesDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -718,7 +718,7 @@ export namespace Prisma {
     Session: 'Session',
     Subscription: 'Subscription',
     Analysis: 'Analysis',
-    AnalysisRequests: 'AnalysisRequests'
+    AnalysisEntries: 'AnalysisEntries'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -737,7 +737,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "password_reset_tokens" | "session" | "subscription" | "analysis" | "analysisRequests"
+      modelProps: "user" | "password_reset_tokens" | "session" | "subscription" | "analysis" | "analysisEntries"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1111,77 +1111,77 @@ export namespace Prisma {
           }
         }
       }
-      AnalysisRequests: {
-        payload: Prisma.$AnalysisRequestsPayload<ExtArgs>
-        fields: Prisma.AnalysisRequestsFieldRefs
+      AnalysisEntries: {
+        payload: Prisma.$AnalysisEntriesPayload<ExtArgs>
+        fields: Prisma.AnalysisEntriesFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.AnalysisRequestsFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload> | null
+            args: Prisma.AnalysisEntriesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.AnalysisRequestsFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           findFirst: {
-            args: Prisma.AnalysisRequestsFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload> | null
+            args: Prisma.AnalysisEntriesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.AnalysisRequestsFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           findMany: {
-            args: Prisma.AnalysisRequestsFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>[]
+            args: Prisma.AnalysisEntriesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>[]
           }
           create: {
-            args: Prisma.AnalysisRequestsCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           createMany: {
-            args: Prisma.AnalysisRequestsCreateManyArgs<ExtArgs>
+            args: Prisma.AnalysisEntriesCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.AnalysisRequestsCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>[]
+            args: Prisma.AnalysisEntriesCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>[]
           }
           delete: {
-            args: Prisma.AnalysisRequestsDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           update: {
-            args: Prisma.AnalysisRequestsUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           deleteMany: {
-            args: Prisma.AnalysisRequestsDeleteManyArgs<ExtArgs>
+            args: Prisma.AnalysisEntriesDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.AnalysisRequestsUpdateManyArgs<ExtArgs>
+            args: Prisma.AnalysisEntriesUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.AnalysisRequestsUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>[]
+            args: Prisma.AnalysisEntriesUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>[]
           }
           upsert: {
-            args: Prisma.AnalysisRequestsUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$AnalysisRequestsPayload>
+            args: Prisma.AnalysisEntriesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AnalysisEntriesPayload>
           }
           aggregate: {
-            args: Prisma.AnalysisRequestsAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateAnalysisRequests>
+            args: Prisma.AnalysisEntriesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAnalysisEntries>
           }
           groupBy: {
-            args: Prisma.AnalysisRequestsGroupByArgs<ExtArgs>
-            result: $Utils.Optional<AnalysisRequestsGroupByOutputType>[]
+            args: Prisma.AnalysisEntriesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AnalysisEntriesGroupByOutputType>[]
           }
           count: {
-            args: Prisma.AnalysisRequestsCountArgs<ExtArgs>
-            result: $Utils.Optional<AnalysisRequestsCountAggregateOutputType> | number
+            args: Prisma.AnalysisEntriesCountArgs<ExtArgs>
+            result: $Utils.Optional<AnalysisEntriesCountAggregateOutputType> | number
           }
         }
       }
@@ -1274,7 +1274,7 @@ export namespace Prisma {
     session?: SessionOmit
     subscription?: SubscriptionOmit
     analysis?: AnalysisOmit
-    analysisRequests?: AnalysisRequestsOmit
+    analysisEntries?: AnalysisEntriesOmit
   }
 
   /* Types for Logging */
@@ -1418,7 +1418,7 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountAnalysisRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
   }
 
 
@@ -1449,7 +1449,7 @@ export namespace Prisma {
    * AnalysisCountOutputType without action
    */
   export type AnalysisCountOutputTypeCountAnalysis_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
   }
 
 
@@ -1702,7 +1702,7 @@ export namespace Prisma {
       Subscription: Prisma.$SubscriptionPayload<ExtArgs>[]
       Password_reset_tokens: Prisma.$Password_reset_tokensPayload<ExtArgs>[]
       Analysis: Prisma.$AnalysisPayload<ExtArgs>[]
-      AnalysisRequests: Prisma.$AnalysisRequestsPayload<ExtArgs>[]
+      AnalysisRequests: Prisma.$AnalysisEntriesPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2110,7 +2110,7 @@ export namespace Prisma {
     Subscription<T extends User$SubscriptionArgs<ExtArgs> = {}>(args?: Subset<T, User$SubscriptionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Password_reset_tokens<T extends User$Password_reset_tokensArgs<ExtArgs> = {}>(args?: Subset<T, User$Password_reset_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$Password_reset_tokensPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Analysis<T extends User$AnalysisArgs<ExtArgs> = {}>(args?: Subset<T, User$AnalysisArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    AnalysisRequests<T extends User$AnalysisRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$AnalysisRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    AnalysisRequests<T extends User$AnalysisRequestsArgs<ExtArgs> = {}>(args?: Subset<T, User$AnalysisRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2612,23 +2612,23 @@ export namespace Prisma {
    */
   export type User$AnalysisRequestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
-    where?: AnalysisRequestsWhereInput
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
-    cursor?: AnalysisRequestsWhereUniqueInput
+    include?: AnalysisEntriesInclude<ExtArgs> | null
+    where?: AnalysisEntriesWhereInput
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
+    cursor?: AnalysisEntriesWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: AnalysisRequestsScalarFieldEnum | AnalysisRequestsScalarFieldEnum[]
+    distinct?: AnalysisEntriesScalarFieldEnum | AnalysisEntriesScalarFieldEnum[]
   }
 
   /**
@@ -6083,7 +6083,7 @@ export namespace Prisma {
     name: "Analysis"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
-      analysis_requests: Prisma.$AnalysisRequestsPayload<ExtArgs>[]
+      analysis_requests: Prisma.$AnalysisEntriesPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6491,7 +6491,7 @@ export namespace Prisma {
   export interface Prisma__AnalysisClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    analysis_requests<T extends Analysis$analysis_requestsArgs<ExtArgs> = {}>(args?: Subset<T, Analysis$analysis_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    analysis_requests<T extends Analysis$analysis_requestsArgs<ExtArgs> = {}>(args?: Subset<T, Analysis$analysis_requestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6931,23 +6931,23 @@ export namespace Prisma {
    */
   export type Analysis$analysis_requestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
-    where?: AnalysisRequestsWhereInput
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
-    cursor?: AnalysisRequestsWhereUniqueInput
+    include?: AnalysisEntriesInclude<ExtArgs> | null
+    where?: AnalysisEntriesWhereInput
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
+    cursor?: AnalysisEntriesWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: AnalysisRequestsScalarFieldEnum | AnalysisRequestsScalarFieldEnum[]
+    distinct?: AnalysisEntriesScalarFieldEnum | AnalysisEntriesScalarFieldEnum[]
   }
 
   /**
@@ -6970,403 +6970,381 @@ export namespace Prisma {
 
 
   /**
-   * Model AnalysisRequests
+   * Model AnalysisEntries
    */
 
-  export type AggregateAnalysisRequests = {
-    _count: AnalysisRequestsCountAggregateOutputType | null
-    _avg: AnalysisRequestsAvgAggregateOutputType | null
-    _sum: AnalysisRequestsSumAggregateOutputType | null
-    _min: AnalysisRequestsMinAggregateOutputType | null
-    _max: AnalysisRequestsMaxAggregateOutputType | null
+  export type AggregateAnalysisEntries = {
+    _count: AnalysisEntriesCountAggregateOutputType | null
+    _min: AnalysisEntriesMinAggregateOutputType | null
+    _max: AnalysisEntriesMaxAggregateOutputType | null
   }
 
-  export type AnalysisRequestsAvgAggregateOutputType = {
-    id: number | null
-  }
-
-  export type AnalysisRequestsSumAggregateOutputType = {
-    id: number | null
-  }
-
-  export type AnalysisRequestsMinAggregateOutputType = {
-    id: number | null
+  export type AnalysisEntriesMinAggregateOutputType = {
+    id: string | null
     analysis_id: string | null
     user_id: string | null
-    status: $Enums.analysisRequestCompletionStatus | null
+    status: $Enums.analysisEntryCompletionStatus | null
     created_at: Date | null
     updated_at: Date | null
+    analysis_url: string | null
   }
 
-  export type AnalysisRequestsMaxAggregateOutputType = {
-    id: number | null
+  export type AnalysisEntriesMaxAggregateOutputType = {
+    id: string | null
     analysis_id: string | null
     user_id: string | null
-    status: $Enums.analysisRequestCompletionStatus | null
+    status: $Enums.analysisEntryCompletionStatus | null
     created_at: Date | null
     updated_at: Date | null
+    analysis_url: string | null
   }
 
-  export type AnalysisRequestsCountAggregateOutputType = {
+  export type AnalysisEntriesCountAggregateOutputType = {
     id: number
     analysis_id: number
     user_id: number
     status: number
     created_at: number
     updated_at: number
+    analysis_url: number
     _all: number
   }
 
 
-  export type AnalysisRequestsAvgAggregateInputType = {
-    id?: true
-  }
-
-  export type AnalysisRequestsSumAggregateInputType = {
-    id?: true
-  }
-
-  export type AnalysisRequestsMinAggregateInputType = {
+  export type AnalysisEntriesMinAggregateInputType = {
     id?: true
     analysis_id?: true
     user_id?: true
     status?: true
     created_at?: true
     updated_at?: true
+    analysis_url?: true
   }
 
-  export type AnalysisRequestsMaxAggregateInputType = {
+  export type AnalysisEntriesMaxAggregateInputType = {
     id?: true
     analysis_id?: true
     user_id?: true
     status?: true
     created_at?: true
     updated_at?: true
+    analysis_url?: true
   }
 
-  export type AnalysisRequestsCountAggregateInputType = {
+  export type AnalysisEntriesCountAggregateInputType = {
     id?: true
     analysis_id?: true
     user_id?: true
     status?: true
     created_at?: true
     updated_at?: true
+    analysis_url?: true
     _all?: true
   }
 
-  export type AnalysisRequestsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which AnalysisRequests to aggregate.
+     * Filter which AnalysisEntries to aggregate.
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of AnalysisRequests to fetch.
+     * Determine the order of AnalysisEntries to fetch.
      */
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: AnalysisRequestsWhereUniqueInput
+    cursor?: AnalysisEntriesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` AnalysisRequests from the position of the cursor.
+     * Take `±n` AnalysisEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` AnalysisRequests.
+     * Skip the first `n` AnalysisEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned AnalysisRequests
+     * Count returned AnalysisEntries
     **/
-    _count?: true | AnalysisRequestsCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to average
-    **/
-    _avg?: AnalysisRequestsAvgAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to sum
-    **/
-    _sum?: AnalysisRequestsSumAggregateInputType
+    _count?: true | AnalysisEntriesCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: AnalysisRequestsMinAggregateInputType
+    _min?: AnalysisEntriesMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: AnalysisRequestsMaxAggregateInputType
+    _max?: AnalysisEntriesMaxAggregateInputType
   }
 
-  export type GetAnalysisRequestsAggregateType<T extends AnalysisRequestsAggregateArgs> = {
-        [P in keyof T & keyof AggregateAnalysisRequests]: P extends '_count' | 'count'
+  export type GetAnalysisEntriesAggregateType<T extends AnalysisEntriesAggregateArgs> = {
+        [P in keyof T & keyof AggregateAnalysisEntries]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateAnalysisRequests[P]>
-      : GetScalarType<T[P], AggregateAnalysisRequests[P]>
+        : GetScalarType<T[P], AggregateAnalysisEntries[P]>
+      : GetScalarType<T[P], AggregateAnalysisEntries[P]>
   }
 
 
 
 
-  export type AnalysisRequestsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AnalysisRequestsWhereInput
-    orderBy?: AnalysisRequestsOrderByWithAggregationInput | AnalysisRequestsOrderByWithAggregationInput[]
-    by: AnalysisRequestsScalarFieldEnum[] | AnalysisRequestsScalarFieldEnum
-    having?: AnalysisRequestsScalarWhereWithAggregatesInput
+  export type AnalysisEntriesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AnalysisEntriesWhereInput
+    orderBy?: AnalysisEntriesOrderByWithAggregationInput | AnalysisEntriesOrderByWithAggregationInput[]
+    by: AnalysisEntriesScalarFieldEnum[] | AnalysisEntriesScalarFieldEnum
+    having?: AnalysisEntriesScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: AnalysisRequestsCountAggregateInputType | true
-    _avg?: AnalysisRequestsAvgAggregateInputType
-    _sum?: AnalysisRequestsSumAggregateInputType
-    _min?: AnalysisRequestsMinAggregateInputType
-    _max?: AnalysisRequestsMaxAggregateInputType
+    _count?: AnalysisEntriesCountAggregateInputType | true
+    _min?: AnalysisEntriesMinAggregateInputType
+    _max?: AnalysisEntriesMaxAggregateInputType
   }
 
-  export type AnalysisRequestsGroupByOutputType = {
-    id: number
+  export type AnalysisEntriesGroupByOutputType = {
+    id: string
     analysis_id: string
     user_id: string
-    status: $Enums.analysisRequestCompletionStatus
+    status: $Enums.analysisEntryCompletionStatus
     created_at: Date
     updated_at: Date
-    _count: AnalysisRequestsCountAggregateOutputType | null
-    _avg: AnalysisRequestsAvgAggregateOutputType | null
-    _sum: AnalysisRequestsSumAggregateOutputType | null
-    _min: AnalysisRequestsMinAggregateOutputType | null
-    _max: AnalysisRequestsMaxAggregateOutputType | null
+    analysis_url: string | null
+    _count: AnalysisEntriesCountAggregateOutputType | null
+    _min: AnalysisEntriesMinAggregateOutputType | null
+    _max: AnalysisEntriesMaxAggregateOutputType | null
   }
 
-  type GetAnalysisRequestsGroupByPayload<T extends AnalysisRequestsGroupByArgs> = Prisma.PrismaPromise<
+  type GetAnalysisEntriesGroupByPayload<T extends AnalysisEntriesGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<AnalysisRequestsGroupByOutputType, T['by']> &
+      PickEnumerable<AnalysisEntriesGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof AnalysisRequestsGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof AnalysisEntriesGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], AnalysisRequestsGroupByOutputType[P]>
-            : GetScalarType<T[P], AnalysisRequestsGroupByOutputType[P]>
+              : GetScalarType<T[P], AnalysisEntriesGroupByOutputType[P]>
+            : GetScalarType<T[P], AnalysisEntriesGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type AnalysisRequestsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type AnalysisEntriesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     analysis_id?: boolean
     user_id?: boolean
     status?: boolean
     created_at?: boolean
     updated_at?: boolean
+    analysis_url?: boolean
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["analysisRequests"]>
+  }, ExtArgs["result"]["analysisEntries"]>
 
-  export type AnalysisRequestsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type AnalysisEntriesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     analysis_id?: boolean
     user_id?: boolean
     status?: boolean
     created_at?: boolean
     updated_at?: boolean
+    analysis_url?: boolean
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["analysisRequests"]>
+  }, ExtArgs["result"]["analysisEntries"]>
 
-  export type AnalysisRequestsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type AnalysisEntriesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     analysis_id?: boolean
     user_id?: boolean
     status?: boolean
     created_at?: boolean
     updated_at?: boolean
+    analysis_url?: boolean
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["analysisRequests"]>
+  }, ExtArgs["result"]["analysisEntries"]>
 
-  export type AnalysisRequestsSelectScalar = {
+  export type AnalysisEntriesSelectScalar = {
     id?: boolean
     analysis_id?: boolean
     user_id?: boolean
     status?: boolean
     created_at?: boolean
     updated_at?: boolean
+    analysis_url?: boolean
   }
 
-  export type AnalysisRequestsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "analysis_id" | "user_id" | "status" | "created_at" | "updated_at", ExtArgs["result"]["analysisRequests"]>
-  export type AnalysisRequestsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "analysis_id" | "user_id" | "status" | "created_at" | "updated_at" | "analysis_url", ExtArgs["result"]["analysisEntries"]>
+  export type AnalysisEntriesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type AnalysisRequestsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
-  export type AnalysisRequestsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     analysis?: boolean | AnalysisDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
 
-  export type $AnalysisRequestsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "AnalysisRequests"
+  export type $AnalysisEntriesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AnalysisEntries"
     objects: {
       analysis: Prisma.$AnalysisPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
-      id: number
+      id: string
       analysis_id: string
       user_id: string
-      status: $Enums.analysisRequestCompletionStatus
+      status: $Enums.analysisEntryCompletionStatus
       created_at: Date
       updated_at: Date
-    }, ExtArgs["result"]["analysisRequests"]>
+      analysis_url: string | null
+    }, ExtArgs["result"]["analysisEntries"]>
     composites: {}
   }
 
-  type AnalysisRequestsGetPayload<S extends boolean | null | undefined | AnalysisRequestsDefaultArgs> = $Result.GetResult<Prisma.$AnalysisRequestsPayload, S>
+  type AnalysisEntriesGetPayload<S extends boolean | null | undefined | AnalysisEntriesDefaultArgs> = $Result.GetResult<Prisma.$AnalysisEntriesPayload, S>
 
-  type AnalysisRequestsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<AnalysisRequestsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: AnalysisRequestsCountAggregateInputType | true
+  type AnalysisEntriesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AnalysisEntriesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AnalysisEntriesCountAggregateInputType | true
     }
 
-  export interface AnalysisRequestsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AnalysisRequests'], meta: { name: 'AnalysisRequests' } }
+  export interface AnalysisEntriesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AnalysisEntries'], meta: { name: 'AnalysisEntries' } }
     /**
-     * Find zero or one AnalysisRequests that matches the filter.
-     * @param {AnalysisRequestsFindUniqueArgs} args - Arguments to find a AnalysisRequests
+     * Find zero or one AnalysisEntries that matches the filter.
+     * @param {AnalysisEntriesFindUniqueArgs} args - Arguments to find a AnalysisEntries
      * @example
-     * // Get one AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findUnique({
+     * // Get one AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends AnalysisRequestsFindUniqueArgs>(args: SelectSubset<T, AnalysisRequestsFindUniqueArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends AnalysisEntriesFindUniqueArgs>(args: SelectSubset<T, AnalysisEntriesFindUniqueArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one AnalysisRequests that matches the filter or throw an error with `error.code='P2025'`
+     * Find one AnalysisEntries that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {AnalysisRequestsFindUniqueOrThrowArgs} args - Arguments to find a AnalysisRequests
+     * @param {AnalysisEntriesFindUniqueOrThrowArgs} args - Arguments to find a AnalysisEntries
      * @example
-     * // Get one AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findUniqueOrThrow({
+     * // Get one AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends AnalysisRequestsFindUniqueOrThrowArgs>(args: SelectSubset<T, AnalysisRequestsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends AnalysisEntriesFindUniqueOrThrowArgs>(args: SelectSubset<T, AnalysisEntriesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first AnalysisRequests that matches the filter.
+     * Find the first AnalysisEntries that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsFindFirstArgs} args - Arguments to find a AnalysisRequests
+     * @param {AnalysisEntriesFindFirstArgs} args - Arguments to find a AnalysisEntries
      * @example
-     * // Get one AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findFirst({
+     * // Get one AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends AnalysisRequestsFindFirstArgs>(args?: SelectSubset<T, AnalysisRequestsFindFirstArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends AnalysisEntriesFindFirstArgs>(args?: SelectSubset<T, AnalysisEntriesFindFirstArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first AnalysisRequests that matches the filter or
+     * Find the first AnalysisEntries that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsFindFirstOrThrowArgs} args - Arguments to find a AnalysisRequests
+     * @param {AnalysisEntriesFindFirstOrThrowArgs} args - Arguments to find a AnalysisEntries
      * @example
-     * // Get one AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findFirstOrThrow({
+     * // Get one AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends AnalysisRequestsFindFirstOrThrowArgs>(args?: SelectSubset<T, AnalysisRequestsFindFirstOrThrowArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends AnalysisEntriesFindFirstOrThrowArgs>(args?: SelectSubset<T, AnalysisEntriesFindFirstOrThrowArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more AnalysisRequests that matches the filter.
+     * Find zero or more AnalysisEntries that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {AnalysisEntriesFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findMany()
+     * // Get all AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findMany()
      * 
-     * // Get first 10 AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.findMany({ take: 10 })
+     * // Get first 10 AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const analysisRequestsWithIdOnly = await prisma.analysisRequests.findMany({ select: { id: true } })
+     * const analysisEntriesWithIdOnly = await prisma.analysisEntries.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends AnalysisRequestsFindManyArgs>(args?: SelectSubset<T, AnalysisRequestsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends AnalysisEntriesFindManyArgs>(args?: SelectSubset<T, AnalysisEntriesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a AnalysisRequests.
-     * @param {AnalysisRequestsCreateArgs} args - Arguments to create a AnalysisRequests.
+     * Create a AnalysisEntries.
+     * @param {AnalysisEntriesCreateArgs} args - Arguments to create a AnalysisEntries.
      * @example
-     * // Create one AnalysisRequests
-     * const AnalysisRequests = await prisma.analysisRequests.create({
+     * // Create one AnalysisEntries
+     * const AnalysisEntries = await prisma.analysisEntries.create({
      *   data: {
-     *     // ... data to create a AnalysisRequests
+     *     // ... data to create a AnalysisEntries
      *   }
      * })
      * 
      */
-    create<T extends AnalysisRequestsCreateArgs>(args: SelectSubset<T, AnalysisRequestsCreateArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends AnalysisEntriesCreateArgs>(args: SelectSubset<T, AnalysisEntriesCreateArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many AnalysisRequests.
-     * @param {AnalysisRequestsCreateManyArgs} args - Arguments to create many AnalysisRequests.
+     * Create many AnalysisEntries.
+     * @param {AnalysisEntriesCreateManyArgs} args - Arguments to create many AnalysisEntries.
      * @example
-     * // Create many AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.createMany({
+     * // Create many AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends AnalysisRequestsCreateManyArgs>(args?: SelectSubset<T, AnalysisRequestsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends AnalysisEntriesCreateManyArgs>(args?: SelectSubset<T, AnalysisEntriesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many AnalysisRequests and returns the data saved in the database.
-     * @param {AnalysisRequestsCreateManyAndReturnArgs} args - Arguments to create many AnalysisRequests.
+     * Create many AnalysisEntries and returns the data saved in the database.
+     * @param {AnalysisEntriesCreateManyAndReturnArgs} args - Arguments to create many AnalysisEntries.
      * @example
-     * // Create many AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.createManyAndReturn({
+     * // Create many AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many AnalysisRequests and only return the `id`
-     * const analysisRequestsWithIdOnly = await prisma.analysisRequests.createManyAndReturn({
+     * // Create many AnalysisEntries and only return the `id`
+     * const analysisEntriesWithIdOnly = await prisma.analysisEntries.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -7376,28 +7354,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends AnalysisRequestsCreateManyAndReturnArgs>(args?: SelectSubset<T, AnalysisRequestsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends AnalysisEntriesCreateManyAndReturnArgs>(args?: SelectSubset<T, AnalysisEntriesCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a AnalysisRequests.
-     * @param {AnalysisRequestsDeleteArgs} args - Arguments to delete one AnalysisRequests.
+     * Delete a AnalysisEntries.
+     * @param {AnalysisEntriesDeleteArgs} args - Arguments to delete one AnalysisEntries.
      * @example
-     * // Delete one AnalysisRequests
-     * const AnalysisRequests = await prisma.analysisRequests.delete({
+     * // Delete one AnalysisEntries
+     * const AnalysisEntries = await prisma.analysisEntries.delete({
      *   where: {
-     *     // ... filter to delete one AnalysisRequests
+     *     // ... filter to delete one AnalysisEntries
      *   }
      * })
      * 
      */
-    delete<T extends AnalysisRequestsDeleteArgs>(args: SelectSubset<T, AnalysisRequestsDeleteArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends AnalysisEntriesDeleteArgs>(args: SelectSubset<T, AnalysisEntriesDeleteArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one AnalysisRequests.
-     * @param {AnalysisRequestsUpdateArgs} args - Arguments to update one AnalysisRequests.
+     * Update one AnalysisEntries.
+     * @param {AnalysisEntriesUpdateArgs} args - Arguments to update one AnalysisEntries.
      * @example
-     * // Update one AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.update({
+     * // Update one AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7407,30 +7385,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends AnalysisRequestsUpdateArgs>(args: SelectSubset<T, AnalysisRequestsUpdateArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends AnalysisEntriesUpdateArgs>(args: SelectSubset<T, AnalysisEntriesUpdateArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more AnalysisRequests.
-     * @param {AnalysisRequestsDeleteManyArgs} args - Arguments to filter AnalysisRequests to delete.
+     * Delete zero or more AnalysisEntries.
+     * @param {AnalysisEntriesDeleteManyArgs} args - Arguments to filter AnalysisEntries to delete.
      * @example
-     * // Delete a few AnalysisRequests
-     * const { count } = await prisma.analysisRequests.deleteMany({
+     * // Delete a few AnalysisEntries
+     * const { count } = await prisma.analysisEntries.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends AnalysisRequestsDeleteManyArgs>(args?: SelectSubset<T, AnalysisRequestsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends AnalysisEntriesDeleteManyArgs>(args?: SelectSubset<T, AnalysisEntriesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more AnalysisRequests.
+     * Update zero or more AnalysisEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {AnalysisEntriesUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.updateMany({
+     * // Update many AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7440,14 +7418,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends AnalysisRequestsUpdateManyArgs>(args: SelectSubset<T, AnalysisRequestsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends AnalysisEntriesUpdateManyArgs>(args: SelectSubset<T, AnalysisEntriesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more AnalysisRequests and returns the data updated in the database.
-     * @param {AnalysisRequestsUpdateManyAndReturnArgs} args - Arguments to update many AnalysisRequests.
+     * Update zero or more AnalysisEntries and returns the data updated in the database.
+     * @param {AnalysisEntriesUpdateManyAndReturnArgs} args - Arguments to update many AnalysisEntries.
      * @example
-     * // Update many AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.updateManyAndReturn({
+     * // Update many AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -7456,8 +7434,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more AnalysisRequests and only return the `id`
-     * const analysisRequestsWithIdOnly = await prisma.analysisRequests.updateManyAndReturn({
+     * // Update zero or more AnalysisEntries and only return the `id`
+     * const analysisEntriesWithIdOnly = await prisma.analysisEntries.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -7470,56 +7448,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends AnalysisRequestsUpdateManyAndReturnArgs>(args: SelectSubset<T, AnalysisRequestsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends AnalysisEntriesUpdateManyAndReturnArgs>(args: SelectSubset<T, AnalysisEntriesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one AnalysisRequests.
-     * @param {AnalysisRequestsUpsertArgs} args - Arguments to update or create a AnalysisRequests.
+     * Create or update one AnalysisEntries.
+     * @param {AnalysisEntriesUpsertArgs} args - Arguments to update or create a AnalysisEntries.
      * @example
-     * // Update or create a AnalysisRequests
-     * const analysisRequests = await prisma.analysisRequests.upsert({
+     * // Update or create a AnalysisEntries
+     * const analysisEntries = await prisma.analysisEntries.upsert({
      *   create: {
-     *     // ... data to create a AnalysisRequests
+     *     // ... data to create a AnalysisEntries
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the AnalysisRequests we want to update
+     *     // ... the filter for the AnalysisEntries we want to update
      *   }
      * })
      */
-    upsert<T extends AnalysisRequestsUpsertArgs>(args: SelectSubset<T, AnalysisRequestsUpsertArgs<ExtArgs>>): Prisma__AnalysisRequestsClient<$Result.GetResult<Prisma.$AnalysisRequestsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends AnalysisEntriesUpsertArgs>(args: SelectSubset<T, AnalysisEntriesUpsertArgs<ExtArgs>>): Prisma__AnalysisEntriesClient<$Result.GetResult<Prisma.$AnalysisEntriesPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of AnalysisRequests.
+     * Count the number of AnalysisEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsCountArgs} args - Arguments to filter AnalysisRequests to count.
+     * @param {AnalysisEntriesCountArgs} args - Arguments to filter AnalysisEntries to count.
      * @example
-     * // Count the number of AnalysisRequests
-     * const count = await prisma.analysisRequests.count({
+     * // Count the number of AnalysisEntries
+     * const count = await prisma.analysisEntries.count({
      *   where: {
-     *     // ... the filter for the AnalysisRequests we want to count
+     *     // ... the filter for the AnalysisEntries we want to count
      *   }
      * })
     **/
-    count<T extends AnalysisRequestsCountArgs>(
-      args?: Subset<T, AnalysisRequestsCountArgs>,
+    count<T extends AnalysisEntriesCountArgs>(
+      args?: Subset<T, AnalysisEntriesCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], AnalysisRequestsCountAggregateOutputType>
+          : GetScalarType<T['select'], AnalysisEntriesCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a AnalysisRequests.
+     * Allows you to perform aggregations operations on a AnalysisEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {AnalysisEntriesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -7539,13 +7517,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends AnalysisRequestsAggregateArgs>(args: Subset<T, AnalysisRequestsAggregateArgs>): Prisma.PrismaPromise<GetAnalysisRequestsAggregateType<T>>
+    aggregate<T extends AnalysisEntriesAggregateArgs>(args: Subset<T, AnalysisEntriesAggregateArgs>): Prisma.PrismaPromise<GetAnalysisEntriesAggregateType<T>>
 
     /**
-     * Group by AnalysisRequests.
+     * Group by AnalysisEntries.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {AnalysisRequestsGroupByArgs} args - Group by arguments.
+     * @param {AnalysisEntriesGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -7560,14 +7538,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends AnalysisRequestsGroupByArgs,
+      T extends AnalysisEntriesGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: AnalysisRequestsGroupByArgs['orderBy'] }
-        : { orderBy?: AnalysisRequestsGroupByArgs['orderBy'] },
+        ? { orderBy: AnalysisEntriesGroupByArgs['orderBy'] }
+        : { orderBy?: AnalysisEntriesGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -7616,20 +7594,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, AnalysisRequestsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAnalysisRequestsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, AnalysisEntriesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAnalysisEntriesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the AnalysisRequests model
+   * Fields of the AnalysisEntries model
    */
-  readonly fields: AnalysisRequestsFieldRefs;
+  readonly fields: AnalysisEntriesFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for AnalysisRequests.
+   * The delegate class that acts as a "Promise-like" for AnalysisEntries.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__AnalysisRequestsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__AnalysisEntriesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     analysis<T extends AnalysisDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AnalysisDefaultArgs<ExtArgs>>): Prisma__AnalysisClient<$Result.GetResult<Prisma.$AnalysisPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -7659,426 +7637,427 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the AnalysisRequests model
+   * Fields of the AnalysisEntries model
    */
-  interface AnalysisRequestsFieldRefs {
-    readonly id: FieldRef<"AnalysisRequests", 'Int'>
-    readonly analysis_id: FieldRef<"AnalysisRequests", 'String'>
-    readonly user_id: FieldRef<"AnalysisRequests", 'String'>
-    readonly status: FieldRef<"AnalysisRequests", 'analysisRequestCompletionStatus'>
-    readonly created_at: FieldRef<"AnalysisRequests", 'DateTime'>
-    readonly updated_at: FieldRef<"AnalysisRequests", 'DateTime'>
+  interface AnalysisEntriesFieldRefs {
+    readonly id: FieldRef<"AnalysisEntries", 'String'>
+    readonly analysis_id: FieldRef<"AnalysisEntries", 'String'>
+    readonly user_id: FieldRef<"AnalysisEntries", 'String'>
+    readonly status: FieldRef<"AnalysisEntries", 'analysisEntryCompletionStatus'>
+    readonly created_at: FieldRef<"AnalysisEntries", 'DateTime'>
+    readonly updated_at: FieldRef<"AnalysisEntries", 'DateTime'>
+    readonly analysis_url: FieldRef<"AnalysisEntries", 'String'>
   }
     
 
   // Custom InputTypes
   /**
-   * AnalysisRequests findUnique
+   * AnalysisEntries findUnique
    */
-  export type AnalysisRequestsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter, which AnalysisRequests to fetch.
+     * Filter, which AnalysisEntries to fetch.
      */
-    where: AnalysisRequestsWhereUniqueInput
+    where: AnalysisEntriesWhereUniqueInput
   }
 
   /**
-   * AnalysisRequests findUniqueOrThrow
+   * AnalysisEntries findUniqueOrThrow
    */
-  export type AnalysisRequestsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter, which AnalysisRequests to fetch.
+     * Filter, which AnalysisEntries to fetch.
      */
-    where: AnalysisRequestsWhereUniqueInput
+    where: AnalysisEntriesWhereUniqueInput
   }
 
   /**
-   * AnalysisRequests findFirst
+   * AnalysisEntries findFirst
    */
-  export type AnalysisRequestsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter, which AnalysisRequests to fetch.
+     * Filter, which AnalysisEntries to fetch.
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of AnalysisRequests to fetch.
+     * Determine the order of AnalysisEntries to fetch.
      */
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for AnalysisRequests.
+     * Sets the position for searching for AnalysisEntries.
      */
-    cursor?: AnalysisRequestsWhereUniqueInput
+    cursor?: AnalysisEntriesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` AnalysisRequests from the position of the cursor.
+     * Take `±n` AnalysisEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` AnalysisRequests.
+     * Skip the first `n` AnalysisEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of AnalysisRequests.
+     * Filter by unique combinations of AnalysisEntries.
      */
-    distinct?: AnalysisRequestsScalarFieldEnum | AnalysisRequestsScalarFieldEnum[]
+    distinct?: AnalysisEntriesScalarFieldEnum | AnalysisEntriesScalarFieldEnum[]
   }
 
   /**
-   * AnalysisRequests findFirstOrThrow
+   * AnalysisEntries findFirstOrThrow
    */
-  export type AnalysisRequestsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter, which AnalysisRequests to fetch.
+     * Filter, which AnalysisEntries to fetch.
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of AnalysisRequests to fetch.
+     * Determine the order of AnalysisEntries to fetch.
      */
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for AnalysisRequests.
+     * Sets the position for searching for AnalysisEntries.
      */
-    cursor?: AnalysisRequestsWhereUniqueInput
+    cursor?: AnalysisEntriesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` AnalysisRequests from the position of the cursor.
+     * Take `±n` AnalysisEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` AnalysisRequests.
+     * Skip the first `n` AnalysisEntries.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of AnalysisRequests.
+     * Filter by unique combinations of AnalysisEntries.
      */
-    distinct?: AnalysisRequestsScalarFieldEnum | AnalysisRequestsScalarFieldEnum[]
+    distinct?: AnalysisEntriesScalarFieldEnum | AnalysisEntriesScalarFieldEnum[]
   }
 
   /**
-   * AnalysisRequests findMany
+   * AnalysisEntries findMany
    */
-  export type AnalysisRequestsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter, which AnalysisRequests to fetch.
+     * Filter, which AnalysisEntries to fetch.
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of AnalysisRequests to fetch.
+     * Determine the order of AnalysisEntries to fetch.
      */
-    orderBy?: AnalysisRequestsOrderByWithRelationInput | AnalysisRequestsOrderByWithRelationInput[]
+    orderBy?: AnalysisEntriesOrderByWithRelationInput | AnalysisEntriesOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing AnalysisRequests.
+     * Sets the position for listing AnalysisEntries.
      */
-    cursor?: AnalysisRequestsWhereUniqueInput
+    cursor?: AnalysisEntriesWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` AnalysisRequests from the position of the cursor.
+     * Take `±n` AnalysisEntries from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` AnalysisRequests.
+     * Skip the first `n` AnalysisEntries.
      */
     skip?: number
-    distinct?: AnalysisRequestsScalarFieldEnum | AnalysisRequestsScalarFieldEnum[]
+    distinct?: AnalysisEntriesScalarFieldEnum | AnalysisEntriesScalarFieldEnum[]
   }
 
   /**
-   * AnalysisRequests create
+   * AnalysisEntries create
    */
-  export type AnalysisRequestsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * The data needed to create a AnalysisRequests.
+     * The data needed to create a AnalysisEntries.
      */
-    data: XOR<AnalysisRequestsCreateInput, AnalysisRequestsUncheckedCreateInput>
+    data: XOR<AnalysisEntriesCreateInput, AnalysisEntriesUncheckedCreateInput>
   }
 
   /**
-   * AnalysisRequests createMany
+   * AnalysisEntries createMany
    */
-  export type AnalysisRequestsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many AnalysisRequests.
+     * The data used to create many AnalysisEntries.
      */
-    data: AnalysisRequestsCreateManyInput | AnalysisRequestsCreateManyInput[]
+    data: AnalysisEntriesCreateManyInput | AnalysisEntriesCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * AnalysisRequests createManyAndReturn
+   * AnalysisEntries createManyAndReturn
    */
-  export type AnalysisRequestsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelectCreateManyAndReturn<ExtArgs> | null
+    select?: AnalysisEntriesSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
-     * The data used to create many AnalysisRequests.
+     * The data used to create many AnalysisEntries.
      */
-    data: AnalysisRequestsCreateManyInput | AnalysisRequestsCreateManyInput[]
+    data: AnalysisEntriesCreateManyInput | AnalysisEntriesCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: AnalysisEntriesIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * AnalysisRequests update
+   * AnalysisEntries update
    */
-  export type AnalysisRequestsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * The data needed to update a AnalysisRequests.
+     * The data needed to update a AnalysisEntries.
      */
-    data: XOR<AnalysisRequestsUpdateInput, AnalysisRequestsUncheckedUpdateInput>
+    data: XOR<AnalysisEntriesUpdateInput, AnalysisEntriesUncheckedUpdateInput>
     /**
-     * Choose, which AnalysisRequests to update.
+     * Choose, which AnalysisEntries to update.
      */
-    where: AnalysisRequestsWhereUniqueInput
+    where: AnalysisEntriesWhereUniqueInput
   }
 
   /**
-   * AnalysisRequests updateMany
+   * AnalysisEntries updateMany
    */
-  export type AnalysisRequestsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update AnalysisRequests.
+     * The data used to update AnalysisEntries.
      */
-    data: XOR<AnalysisRequestsUpdateManyMutationInput, AnalysisRequestsUncheckedUpdateManyInput>
+    data: XOR<AnalysisEntriesUpdateManyMutationInput, AnalysisEntriesUncheckedUpdateManyInput>
     /**
-     * Filter which AnalysisRequests to update
+     * Filter which AnalysisEntries to update
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
-     * Limit how many AnalysisRequests to update.
+     * Limit how many AnalysisEntries to update.
      */
     limit?: number
   }
 
   /**
-   * AnalysisRequests updateManyAndReturn
+   * AnalysisEntries updateManyAndReturn
    */
-  export type AnalysisRequestsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: AnalysisEntriesSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
-     * The data used to update AnalysisRequests.
+     * The data used to update AnalysisEntries.
      */
-    data: XOR<AnalysisRequestsUpdateManyMutationInput, AnalysisRequestsUncheckedUpdateManyInput>
+    data: XOR<AnalysisEntriesUpdateManyMutationInput, AnalysisEntriesUncheckedUpdateManyInput>
     /**
-     * Filter which AnalysisRequests to update
+     * Filter which AnalysisEntries to update
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
-     * Limit how many AnalysisRequests to update.
+     * Limit how many AnalysisEntries to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: AnalysisEntriesIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * AnalysisRequests upsert
+   * AnalysisEntries upsert
    */
-  export type AnalysisRequestsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * The filter to search for the AnalysisRequests to update in case it exists.
+     * The filter to search for the AnalysisEntries to update in case it exists.
      */
-    where: AnalysisRequestsWhereUniqueInput
+    where: AnalysisEntriesWhereUniqueInput
     /**
-     * In case the AnalysisRequests found by the `where` argument doesn't exist, create a new AnalysisRequests with this data.
+     * In case the AnalysisEntries found by the `where` argument doesn't exist, create a new AnalysisEntries with this data.
      */
-    create: XOR<AnalysisRequestsCreateInput, AnalysisRequestsUncheckedCreateInput>
+    create: XOR<AnalysisEntriesCreateInput, AnalysisEntriesUncheckedCreateInput>
     /**
-     * In case the AnalysisRequests was found with the provided `where` argument, update it with this data.
+     * In case the AnalysisEntries was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<AnalysisRequestsUpdateInput, AnalysisRequestsUncheckedUpdateInput>
+    update: XOR<AnalysisEntriesUpdateInput, AnalysisEntriesUncheckedUpdateInput>
   }
 
   /**
-   * AnalysisRequests delete
+   * AnalysisEntries delete
    */
-  export type AnalysisRequestsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
     /**
-     * Filter which AnalysisRequests to delete.
+     * Filter which AnalysisEntries to delete.
      */
-    where: AnalysisRequestsWhereUniqueInput
+    where: AnalysisEntriesWhereUniqueInput
   }
 
   /**
-   * AnalysisRequests deleteMany
+   * AnalysisEntries deleteMany
    */
-  export type AnalysisRequestsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which AnalysisRequests to delete
+     * Filter which AnalysisEntries to delete
      */
-    where?: AnalysisRequestsWhereInput
+    where?: AnalysisEntriesWhereInput
     /**
-     * Limit how many AnalysisRequests to delete.
+     * Limit how many AnalysisEntries to delete.
      */
     limit?: number
   }
 
   /**
-   * AnalysisRequests without action
+   * AnalysisEntries without action
    */
-  export type AnalysisRequestsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AnalysisEntriesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the AnalysisRequests
+     * Select specific fields to fetch from the AnalysisEntries
      */
-    select?: AnalysisRequestsSelect<ExtArgs> | null
+    select?: AnalysisEntriesSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the AnalysisRequests
+     * Omit specific fields from the AnalysisEntries
      */
-    omit?: AnalysisRequestsOmit<ExtArgs> | null
+    omit?: AnalysisEntriesOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: AnalysisRequestsInclude<ExtArgs> | null
+    include?: AnalysisEntriesInclude<ExtArgs> | null
   }
 
 
@@ -8158,16 +8137,17 @@ export namespace Prisma {
   export type AnalysisScalarFieldEnum = (typeof AnalysisScalarFieldEnum)[keyof typeof AnalysisScalarFieldEnum]
 
 
-  export const AnalysisRequestsScalarFieldEnum: {
+  export const AnalysisEntriesScalarFieldEnum: {
     id: 'id',
     analysis_id: 'analysis_id',
     user_id: 'user_id',
     status: 'status',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    updated_at: 'updated_at',
+    analysis_url: 'analysis_url'
   };
 
-  export type AnalysisRequestsScalarFieldEnum = (typeof AnalysisRequestsScalarFieldEnum)[keyof typeof AnalysisRequestsScalarFieldEnum]
+  export type AnalysisEntriesScalarFieldEnum = (typeof AnalysisEntriesScalarFieldEnum)[keyof typeof AnalysisEntriesScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8300,16 +8280,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'analysisRequestCompletionStatus'
+   * Reference to a field of type 'analysisEntryCompletionStatus'
    */
-  export type EnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'analysisRequestCompletionStatus'>
+  export type EnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'analysisEntryCompletionStatus'>
     
 
 
   /**
-   * Reference to a field of type 'analysisRequestCompletionStatus[]'
+   * Reference to a field of type 'analysisEntryCompletionStatus[]'
    */
-  export type ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'analysisRequestCompletionStatus[]'>
+  export type ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'analysisEntryCompletionStatus[]'>
     
 
 
@@ -8345,7 +8325,7 @@ export namespace Prisma {
     Subscription?: SubscriptionListRelationFilter
     Password_reset_tokens?: Password_reset_tokensListRelationFilter
     Analysis?: AnalysisListRelationFilter
-    AnalysisRequests?: AnalysisRequestsListRelationFilter
+    AnalysisRequests?: AnalysisEntriesListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -8360,7 +8340,7 @@ export namespace Prisma {
     Subscription?: SubscriptionOrderByRelationAggregateInput
     Password_reset_tokens?: Password_reset_tokensOrderByRelationAggregateInput
     Analysis?: AnalysisOrderByRelationAggregateInput
-    AnalysisRequests?: AnalysisRequestsOrderByRelationAggregateInput
+    AnalysisRequests?: AnalysisEntriesOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -8378,7 +8358,7 @@ export namespace Prisma {
     Subscription?: SubscriptionListRelationFilter
     Password_reset_tokens?: Password_reset_tokensListRelationFilter
     Analysis?: AnalysisListRelationFilter
-    AnalysisRequests?: AnalysisRequestsListRelationFilter
+    AnalysisRequests?: AnalysisEntriesListRelationFilter
   }, "id" | "email" | "stripe_customer_id">
 
   export type UserOrderByWithAggregationInput = {
@@ -8583,7 +8563,7 @@ export namespace Prisma {
     current_participants_count?: IntFilter<"Analysis"> | number
     max_number_of_participants?: IntFilter<"Analysis"> | number
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
-    analysis_requests?: AnalysisRequestsListRelationFilter
+    analysis_requests?: AnalysisEntriesListRelationFilter
   }
 
   export type AnalysisOrderByWithRelationInput = {
@@ -8598,7 +8578,7 @@ export namespace Prisma {
     current_participants_count?: SortOrder
     max_number_of_participants?: SortOrder
     owner?: UserOrderByWithRelationInput
-    analysis_requests?: AnalysisRequestsOrderByRelationAggregateInput
+    analysis_requests?: AnalysisEntriesOrderByRelationAggregateInput
   }
 
   export type AnalysisWhereUniqueInput = Prisma.AtLeast<{
@@ -8616,7 +8596,7 @@ export namespace Prisma {
     current_participants_count?: IntFilter<"Analysis"> | number
     max_number_of_participants?: IntFilter<"Analysis"> | number
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
-    analysis_requests?: AnalysisRequestsListRelationFilter
+    analysis_requests?: AnalysisEntriesListRelationFilter
   }, "id">
 
   export type AnalysisOrderByWithAggregationInput = {
@@ -8653,69 +8633,72 @@ export namespace Prisma {
     max_number_of_participants?: IntWithAggregatesFilter<"Analysis"> | number
   }
 
-  export type AnalysisRequestsWhereInput = {
-    AND?: AnalysisRequestsWhereInput | AnalysisRequestsWhereInput[]
-    OR?: AnalysisRequestsWhereInput[]
-    NOT?: AnalysisRequestsWhereInput | AnalysisRequestsWhereInput[]
-    id?: IntFilter<"AnalysisRequests"> | number
-    analysis_id?: StringFilter<"AnalysisRequests"> | string
-    user_id?: StringFilter<"AnalysisRequests"> | string
-    status?: EnumanalysisRequestCompletionStatusFilter<"AnalysisRequests"> | $Enums.analysisRequestCompletionStatus
-    created_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
-    updated_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
+  export type AnalysisEntriesWhereInput = {
+    AND?: AnalysisEntriesWhereInput | AnalysisEntriesWhereInput[]
+    OR?: AnalysisEntriesWhereInput[]
+    NOT?: AnalysisEntriesWhereInput | AnalysisEntriesWhereInput[]
+    id?: StringFilter<"AnalysisEntries"> | string
+    analysis_id?: StringFilter<"AnalysisEntries"> | string
+    user_id?: StringFilter<"AnalysisEntries"> | string
+    status?: EnumanalysisEntryCompletionStatusFilter<"AnalysisEntries"> | $Enums.analysisEntryCompletionStatus
+    created_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    updated_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    analysis_url?: StringNullableFilter<"AnalysisEntries"> | string | null
     analysis?: XOR<AnalysisScalarRelationFilter, AnalysisWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
-  export type AnalysisRequestsOrderByWithRelationInput = {
+  export type AnalysisEntriesOrderByWithRelationInput = {
     id?: SortOrder
     analysis_id?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    analysis_url?: SortOrderInput | SortOrder
     analysis?: AnalysisOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
   }
 
-  export type AnalysisRequestsWhereUniqueInput = Prisma.AtLeast<{
-    id?: number
-    AND?: AnalysisRequestsWhereInput | AnalysisRequestsWhereInput[]
-    OR?: AnalysisRequestsWhereInput[]
-    NOT?: AnalysisRequestsWhereInput | AnalysisRequestsWhereInput[]
-    analysis_id?: StringFilter<"AnalysisRequests"> | string
-    user_id?: StringFilter<"AnalysisRequests"> | string
-    status?: EnumanalysisRequestCompletionStatusFilter<"AnalysisRequests"> | $Enums.analysisRequestCompletionStatus
-    created_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
-    updated_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
+  export type AnalysisEntriesWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AnalysisEntriesWhereInput | AnalysisEntriesWhereInput[]
+    OR?: AnalysisEntriesWhereInput[]
+    NOT?: AnalysisEntriesWhereInput | AnalysisEntriesWhereInput[]
+    analysis_id?: StringFilter<"AnalysisEntries"> | string
+    user_id?: StringFilter<"AnalysisEntries"> | string
+    status?: EnumanalysisEntryCompletionStatusFilter<"AnalysisEntries"> | $Enums.analysisEntryCompletionStatus
+    created_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    updated_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    analysis_url?: StringNullableFilter<"AnalysisEntries"> | string | null
     analysis?: XOR<AnalysisScalarRelationFilter, AnalysisWhereInput>
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
-  export type AnalysisRequestsOrderByWithAggregationInput = {
+  export type AnalysisEntriesOrderByWithAggregationInput = {
     id?: SortOrder
     analysis_id?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
-    _count?: AnalysisRequestsCountOrderByAggregateInput
-    _avg?: AnalysisRequestsAvgOrderByAggregateInput
-    _max?: AnalysisRequestsMaxOrderByAggregateInput
-    _min?: AnalysisRequestsMinOrderByAggregateInput
-    _sum?: AnalysisRequestsSumOrderByAggregateInput
+    analysis_url?: SortOrderInput | SortOrder
+    _count?: AnalysisEntriesCountOrderByAggregateInput
+    _max?: AnalysisEntriesMaxOrderByAggregateInput
+    _min?: AnalysisEntriesMinOrderByAggregateInput
   }
 
-  export type AnalysisRequestsScalarWhereWithAggregatesInput = {
-    AND?: AnalysisRequestsScalarWhereWithAggregatesInput | AnalysisRequestsScalarWhereWithAggregatesInput[]
-    OR?: AnalysisRequestsScalarWhereWithAggregatesInput[]
-    NOT?: AnalysisRequestsScalarWhereWithAggregatesInput | AnalysisRequestsScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"AnalysisRequests"> | number
-    analysis_id?: StringWithAggregatesFilter<"AnalysisRequests"> | string
-    user_id?: StringWithAggregatesFilter<"AnalysisRequests"> | string
-    status?: EnumanalysisRequestCompletionStatusWithAggregatesFilter<"AnalysisRequests"> | $Enums.analysisRequestCompletionStatus
-    created_at?: DateTimeWithAggregatesFilter<"AnalysisRequests"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"AnalysisRequests"> | Date | string
+  export type AnalysisEntriesScalarWhereWithAggregatesInput = {
+    AND?: AnalysisEntriesScalarWhereWithAggregatesInput | AnalysisEntriesScalarWhereWithAggregatesInput[]
+    OR?: AnalysisEntriesScalarWhereWithAggregatesInput[]
+    NOT?: AnalysisEntriesScalarWhereWithAggregatesInput | AnalysisEntriesScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AnalysisEntries"> | string
+    analysis_id?: StringWithAggregatesFilter<"AnalysisEntries"> | string
+    user_id?: StringWithAggregatesFilter<"AnalysisEntries"> | string
+    status?: EnumanalysisEntryCompletionStatusWithAggregatesFilter<"AnalysisEntries"> | $Enums.analysisEntryCompletionStatus
+    created_at?: DateTimeWithAggregatesFilter<"AnalysisEntries"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"AnalysisEntries"> | Date | string
+    analysis_url?: StringNullableWithAggregatesFilter<"AnalysisEntries"> | string | null
   }
 
   export type UserCreateInput = {
@@ -8730,7 +8713,7 @@ export namespace Prisma {
     Subscription?: SubscriptionCreateNestedManyWithoutUserInput
     Password_reset_tokens?: Password_reset_tokensCreateNestedManyWithoutUserInput
     Analysis?: AnalysisCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -8745,7 +8728,7 @@ export namespace Prisma {
     Subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     Password_reset_tokens?: Password_reset_tokensUncheckedCreateNestedManyWithoutUserInput
     Analysis?: AnalysisUncheckedCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsUncheckedCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -8760,7 +8743,7 @@ export namespace Prisma {
     Subscription?: SubscriptionUpdateManyWithoutUserNestedInput
     Password_reset_tokens?: Password_reset_tokensUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -8775,7 +8758,7 @@ export namespace Prisma {
     Subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     Password_reset_tokens?: Password_reset_tokensUncheckedUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUncheckedUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUncheckedUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -8978,7 +8961,7 @@ export namespace Prisma {
     current_participants_count?: number
     max_number_of_participants: number
     owner: UserCreateNestedOneWithoutAnalysisInput
-    analysis_requests?: AnalysisRequestsCreateNestedManyWithoutAnalysisInput
+    analysis_requests?: AnalysisEntriesCreateNestedManyWithoutAnalysisInput
   }
 
   export type AnalysisUncheckedCreateInput = {
@@ -8992,7 +8975,7 @@ export namespace Prisma {
     updated_at?: Date | string
     current_participants_count?: number
     max_number_of_participants: number
-    analysis_requests?: AnalysisRequestsUncheckedCreateNestedManyWithoutAnalysisInput
+    analysis_requests?: AnalysisEntriesUncheckedCreateNestedManyWithoutAnalysisInput
   }
 
   export type AnalysisUpdateInput = {
@@ -9006,7 +8989,7 @@ export namespace Prisma {
     current_participants_count?: IntFieldUpdateOperationsInput | number
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
     owner?: UserUpdateOneRequiredWithoutAnalysisNestedInput
-    analysis_requests?: AnalysisRequestsUpdateManyWithoutAnalysisNestedInput
+    analysis_requests?: AnalysisEntriesUpdateManyWithoutAnalysisNestedInput
   }
 
   export type AnalysisUncheckedUpdateInput = {
@@ -9020,7 +9003,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     current_participants_count?: IntFieldUpdateOperationsInput | number
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
-    analysis_requests?: AnalysisRequestsUncheckedUpdateManyWithoutAnalysisNestedInput
+    analysis_requests?: AnalysisEntriesUncheckedUpdateManyWithoutAnalysisNestedInput
   }
 
   export type AnalysisCreateManyInput = {
@@ -9061,62 +9044,72 @@ export namespace Prisma {
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
   }
 
-  export type AnalysisRequestsCreateInput = {
-    status?: $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesCreateInput = {
+    id?: string
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
     analysis: AnalysisCreateNestedOneWithoutAnalysis_requestsInput
     user: UserCreateNestedOneWithoutAnalysisRequestsInput
   }
 
-  export type AnalysisRequestsUncheckedCreateInput = {
-    id?: number
+  export type AnalysisEntriesUncheckedCreateInput = {
+    id?: string
     analysis_id: string
     user_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
-  export type AnalysisRequestsUpdateInput = {
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
     analysis?: AnalysisUpdateOneRequiredWithoutAnalysis_requestsNestedInput
     user?: UserUpdateOneRequiredWithoutAnalysisRequestsNestedInput
   }
 
-  export type AnalysisRequestsUncheckedUpdateInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
     analysis_id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AnalysisRequestsCreateManyInput = {
-    id?: number
+  export type AnalysisEntriesCreateManyInput = {
+    id?: string
     analysis_id: string
     user_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
-  export type AnalysisRequestsUpdateManyMutationInput = {
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AnalysisRequestsUncheckedUpdateManyInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
     analysis_id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -9196,10 +9189,10 @@ export namespace Prisma {
     none?: AnalysisWhereInput
   }
 
-  export type AnalysisRequestsListRelationFilter = {
-    every?: AnalysisRequestsWhereInput
-    some?: AnalysisRequestsWhereInput
-    none?: AnalysisRequestsWhereInput
+  export type AnalysisEntriesListRelationFilter = {
+    every?: AnalysisEntriesWhereInput
+    some?: AnalysisEntriesWhereInput
+    none?: AnalysisEntriesWhereInput
   }
 
   export type SortOrderInput = {
@@ -9219,7 +9212,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type AnalysisRequestsOrderByRelationAggregateInput = {
+  export type AnalysisEntriesOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9552,11 +9545,11 @@ export namespace Prisma {
     _max?: NestedEnumanalysisStatusFilter<$PrismaModel>
   }
 
-  export type EnumanalysisRequestCompletionStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.analysisRequestCompletionStatus | EnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel> | $Enums.analysisRequestCompletionStatus
+  export type EnumanalysisEntryCompletionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.analysisEntryCompletionStatus | EnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel> | $Enums.analysisEntryCompletionStatus
   }
 
   export type AnalysisScalarRelationFilter = {
@@ -9564,49 +9557,44 @@ export namespace Prisma {
     isNot?: AnalysisWhereInput
   }
 
-  export type AnalysisRequestsCountOrderByAggregateInput = {
+  export type AnalysisEntriesCountOrderByAggregateInput = {
     id?: SortOrder
     analysis_id?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    analysis_url?: SortOrder
   }
 
-  export type AnalysisRequestsAvgOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type AnalysisRequestsMaxOrderByAggregateInput = {
+  export type AnalysisEntriesMaxOrderByAggregateInput = {
     id?: SortOrder
     analysis_id?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    analysis_url?: SortOrder
   }
 
-  export type AnalysisRequestsMinOrderByAggregateInput = {
+  export type AnalysisEntriesMinOrderByAggregateInput = {
     id?: SortOrder
     analysis_id?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+    analysis_url?: SortOrder
   }
 
-  export type AnalysisRequestsSumOrderByAggregateInput = {
-    id?: SortOrder
-  }
-
-  export type EnumanalysisRequestCompletionStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.analysisRequestCompletionStatus | EnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumanalysisRequestCompletionStatusWithAggregatesFilter<$PrismaModel> | $Enums.analysisRequestCompletionStatus
+  export type EnumanalysisEntryCompletionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.analysisEntryCompletionStatus | EnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumanalysisEntryCompletionStatusWithAggregatesFilter<$PrismaModel> | $Enums.analysisEntryCompletionStatus
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel>
-    _max?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel>
+    _min?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel>
+    _max?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateNestedManyWithoutUserInput = {
@@ -9630,11 +9618,11 @@ export namespace Prisma {
     connect?: AnalysisWhereUniqueInput | AnalysisWhereUniqueInput[]
   }
 
-  export type AnalysisRequestsCreateNestedManyWithoutUserInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput> | AnalysisRequestsCreateWithoutUserInput[] | AnalysisRequestsUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutUserInput | AnalysisRequestsCreateOrConnectWithoutUserInput[]
-    createMany?: AnalysisRequestsCreateManyUserInputEnvelope
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
+  export type AnalysisEntriesCreateNestedManyWithoutUserInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput> | AnalysisEntriesCreateWithoutUserInput[] | AnalysisEntriesUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutUserInput | AnalysisEntriesCreateOrConnectWithoutUserInput[]
+    createMany?: AnalysisEntriesCreateManyUserInputEnvelope
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
   }
 
   export type SubscriptionUncheckedCreateNestedManyWithoutUserInput = {
@@ -9658,11 +9646,11 @@ export namespace Prisma {
     connect?: AnalysisWhereUniqueInput | AnalysisWhereUniqueInput[]
   }
 
-  export type AnalysisRequestsUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput> | AnalysisRequestsCreateWithoutUserInput[] | AnalysisRequestsUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutUserInput | AnalysisRequestsCreateOrConnectWithoutUserInput[]
-    createMany?: AnalysisRequestsCreateManyUserInputEnvelope
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
+  export type AnalysisEntriesUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput> | AnalysisEntriesCreateWithoutUserInput[] | AnalysisEntriesUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutUserInput | AnalysisEntriesCreateOrConnectWithoutUserInput[]
+    createMany?: AnalysisEntriesCreateManyUserInputEnvelope
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -9727,18 +9715,18 @@ export namespace Prisma {
     deleteMany?: AnalysisScalarWhereInput | AnalysisScalarWhereInput[]
   }
 
-  export type AnalysisRequestsUpdateManyWithoutUserNestedInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput> | AnalysisRequestsCreateWithoutUserInput[] | AnalysisRequestsUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutUserInput | AnalysisRequestsCreateOrConnectWithoutUserInput[]
-    upsert?: AnalysisRequestsUpsertWithWhereUniqueWithoutUserInput | AnalysisRequestsUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: AnalysisRequestsCreateManyUserInputEnvelope
-    set?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    disconnect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    delete?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    update?: AnalysisRequestsUpdateWithWhereUniqueWithoutUserInput | AnalysisRequestsUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: AnalysisRequestsUpdateManyWithWhereWithoutUserInput | AnalysisRequestsUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
+  export type AnalysisEntriesUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput> | AnalysisEntriesCreateWithoutUserInput[] | AnalysisEntriesUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutUserInput | AnalysisEntriesCreateOrConnectWithoutUserInput[]
+    upsert?: AnalysisEntriesUpsertWithWhereUniqueWithoutUserInput | AnalysisEntriesUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AnalysisEntriesCreateManyUserInputEnvelope
+    set?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    disconnect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    delete?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    update?: AnalysisEntriesUpdateWithWhereUniqueWithoutUserInput | AnalysisEntriesUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AnalysisEntriesUpdateManyWithWhereWithoutUserInput | AnalysisEntriesUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
   }
 
   export type SubscriptionUncheckedUpdateManyWithoutUserNestedInput = {
@@ -9783,18 +9771,18 @@ export namespace Prisma {
     deleteMany?: AnalysisScalarWhereInput | AnalysisScalarWhereInput[]
   }
 
-  export type AnalysisRequestsUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput> | AnalysisRequestsCreateWithoutUserInput[] | AnalysisRequestsUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutUserInput | AnalysisRequestsCreateOrConnectWithoutUserInput[]
-    upsert?: AnalysisRequestsUpsertWithWhereUniqueWithoutUserInput | AnalysisRequestsUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: AnalysisRequestsCreateManyUserInputEnvelope
-    set?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    disconnect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    delete?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    update?: AnalysisRequestsUpdateWithWhereUniqueWithoutUserInput | AnalysisRequestsUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: AnalysisRequestsUpdateManyWithWhereWithoutUserInput | AnalysisRequestsUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
+  export type AnalysisEntriesUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput> | AnalysisEntriesCreateWithoutUserInput[] | AnalysisEntriesUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutUserInput | AnalysisEntriesCreateOrConnectWithoutUserInput[]
+    upsert?: AnalysisEntriesUpsertWithWhereUniqueWithoutUserInput | AnalysisEntriesUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AnalysisEntriesCreateManyUserInputEnvelope
+    set?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    disconnect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    delete?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    update?: AnalysisEntriesUpdateWithWhereUniqueWithoutUserInput | AnalysisEntriesUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AnalysisEntriesUpdateManyWithWhereWithoutUserInput | AnalysisEntriesUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutPassword_reset_tokensInput = {
@@ -9839,18 +9827,18 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type AnalysisRequestsCreateNestedManyWithoutAnalysisInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput> | AnalysisRequestsCreateWithoutAnalysisInput[] | AnalysisRequestsUncheckedCreateWithoutAnalysisInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutAnalysisInput | AnalysisRequestsCreateOrConnectWithoutAnalysisInput[]
-    createMany?: AnalysisRequestsCreateManyAnalysisInputEnvelope
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
+  export type AnalysisEntriesCreateNestedManyWithoutAnalysisInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput> | AnalysisEntriesCreateWithoutAnalysisInput[] | AnalysisEntriesUncheckedCreateWithoutAnalysisInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutAnalysisInput | AnalysisEntriesCreateOrConnectWithoutAnalysisInput[]
+    createMany?: AnalysisEntriesCreateManyAnalysisInputEnvelope
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
   }
 
-  export type AnalysisRequestsUncheckedCreateNestedManyWithoutAnalysisInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput> | AnalysisRequestsCreateWithoutAnalysisInput[] | AnalysisRequestsUncheckedCreateWithoutAnalysisInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutAnalysisInput | AnalysisRequestsCreateOrConnectWithoutAnalysisInput[]
-    createMany?: AnalysisRequestsCreateManyAnalysisInputEnvelope
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
+  export type AnalysisEntriesUncheckedCreateNestedManyWithoutAnalysisInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput> | AnalysisEntriesCreateWithoutAnalysisInput[] | AnalysisEntriesUncheckedCreateWithoutAnalysisInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutAnalysisInput | AnalysisEntriesCreateOrConnectWithoutAnalysisInput[]
+    createMany?: AnalysisEntriesCreateManyAnalysisInputEnvelope
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
   }
 
   export type EnumanalysisStatusFieldUpdateOperationsInput = {
@@ -9865,32 +9853,32 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAnalysisInput, UserUpdateWithoutAnalysisInput>, UserUncheckedUpdateWithoutAnalysisInput>
   }
 
-  export type AnalysisRequestsUpdateManyWithoutAnalysisNestedInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput> | AnalysisRequestsCreateWithoutAnalysisInput[] | AnalysisRequestsUncheckedCreateWithoutAnalysisInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutAnalysisInput | AnalysisRequestsCreateOrConnectWithoutAnalysisInput[]
-    upsert?: AnalysisRequestsUpsertWithWhereUniqueWithoutAnalysisInput | AnalysisRequestsUpsertWithWhereUniqueWithoutAnalysisInput[]
-    createMany?: AnalysisRequestsCreateManyAnalysisInputEnvelope
-    set?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    disconnect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    delete?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    update?: AnalysisRequestsUpdateWithWhereUniqueWithoutAnalysisInput | AnalysisRequestsUpdateWithWhereUniqueWithoutAnalysisInput[]
-    updateMany?: AnalysisRequestsUpdateManyWithWhereWithoutAnalysisInput | AnalysisRequestsUpdateManyWithWhereWithoutAnalysisInput[]
-    deleteMany?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
+  export type AnalysisEntriesUpdateManyWithoutAnalysisNestedInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput> | AnalysisEntriesCreateWithoutAnalysisInput[] | AnalysisEntriesUncheckedCreateWithoutAnalysisInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutAnalysisInput | AnalysisEntriesCreateOrConnectWithoutAnalysisInput[]
+    upsert?: AnalysisEntriesUpsertWithWhereUniqueWithoutAnalysisInput | AnalysisEntriesUpsertWithWhereUniqueWithoutAnalysisInput[]
+    createMany?: AnalysisEntriesCreateManyAnalysisInputEnvelope
+    set?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    disconnect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    delete?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    update?: AnalysisEntriesUpdateWithWhereUniqueWithoutAnalysisInput | AnalysisEntriesUpdateWithWhereUniqueWithoutAnalysisInput[]
+    updateMany?: AnalysisEntriesUpdateManyWithWhereWithoutAnalysisInput | AnalysisEntriesUpdateManyWithWhereWithoutAnalysisInput[]
+    deleteMany?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
   }
 
-  export type AnalysisRequestsUncheckedUpdateManyWithoutAnalysisNestedInput = {
-    create?: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput> | AnalysisRequestsCreateWithoutAnalysisInput[] | AnalysisRequestsUncheckedCreateWithoutAnalysisInput[]
-    connectOrCreate?: AnalysisRequestsCreateOrConnectWithoutAnalysisInput | AnalysisRequestsCreateOrConnectWithoutAnalysisInput[]
-    upsert?: AnalysisRequestsUpsertWithWhereUniqueWithoutAnalysisInput | AnalysisRequestsUpsertWithWhereUniqueWithoutAnalysisInput[]
-    createMany?: AnalysisRequestsCreateManyAnalysisInputEnvelope
-    set?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    disconnect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    delete?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    connect?: AnalysisRequestsWhereUniqueInput | AnalysisRequestsWhereUniqueInput[]
-    update?: AnalysisRequestsUpdateWithWhereUniqueWithoutAnalysisInput | AnalysisRequestsUpdateWithWhereUniqueWithoutAnalysisInput[]
-    updateMany?: AnalysisRequestsUpdateManyWithWhereWithoutAnalysisInput | AnalysisRequestsUpdateManyWithWhereWithoutAnalysisInput[]
-    deleteMany?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
+  export type AnalysisEntriesUncheckedUpdateManyWithoutAnalysisNestedInput = {
+    create?: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput> | AnalysisEntriesCreateWithoutAnalysisInput[] | AnalysisEntriesUncheckedCreateWithoutAnalysisInput[]
+    connectOrCreate?: AnalysisEntriesCreateOrConnectWithoutAnalysisInput | AnalysisEntriesCreateOrConnectWithoutAnalysisInput[]
+    upsert?: AnalysisEntriesUpsertWithWhereUniqueWithoutAnalysisInput | AnalysisEntriesUpsertWithWhereUniqueWithoutAnalysisInput[]
+    createMany?: AnalysisEntriesCreateManyAnalysisInputEnvelope
+    set?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    disconnect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    delete?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    connect?: AnalysisEntriesWhereUniqueInput | AnalysisEntriesWhereUniqueInput[]
+    update?: AnalysisEntriesUpdateWithWhereUniqueWithoutAnalysisInput | AnalysisEntriesUpdateWithWhereUniqueWithoutAnalysisInput[]
+    updateMany?: AnalysisEntriesUpdateManyWithWhereWithoutAnalysisInput | AnalysisEntriesUpdateManyWithWhereWithoutAnalysisInput[]
+    deleteMany?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
   }
 
   export type AnalysisCreateNestedOneWithoutAnalysis_requestsInput = {
@@ -9905,8 +9893,8 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput = {
-    set?: $Enums.analysisRequestCompletionStatus
+  export type EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.analysisEntryCompletionStatus
   }
 
   export type AnalysisUpdateOneRequiredWithoutAnalysis_requestsNestedInput = {
@@ -10143,21 +10131,21 @@ export namespace Prisma {
     _max?: NestedEnumanalysisStatusFilter<$PrismaModel>
   }
 
-  export type NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.analysisRequestCompletionStatus | EnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel> | $Enums.analysisRequestCompletionStatus
+  export type NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.analysisEntryCompletionStatus | EnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel> | $Enums.analysisEntryCompletionStatus
   }
 
-  export type NestedEnumanalysisRequestCompletionStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.analysisRequestCompletionStatus | EnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.analysisRequestCompletionStatus[] | ListEnumanalysisRequestCompletionStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumanalysisRequestCompletionStatusWithAggregatesFilter<$PrismaModel> | $Enums.analysisRequestCompletionStatus
+  export type NestedEnumanalysisEntryCompletionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.analysisEntryCompletionStatus | EnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.analysisEntryCompletionStatus[] | ListEnumanalysisEntryCompletionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumanalysisEntryCompletionStatusWithAggregatesFilter<$PrismaModel> | $Enums.analysisEntryCompletionStatus
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel>
-    _max?: NestedEnumanalysisRequestCompletionStatusFilter<$PrismaModel>
+    _min?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel>
+    _max?: NestedEnumanalysisEntryCompletionStatusFilter<$PrismaModel>
   }
 
   export type SubscriptionCreateWithoutUserInput = {
@@ -10217,7 +10205,7 @@ export namespace Prisma {
     updated_at?: Date | string
     current_participants_count?: number
     max_number_of_participants: number
-    analysis_requests?: AnalysisRequestsCreateNestedManyWithoutAnalysisInput
+    analysis_requests?: AnalysisEntriesCreateNestedManyWithoutAnalysisInput
   }
 
   export type AnalysisUncheckedCreateWithoutOwnerInput = {
@@ -10230,7 +10218,7 @@ export namespace Prisma {
     updated_at?: Date | string
     current_participants_count?: number
     max_number_of_participants: number
-    analysis_requests?: AnalysisRequestsUncheckedCreateNestedManyWithoutAnalysisInput
+    analysis_requests?: AnalysisEntriesUncheckedCreateNestedManyWithoutAnalysisInput
   }
 
   export type AnalysisCreateOrConnectWithoutOwnerInput = {
@@ -10243,28 +10231,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type AnalysisRequestsCreateWithoutUserInput = {
-    status?: $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesCreateWithoutUserInput = {
+    id?: string
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
     analysis: AnalysisCreateNestedOneWithoutAnalysis_requestsInput
   }
 
-  export type AnalysisRequestsUncheckedCreateWithoutUserInput = {
-    id?: number
+  export type AnalysisEntriesUncheckedCreateWithoutUserInput = {
+    id?: string
     analysis_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
-  export type AnalysisRequestsCreateOrConnectWithoutUserInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    create: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput>
+  export type AnalysisEntriesCreateOrConnectWithoutUserInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    create: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput>
   }
 
-  export type AnalysisRequestsCreateManyUserInputEnvelope = {
-    data: AnalysisRequestsCreateManyUserInput | AnalysisRequestsCreateManyUserInput[]
+  export type AnalysisEntriesCreateManyUserInputEnvelope = {
+    data: AnalysisEntriesCreateManyUserInput | AnalysisEntriesCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -10354,32 +10345,33 @@ export namespace Prisma {
     max_number_of_participants?: IntFilter<"Analysis"> | number
   }
 
-  export type AnalysisRequestsUpsertWithWhereUniqueWithoutUserInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    update: XOR<AnalysisRequestsUpdateWithoutUserInput, AnalysisRequestsUncheckedUpdateWithoutUserInput>
-    create: XOR<AnalysisRequestsCreateWithoutUserInput, AnalysisRequestsUncheckedCreateWithoutUserInput>
+  export type AnalysisEntriesUpsertWithWhereUniqueWithoutUserInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    update: XOR<AnalysisEntriesUpdateWithoutUserInput, AnalysisEntriesUncheckedUpdateWithoutUserInput>
+    create: XOR<AnalysisEntriesCreateWithoutUserInput, AnalysisEntriesUncheckedCreateWithoutUserInput>
   }
 
-  export type AnalysisRequestsUpdateWithWhereUniqueWithoutUserInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    data: XOR<AnalysisRequestsUpdateWithoutUserInput, AnalysisRequestsUncheckedUpdateWithoutUserInput>
+  export type AnalysisEntriesUpdateWithWhereUniqueWithoutUserInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    data: XOR<AnalysisEntriesUpdateWithoutUserInput, AnalysisEntriesUncheckedUpdateWithoutUserInput>
   }
 
-  export type AnalysisRequestsUpdateManyWithWhereWithoutUserInput = {
-    where: AnalysisRequestsScalarWhereInput
-    data: XOR<AnalysisRequestsUpdateManyMutationInput, AnalysisRequestsUncheckedUpdateManyWithoutUserInput>
+  export type AnalysisEntriesUpdateManyWithWhereWithoutUserInput = {
+    where: AnalysisEntriesScalarWhereInput
+    data: XOR<AnalysisEntriesUpdateManyMutationInput, AnalysisEntriesUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type AnalysisRequestsScalarWhereInput = {
-    AND?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
-    OR?: AnalysisRequestsScalarWhereInput[]
-    NOT?: AnalysisRequestsScalarWhereInput | AnalysisRequestsScalarWhereInput[]
-    id?: IntFilter<"AnalysisRequests"> | number
-    analysis_id?: StringFilter<"AnalysisRequests"> | string
-    user_id?: StringFilter<"AnalysisRequests"> | string
-    status?: EnumanalysisRequestCompletionStatusFilter<"AnalysisRequests"> | $Enums.analysisRequestCompletionStatus
-    created_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
-    updated_at?: DateTimeFilter<"AnalysisRequests"> | Date | string
+  export type AnalysisEntriesScalarWhereInput = {
+    AND?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
+    OR?: AnalysisEntriesScalarWhereInput[]
+    NOT?: AnalysisEntriesScalarWhereInput | AnalysisEntriesScalarWhereInput[]
+    id?: StringFilter<"AnalysisEntries"> | string
+    analysis_id?: StringFilter<"AnalysisEntries"> | string
+    user_id?: StringFilter<"AnalysisEntries"> | string
+    status?: EnumanalysisEntryCompletionStatusFilter<"AnalysisEntries"> | $Enums.analysisEntryCompletionStatus
+    created_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    updated_at?: DateTimeFilter<"AnalysisEntries"> | Date | string
+    analysis_url?: StringNullableFilter<"AnalysisEntries"> | string | null
   }
 
   export type UserCreateWithoutPassword_reset_tokensInput = {
@@ -10393,7 +10385,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Subscription?: SubscriptionCreateNestedManyWithoutUserInput
     Analysis?: AnalysisCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPassword_reset_tokensInput = {
@@ -10407,7 +10399,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     Analysis?: AnalysisUncheckedCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsUncheckedCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPassword_reset_tokensInput = {
@@ -10437,7 +10429,7 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Subscription?: SubscriptionUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPassword_reset_tokensInput = {
@@ -10451,7 +10443,7 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUncheckedUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUncheckedUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSubscriptionInput = {
@@ -10465,7 +10457,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Password_reset_tokens?: Password_reset_tokensCreateNestedManyWithoutUserInput
     Analysis?: AnalysisCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSubscriptionInput = {
@@ -10479,7 +10471,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Password_reset_tokens?: Password_reset_tokensUncheckedCreateNestedManyWithoutUserInput
     Analysis?: AnalysisUncheckedCreateNestedManyWithoutOwnerInput
-    AnalysisRequests?: AnalysisRequestsUncheckedCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSubscriptionInput = {
@@ -10509,7 +10501,7 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Password_reset_tokens?: Password_reset_tokensUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubscriptionInput = {
@@ -10523,7 +10515,7 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Password_reset_tokens?: Password_reset_tokensUncheckedUpdateManyWithoutUserNestedInput
     Analysis?: AnalysisUncheckedUpdateManyWithoutOwnerNestedInput
-    AnalysisRequests?: AnalysisRequestsUncheckedUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAnalysisInput = {
@@ -10537,7 +10529,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Subscription?: SubscriptionCreateNestedManyWithoutUserInput
     Password_reset_tokens?: Password_reset_tokensCreateNestedManyWithoutUserInput
-    AnalysisRequests?: AnalysisRequestsCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAnalysisInput = {
@@ -10551,7 +10543,7 @@ export namespace Prisma {
     stripe_customer_id?: string | null
     Subscription?: SubscriptionUncheckedCreateNestedManyWithoutUserInput
     Password_reset_tokens?: Password_reset_tokensUncheckedCreateNestedManyWithoutUserInput
-    AnalysisRequests?: AnalysisRequestsUncheckedCreateNestedManyWithoutUserInput
+    AnalysisRequests?: AnalysisEntriesUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAnalysisInput = {
@@ -10559,28 +10551,31 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutAnalysisInput, UserUncheckedCreateWithoutAnalysisInput>
   }
 
-  export type AnalysisRequestsCreateWithoutAnalysisInput = {
-    status?: $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesCreateWithoutAnalysisInput = {
+    id?: string
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
     user: UserCreateNestedOneWithoutAnalysisRequestsInput
   }
 
-  export type AnalysisRequestsUncheckedCreateWithoutAnalysisInput = {
-    id?: number
+  export type AnalysisEntriesUncheckedCreateWithoutAnalysisInput = {
+    id?: string
     user_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
-  export type AnalysisRequestsCreateOrConnectWithoutAnalysisInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    create: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput>
+  export type AnalysisEntriesCreateOrConnectWithoutAnalysisInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    create: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput>
   }
 
-  export type AnalysisRequestsCreateManyAnalysisInputEnvelope = {
-    data: AnalysisRequestsCreateManyAnalysisInput | AnalysisRequestsCreateManyAnalysisInput[]
+  export type AnalysisEntriesCreateManyAnalysisInputEnvelope = {
+    data: AnalysisEntriesCreateManyAnalysisInput | AnalysisEntriesCreateManyAnalysisInput[]
     skipDuplicates?: boolean
   }
 
@@ -10606,7 +10601,7 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Subscription?: SubscriptionUpdateManyWithoutUserNestedInput
     Password_reset_tokens?: Password_reset_tokensUpdateManyWithoutUserNestedInput
-    AnalysisRequests?: AnalysisRequestsUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAnalysisInput = {
@@ -10620,23 +10615,23 @@ export namespace Prisma {
     stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
     Subscription?: SubscriptionUncheckedUpdateManyWithoutUserNestedInput
     Password_reset_tokens?: Password_reset_tokensUncheckedUpdateManyWithoutUserNestedInput
-    AnalysisRequests?: AnalysisRequestsUncheckedUpdateManyWithoutUserNestedInput
+    AnalysisRequests?: AnalysisEntriesUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type AnalysisRequestsUpsertWithWhereUniqueWithoutAnalysisInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    update: XOR<AnalysisRequestsUpdateWithoutAnalysisInput, AnalysisRequestsUncheckedUpdateWithoutAnalysisInput>
-    create: XOR<AnalysisRequestsCreateWithoutAnalysisInput, AnalysisRequestsUncheckedCreateWithoutAnalysisInput>
+  export type AnalysisEntriesUpsertWithWhereUniqueWithoutAnalysisInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    update: XOR<AnalysisEntriesUpdateWithoutAnalysisInput, AnalysisEntriesUncheckedUpdateWithoutAnalysisInput>
+    create: XOR<AnalysisEntriesCreateWithoutAnalysisInput, AnalysisEntriesUncheckedCreateWithoutAnalysisInput>
   }
 
-  export type AnalysisRequestsUpdateWithWhereUniqueWithoutAnalysisInput = {
-    where: AnalysisRequestsWhereUniqueInput
-    data: XOR<AnalysisRequestsUpdateWithoutAnalysisInput, AnalysisRequestsUncheckedUpdateWithoutAnalysisInput>
+  export type AnalysisEntriesUpdateWithWhereUniqueWithoutAnalysisInput = {
+    where: AnalysisEntriesWhereUniqueInput
+    data: XOR<AnalysisEntriesUpdateWithoutAnalysisInput, AnalysisEntriesUncheckedUpdateWithoutAnalysisInput>
   }
 
-  export type AnalysisRequestsUpdateManyWithWhereWithoutAnalysisInput = {
-    where: AnalysisRequestsScalarWhereInput
-    data: XOR<AnalysisRequestsUpdateManyMutationInput, AnalysisRequestsUncheckedUpdateManyWithoutAnalysisInput>
+  export type AnalysisEntriesUpdateManyWithWhereWithoutAnalysisInput = {
+    where: AnalysisEntriesScalarWhereInput
+    data: XOR<AnalysisEntriesUpdateManyMutationInput, AnalysisEntriesUncheckedUpdateManyWithoutAnalysisInput>
   }
 
   export type AnalysisCreateWithoutAnalysis_requestsInput = {
@@ -10805,12 +10800,13 @@ export namespace Prisma {
     max_number_of_participants: number
   }
 
-  export type AnalysisRequestsCreateManyUserInput = {
-    id?: number
+  export type AnalysisEntriesCreateManyUserInput = {
+    id?: string
     analysis_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
   export type SubscriptionUpdateWithoutUserInput = {
@@ -10864,7 +10860,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     current_participants_count?: IntFieldUpdateOperationsInput | number
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
-    analysis_requests?: AnalysisRequestsUpdateManyWithoutAnalysisNestedInput
+    analysis_requests?: AnalysisEntriesUpdateManyWithoutAnalysisNestedInput
   }
 
   export type AnalysisUncheckedUpdateWithoutOwnerInput = {
@@ -10877,7 +10873,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     current_participants_count?: IntFieldUpdateOperationsInput | number
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
-    analysis_requests?: AnalysisRequestsUncheckedUpdateManyWithoutAnalysisNestedInput
+    analysis_requests?: AnalysisEntriesUncheckedUpdateManyWithoutAnalysisNestedInput
   }
 
   export type AnalysisUncheckedUpdateManyWithoutOwnerInput = {
@@ -10892,58 +10888,67 @@ export namespace Prisma {
     max_number_of_participants?: IntFieldUpdateOperationsInput | number
   }
 
-  export type AnalysisRequestsUpdateWithoutUserInput = {
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
     analysis?: AnalysisUpdateOneRequiredWithoutAnalysis_requestsNestedInput
   }
 
-  export type AnalysisRequestsUncheckedUpdateWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
     analysis_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AnalysisRequestsUncheckedUpdateManyWithoutUserInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
     analysis_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AnalysisRequestsCreateManyAnalysisInput = {
-    id?: number
+  export type AnalysisEntriesCreateManyAnalysisInput = {
+    id?: string
     user_id: string
-    status?: $Enums.analysisRequestCompletionStatus
+    status?: $Enums.analysisEntryCompletionStatus
     created_at?: Date | string
     updated_at?: Date | string
+    analysis_url?: string | null
   }
 
-  export type AnalysisRequestsUpdateWithoutAnalysisInput = {
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+  export type AnalysisEntriesUpdateWithoutAnalysisInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAnalysisRequestsNestedInput
   }
 
-  export type AnalysisRequestsUncheckedUpdateWithoutAnalysisInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateWithoutAnalysisInput = {
+    id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
-  export type AnalysisRequestsUncheckedUpdateManyWithoutAnalysisInput = {
-    id?: IntFieldUpdateOperationsInput | number
+  export type AnalysisEntriesUncheckedUpdateManyWithoutAnalysisInput = {
+    id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
-    status?: EnumanalysisRequestCompletionStatusFieldUpdateOperationsInput | $Enums.analysisRequestCompletionStatus
+    status?: EnumanalysisEntryCompletionStatusFieldUpdateOperationsInput | $Enums.analysisEntryCompletionStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    analysis_url?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
 

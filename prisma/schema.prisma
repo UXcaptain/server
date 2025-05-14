@@ -28,7 +28,7 @@ model User {
   Subscription          Subscription[]
   Password_reset_tokens Password_reset_tokens[]
   Analysis              Analysis[]
-  AnalysisRequests      AnalysisRequests[]
+  AnalysisRequests      AnalysisEntries[]
 
   @@index([id, email])
 }
@@ -70,18 +70,18 @@ model Subscription {
 }
 
 model Analysis {
-  id                         String             @id @default(uuid())
-  owner                      User               @relation(fields: [owner_id], references: [id])
+  id                         String            @id @default(uuid())
+  owner                      User              @relation(fields: [owner_id], references: [id])
   owner_id                   String
   analysis_name              String
   analysis_tasks             Json
   analysis_url               String
-  analysis_status            analysisStatus     @default(draft)
-  created_at                 DateTime           @default(now())
-  updated_at                 DateTime           @updatedAt
-  current_participants_count Int                @default(0)
+  analysis_status            analysisStatus    @default(draft)
+  created_at                 DateTime          @default(now())
+  updated_at                 DateTime          @updatedAt
+  current_participants_count Int               @default(0)
   max_number_of_participants Int
-  analysis_requests          AnalysisRequests[]
+  analysis_requests          AnalysisEntries[]
 
   @@index([owner_id])
 }
@@ -92,20 +92,21 @@ enum analysisStatus {
   completed // analysis has been completed and no more participants are accepted
 }
 
-model AnalysisRequests {
-  id          Int                             @id @default(autoincrement())
-  analysis    Analysis                        @relation(fields: [analysis_id], references: [id])
-  analysis_id String
-  user        User                            @relation(fields: [user_id], references: [id])
-  user_id     String
-  status      analysisRequestCompletionStatus @default(in_progress)
-  created_at  DateTime                        @default(now())
-  updated_at  DateTime                        @updatedAt
+model AnalysisEntries {
+  id           String                        @id @default(uuid())
+  analysis     Analysis                      @relation(fields: [analysis_id], references: [id])
+  analysis_id  String
+  user         User                          @relation(fields: [user_id], references: [id])
+  user_id      String
+  status       analysisEntryCompletionStatus @default(in_progress)
+  created_at   DateTime                      @default(now())
+  updated_at   DateTime                      @updatedAt
+  analysis_url String?
 
   @@index([created_at, status])
 }
 
-enum analysisRequestCompletionStatus {
+enum analysisEntryCompletionStatus {
   in_progress // participant has started the analysis
   cancelled // analysis has been started by the participant but not submitted in time - Serves to prevent the participant from participating AGAIN in the analysis
   submitted // participant has submitted the analysis by the user

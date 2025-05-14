@@ -1,4 +1,10 @@
-import { createAnalysisInDb, getAllAnalysesFromDb, getAnalysisDetailsById } from '../models/analysisModel.mjs';
+import {
+  createAnalysisInDb,
+  getAllAnalysesFromDb,
+  getAnalysisDetailsById,
+  getAnalysisEntryDetailsById,
+}
+  from '../models/analysisModel.mjs';
 
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
@@ -13,7 +19,7 @@ export const createAnalysis = async (req, res) => {
   }
 
   try {
-    const analysisOwner = '1843131e-e454-4603-a508-f8641c49aff2';
+    const analysisOwner = 'ecd4ff17-c65a-4ac4-b4b3-5505799c912f';
     // const analysisOwner = req.user.id;
 
     const analysis = new Analysis(req.body, analysisOwner);
@@ -36,7 +42,9 @@ export const createAnalysis = async (req, res) => {
 
 export const getAllAnalyses = async (req, res) => {
   try {
-    const ownerId = '1843131e-e454-4603-a508-f8641c49aff2';
+    const { id } = req.user;
+
+    const ownerId = id;
     // const analysisOwner = req.user.id;
 
     const analyses = await getAllAnalysesFromDb(ownerId);
@@ -58,7 +66,9 @@ export const getAllAnalyses = async (req, res) => {
 
 export const getSinglesAnalysisDetails = async (req, res) => {
   try {
-    const analysis = await getAnalysisDetailsById(req.params.id);
+    const { id } = req.params;
+
+    const analysis = await getAnalysisDetailsById(id);
 
     if (!analysis) {
       return res.status(404).json({
@@ -77,6 +87,25 @@ export const getSinglesAnalysisDetails = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve analysis details',
+    });
+  }
+};
+
+export const getAnalysisEntryDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const analysisData = await getAnalysisEntryDetailsById(id);
+
+    res.status(200).json({
+      success: true,
+      analysisData: analysisData,
+    });
+  } catch (error) {
+    logError('', error);
+    res.status(500).json({
+      success: false,
+      message: 'could not retrieve analysis details',
     });
   }
 };
