@@ -2,7 +2,6 @@ import {
   createAnalysisInDb,
   getAllAnalysesFromDb,
   getAnalysisDetailsById,
-  getAnalysisEntryDetailsById,
 }
   from '../models/analysisModel.mjs';
 
@@ -87,25 +86,6 @@ export const getSinglesAnalysisDetails = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve analysis details',
-    });
-  }
-};
-
-export const getAnalysisEntryDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const analysisData = await getAnalysisEntryDetailsById(id);
-
-    res.status(200).json({
-      success: true,
-      analysisData: analysisData,
-    });
-  } catch (error) {
-    logError('', error);
-    res.status(500).json({
-      success: false,
-      message: 'could not retrieve analysis details',
     });
   }
 };
