@@ -48,6 +48,13 @@ export const getAnalysisDetailsById = async (analysisId) => {
       where: {
         id: analysisId,
       },
+      include: {
+        analysis_requests: {
+          include: {
+            user: true,
+          },
+        },
+      },
     });
 
     return analysis;
