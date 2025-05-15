@@ -7,14 +7,14 @@ export const createAnalysisInDb = async (data) => {
   try {
     const analysisCreationInDbResponse = await prisma.analysis.create({
       data: {
-        analysis_name: data.analysis_name,
-        analysis_url: data.analysis_url,
-        analysis_status: data.analysis_status,
-        analysis_tasks: data.analysis_tasks,
+        name: data.name,
+        url: data.url,
+        status: data.status,
+        tasks: data.tasks,
         max_number_of_participants: data.max_number_of_participants,
         owner: {
           connect: {
-            id: data.analysis_owner_id,
+            id: data.owner_id,
           },
         },
       },
@@ -49,7 +49,7 @@ export const getAnalysisDetailsById = async (analysisId) => {
         id: analysisId,
       },
       include: {
-        analysis_requests: {
+        requests: {
           include: {
             user: true,
           },

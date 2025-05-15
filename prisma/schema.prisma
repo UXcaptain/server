@@ -73,17 +73,25 @@ model Analysis {
   id                         String            @id @default(uuid())
   owner                      User              @relation(fields: [owner_id], references: [id])
   owner_id                   String
-  analysis_name              String
-  analysis_tasks             Json
-  analysis_url               String
-  analysis_status            analysisStatus    @default(draft)
+  device AnalysisDevice
+  name              String
+  tasks             Json
+  url               String
+  status            analysisStatus    @default(draft)
   created_at                 DateTime          @default(now())
   updated_at                 DateTime          @updatedAt
   current_participants_count Int               @default(0)
   max_number_of_participants Int
-  analysis_requests          AnalysisEntries[]
+  entries          AnalysisEntries[]
 
   @@index([owner_id])
+}
+
+enum AnalysisDevice {
+  desktop
+  mobile
+  tablet
+  other
 }
 
 enum analysisStatus {
