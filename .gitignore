@@ -26,6 +26,25 @@ staging.env
 # test results
 
 /test-results
+
+# middlewares
 server/middlewares/permissionByRoleChecker.mjs
 server/middlewares/authenticationChecker.mjs
 server/middlewares/subscriptionChecker.mjs
+
+# prisma client
+
+server/generated
+server/config/generated/prisma/client/edge.js
+
+server/config/generated/prisma/client/index-browser.js
+
+server/config/generated/prisma/client/index.d.ts
+
+server/config/generated/prisma/client/index.js
+
+server/config/generated/prisma/client/package.json
+
+server/config/generated/prisma/client/schema.prisma
+
+server/config/generated/prisma/client/wasm.js
