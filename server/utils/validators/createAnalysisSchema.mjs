@@ -49,4 +49,9 @@ export const createAnalysisSchema = {
       },
     },
   },
+  scenario: {
+    notEmpty: true,
+    trim: true,
+    escape: true,
+  },
 };
