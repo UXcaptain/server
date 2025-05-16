@@ -33,6 +33,16 @@ export const getAllAnalysesFromDb = async (ownerId) => {
       where: {
         owner_id: ownerId,
       },
+      include: {
+        entries: {
+          where: {
+            status: 'submitted',
+          },
+          select: {
+            id: true,
+          },
+        },
+      },
     });
 
     return analyses;
@@ -42,14 +52,17 @@ export const getAllAnalysesFromDb = async (ownerId) => {
   }
 };
 
-export const getAnalysisDetailsById = async (analysisId) => {
+export const getAnalysisDataById = async (analysisId) => {
   try {
     const analysis = await prisma.analysis.findUnique({
       where: {
         id: analysisId,
       },
       include: {
-        requests: {
+        entries: {
+          where: {
+            status: 'submitted',
+          },
           include: {
             user: true,
           },
