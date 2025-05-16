@@ -12,7 +12,7 @@ export const analysisRouter = Router();
 
 analysisRouter.get('/', getAllAnalyses);
 
-analysisRouter.get('/analysis-details/:id', getSinglesAnalysisDetails);
+analysisRouter.get('/analysis-details/:id', getSinglesAnalysisData);
 
 analysisRouter.post('/create', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
 
