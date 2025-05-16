@@ -1,7 +1,7 @@
 import {
   createAnalysisInDb,
   getAllAnalysesFromDb,
-  getAnalysisDetailsById,
+  getAnalysisDataById,
 }
   from '../models/analysisModel.mjs';
 
@@ -18,8 +18,7 @@ export const createAnalysis = async (req, res) => {
   }
 
   try {
-    const analysisOwner = 'ecd4ff17-c65a-4ac4-b4b3-5505799c912f';
-    // const analysisOwner = req.user.id;
+    const analysisOwner = req.user.id;
 
     const analysis = new Analysis(req.body, analysisOwner);
 
@@ -44,7 +43,6 @@ export const getAllAnalyses = async (req, res) => {
     const { id } = req.user;
 
     const ownerId = id;
-    // const analysisOwner = req.user.id;
 
     const analyses = await getAllAnalysesFromDb(ownerId);
 
@@ -63,11 +61,11 @@ export const getAllAnalyses = async (req, res) => {
   }
 };
 
-export const getSinglesAnalysisDetails = async (req, res) => {
+export const getSinglesAnalysisData = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const analysis = await getAnalysisDetailsById(id);
+    const analysis = await getAnalysisDataById(id);
 
     if (!analysis) {
       return res.status(404).json({
@@ -79,7 +77,7 @@ export const getSinglesAnalysisDetails = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Analysis details retrieved successfully',
-      analysisDetails: analysis,
+      analysisData: analysis,
     });
   } catch (error) {
     logError('Error in analysis details endpoint', error);
