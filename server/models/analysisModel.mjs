@@ -9,9 +9,11 @@ export const createAnalysisInDb = async (data) => {
       data: {
         name: data.name,
         url: data.url,
+        device: data.device,
         status: data.status,
         tasks: data.tasks,
-        max_number_of_participants: data.max_number_of_participants,
+        max_number_of_participants: data.maxNumberOfParticipants,
+        scenario: data.scenario,
         owner: {
           connect: {
             id: data.owner_id,

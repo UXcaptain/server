@@ -73,22 +73,22 @@ model Analysis {
   id                         String            @id @default(uuid())
   owner                      User              @relation(fields: [owner_id], references: [id])
   owner_id                   String
-  device AnalysisDevice
-  name              String
-  tasks             Json
-  url               String
-  status            analysisStatus    @default(draft)
+  device                     AnalysisDevice
+  name                       String
+  scenario                   String
+  tasks                      Json
+  url                        String
+  status                     analysisStatus    @default(draft)
   created_at                 DateTime          @default(now())
   updated_at                 DateTime          @updatedAt
-  current_participants_count Int               @default(0)
   max_number_of_participants Int
-  entries          AnalysisEntries[]
+  entries                    AnalysisEntries[]
 
   @@index([owner_id])
 }
 
 enum AnalysisDevice {
-  desktop
+  computer
   mobile
   tablet
   other
@@ -109,7 +109,7 @@ model AnalysisEntries {
   status       analysisEntryCompletionStatus @default(in_progress)
   created_at   DateTime                      @default(now())
   updated_at   DateTime                      @updatedAt
-  analysis_url String?
+  url String?
 
   @@index([created_at, status])
 }
