@@ -1,5 +1,5 @@
 export const createAnalysisSchema = {
-  analysisName: {
+  name: {
     notEmpty: {
       errorMessage: 'Analysis name is required',
     },
@@ -7,7 +7,7 @@ export const createAnalysisSchema = {
     trim: true,
     escape: true,
   },
-  analysisUrl: {
+  url: {
     notEmpty: {
       errorMessage: 'Analysis URL is required',
     },
@@ -17,7 +17,7 @@ export const createAnalysisSchema = {
     trim: true,
     // escape: true,
   },
-  analysisTasks: {
+  tasks: {
     notEmpty: {
       errorMessage: 'Analysis tasks are required',
     },

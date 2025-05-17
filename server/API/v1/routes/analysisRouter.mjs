@@ -14,7 +14,7 @@ analysisRouter.get('/', getAllAnalyses);
 
 analysisRouter.get('/analysis-details/:id', getSinglesAnalysisData);
 
-analysisRouter.post('/create', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+analysisRouter.post('/create-analysis', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
 
 analysisRouter.use('/*fallback', (req, res) => {
   res.status(404).send('Route not found');
