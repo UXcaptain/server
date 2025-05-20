@@ -14,8 +14,7 @@ export const createPasswordResetToken = async (userId) => {
 
     return createPasswordResetTokenQuery;
   } catch (error) {
-    logError('Error creating password reset token', error);
-
+    logError('Password reset token creation failed', error);
     throw error;
   }
 };
@@ -30,8 +29,7 @@ export const getPasswordResetTokenData = async (token) => {
 
     return getPasswordResetTokenDataQuery;
   } catch (error) {
-    logError('Error getting token data by token', error);
-
+    logError(`Token Id ${token} retrieval failed`, error);
     throw error;
   }
 };
@@ -49,8 +47,7 @@ export const deletePasswordResetTokens = async (userId) => {
       deletedCount: deleteResult.count,
     };
   } catch (error) {
-    return logError('Error deleting token', error);
-
+    return logError(`Token for user ID ${userId} deletion failed`, error);
     // throw error //* NOT throwing an error since req-res
     //*  flow should not be interrupted with this cleanup operation
   }
@@ -66,8 +63,7 @@ export const deleteExpiredPasswordResetTokens = async () => {
       },
     });
   } catch (error) {
-    logError('Error deleting expired password reset tokens', error);
-
+    logError('Expired token deletion failed', error);
     throw error;
   }
 };

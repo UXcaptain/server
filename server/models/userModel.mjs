@@ -23,8 +23,7 @@ export const createUserInDB = async (user) => {
 
     return createUserInDbQuery;
   } catch (error) {
-    logError('Error creating user in DB', error);
-
+    logError('User creation failed', error);
     throw error;
   }
 };
@@ -37,8 +36,7 @@ export const getUserByEmail = async (userEmail) => {
 
     return getUserByEmailQuery;
   } catch (error) {
-    logError('Error getting user by email', error);
-
+    logError('User retrieval by email failed', error);
     throw error;
   }
 };
@@ -54,8 +52,7 @@ export const updateUserLastLoginDate = async (userId) => {
 
     return queryResult;
   } catch (error) {
-    logError('Error updating last login date', error);
-
+    logError(`Last login date update for user ${userId} failed`, error);
     throw error;
   }
 };
@@ -68,7 +65,7 @@ export const getUserById = async (userId) => {
 
     return getUserByIdQuery;
   } catch (error) {
-    logError('Error getting user by user ID', error);
+    logError(`User Id ${userId} profile retrieval failed`, error);
     throw error;
   }
 };
@@ -89,8 +86,7 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
 
     return updatePasswordQuery;
   } catch (error) {
-    logError('Error updating user password', error, { userId: userId });
-
+    logError(`Password update for userId ${userId} failed`, error);
     throw error;
   }
 };

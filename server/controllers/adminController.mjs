@@ -77,7 +77,7 @@ export const deleteOneUserById = async (req, res) => {
       });
     }
 
-    return res.status(502).json({
+    return res.status(500).json({
       success: false,
       message: 'User deletion failed - Please try again later',
     });

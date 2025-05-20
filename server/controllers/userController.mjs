@@ -21,10 +21,10 @@ export const getUserProfile = async (req, res) => {
       user: user,
     });
   } catch (error) {
-    logError('Error getting user profile', error);
+    logError('User profile retrieval failed', error);
     res.status(500).json({
       success: false,
-      message: 'Error getting user profile',
+      message: 'User profile retrieval failed',
     });
   }
 };
@@ -38,10 +38,18 @@ export const deleteUser = async (req, res) => {
       message: 'User deleted successfully',
     });
   } catch (error) {
-    logError('Error deleting user', error);
+    logError('User deletion failed', error);
+
+    if (error.code === 'P2003') {
+      res.status(409).json({
+        success: false,
+        message: 'User deletion failed - Related DB entries exist',
+      });
+    }
+
     return res.status(500).json({
       success: false,
-      message: 'Error deleting user',
+      message: 'User deletion failed - Please try again later',
     });
   }
 };
@@ -66,8 +74,7 @@ export const createUser = async (req, res) => {
     if (existingUser !== null) {
       return res.status(409).json({
         success: false,
-        ERR_CODE: 'USER_ALREADY_EXISTS',
-        message: 'A user with that email address already exists',
+        message: 'User creation failed - The email address already exists',
       });
     }
 
@@ -81,8 +88,7 @@ export const createUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      ERR_CODE: 'USER_CREATION_ERROR',
-      message: 'An error occurred while creating the user - Please try again in a few minutes',
+      message: 'User creation failed - Please try again in a few minutes',
     });
   }
 };
@@ -124,10 +130,10 @@ export const checkPasswordResetTokenExpirationDate = async (req, res) => {
       tokenData: passwordResetTokenData,
     });
   } catch (error) {
-    logError('Error checking password reset token expiration date', error);
+    logError('Token expiration date retrieval failed', error);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while checking the token',
+      message: 'Token expiration date retrieval failed',
     });
   }
 };
@@ -228,8 +234,7 @@ export const updateUserPassword = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        ERR_CODE: 'INCORRECT_PASSWORD',
-        message: 'Current password is incorrect',
+        message: 'Password update failed - old password is incorrect',
       });
     }
 
@@ -242,10 +247,10 @@ export const updateUserPassword = async (req, res) => {
       result: updatedUser,
     });
   } catch (error) {
-    logError('Error updating user password', error);
+    logError('Password update failed', error);
     return res.status(500).json({
       success: false,
-      message: 'Error updating password',
+      message: 'Password update failed',
     });
   }
 };
