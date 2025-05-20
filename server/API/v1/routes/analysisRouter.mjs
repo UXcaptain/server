@@ -7,8 +7,11 @@ import {
 } from '../../../controllers/analysisController.mjs';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
+import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
 
 export const analysisRouter = Router();
+
+analysisRouter.use(checkPermissionByRole('customer'));
 
 analysisRouter.get('/', getAllAnalyses);
 
