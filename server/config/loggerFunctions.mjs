@@ -90,3 +90,12 @@ export const logWarn = async (message, error, additionalInfo = 'N/A') => {
     },
   });
 };
+
+export const logRateLimited = async (req) => {
+  logger.warn({
+    message: 'rate limit exceeded',
+    context: {
+      ipAddress: req.ip,
+    },
+  });
+};

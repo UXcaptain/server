@@ -1,4 +1,5 @@
 import rateLimit from 'express-rate-limit';
+import { logRateLimited } from '../config/loggerFunctions.mjs';
 
 export const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -6,9 +7,17 @@ export const limiter = rateLimit({
   standardHeaders: 'draft-8', // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
   // store: ... , // Redis, Memcached, etc. See below.
-  message: {
-    success: false,
-    message: 'Too many requests - please try again later',
+  skipFailedRequests: true, // Skip failed requests (e.g., due to authentication errors).
+  // message: { //* being returned on the handler
+  //   success: false,
+  //   message: 'Too many requests - please try again later',
+  // },
+  handler: (req, res /* , next, options */) => {
+    logRateLimited(req);
+    res.status(429).json({
+      success: false,
+      message: 'Too many requests - please try again later',
+    });
   },
 });
 
