@@ -56,7 +56,7 @@ export const deleteOneUserById = async (req, res) => {
     if (!existingUser) {
       return res.status(404).json({
         success: false,
-        message: 'User does not exist',
+        message: 'User deletion failed - User does not exist',
       });
     }
 
@@ -69,9 +69,17 @@ export const deleteOneUserById = async (req, res) => {
     });
   } catch (error) {
     logError('Error deleting user', error);
+
+    if (error.code === 'P2003') {
+      res.status(409).json({
+        success: false,
+        message: 'User deletion failed - Related DB entries exist',
+      });
+    }
+
     return res.status(502).json({
       success: false,
-      message: 'Error deleting user',
+      message: 'User deletion failed - Please try again later',
     });
   }
 };

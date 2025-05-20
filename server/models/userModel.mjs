@@ -126,7 +126,7 @@ export const deleteUserInDb = async (userId) => {
 
     return deleteUserQuery;
   } catch (error) {
-    logError('Error deleting user', error);
+    logError(`User ID: ${userId} deletion failed`, error);
     throw error;
   }
 };
