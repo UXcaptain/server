@@ -42,9 +42,11 @@ export const getAllAnalyses = async (req, res) => {
   try {
     const { id } = req.user;
 
+    const params = req.query;
+
     const ownerId = id;
 
-    const analyses = await getAllAnalysesFromDb(ownerId);
+    const analyses = await getAllAnalysesFromDb(ownerId, params);
 
     return res.status(200).send({
       success: true,

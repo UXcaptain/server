@@ -29,12 +29,15 @@ export const createAnalysisInDb = async (data) => {
   }
 };
 
-export const getAllAnalysesFromDb = async (ownerId) => {
+export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
   try {
+    const whereClause = {
+      owner_id: ownerId,
+      ...filters,
+    };
+
     const analyses = await prisma.analysis.findMany({
-      where: {
-        owner_id: ownerId,
-      },
+      where: whereClause,
       include: {
         entries: {
           where: {
