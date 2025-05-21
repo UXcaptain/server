@@ -1,0 +1,337 @@
+openapi: '3.1.0'
+info:
+  version: '1.0.0'
+  title: 'UXmonkeys API'
+  description: Buy or rent user tests
+
+servers:
+  [
+    {
+      "url": "prod.uxmonkeys.com/api",
+      description: "Prod server for uxmonkeys"
+    },
+    {
+      url: "dev.uxmonkeys.com/api",
+      description: "dev server uxmonkeys"
+    }
+  ]
+
+paths:
+  /v1/admin:
+    get:
+      summary: Get all users
+      description: This endpoint will return all users - Allows for filtering via query parameters
+      tags: ["admin"]
+      parameters:
+          - name: role
+            in: query
+            description: Indicates the role of the user
+            required: false
+            schema: 
+                $ref: "#/components/schemas/UserRoles"
+                nullable: true
+          - name: email
+            in: query
+            description: email of the user
+            required: false
+            schema:
+                type: string
+                format: email
+                example: username@gmail.com
+                nullable: true
+          - name: id
+            in: query
+            description: id of the user
+            required: false
+            schema:
+                $ref: "#/components/schemas/userId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        userCount:
+                            description: Indicates the number of users being returned
+                            type: integer
+                            example: 1
+                        users:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/User'
+                            
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalError'
+
+  /v1/admin/{userId}:
+    get:
+      summary: Returns one user
+      description: This endpoint will return one user
+      tags: ["admin"]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/userId"
+      
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        user:
+                            $ref: "#/components/schemas/User"
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalError'
+  
+    delete:
+      summary: Deletes one user
+      description: This endpoint will delete one user
+      tags: ["admin"]
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/userId"
+      
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                            type: string
+                            example: User successfully deleted
+        404:
+          description: User deletion failed - User does not exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - User does not exist
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalError'
+    
+  /v1/auth/register/local:
+    post:
+
+        summary: Deletes one user
+        description: This endpoint will delete one user
+        tags: ["auth"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                                format: email
+                                description: 8 chars minimum
+                                example: username@gmail.com
+                            password:
+                                type: string
+                                format: password
+                                description: user password
+                                example: 123456
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: User created successfully
+                              userId:
+                                $ref: "#/components/schemas/userId"
+            422:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage' 
+                
+
+
+
+
+
+components:
+  schemas:
+    
+    SuccessTrueStatus:
+      description: Success status for any API call
+      type: boolean
+      example: true
+
+    SuccessFalseStatus:
+      description: false status for any API call
+      type: boolean
+      example: false
+
+    userId:
+      description: The unique identifier of a user
+      type: string
+      format: uuid
+      example: c20432a3-7667-4b82-a653-f0af5cf47464
+    
+    
+    analysisId:
+        description: The unique identifier of an analysis
+        type: string
+        format: uuid
+        example: 53c3c74e-1d1a-4a4e-9ee1-4974d7402bfd
+    
+    
+    entryId:
+        description: The unique identifier of an entry
+        type: string
+        format: uuid
+        example: d7c8843e-b500-45be-a3e6-7f2d3c33ae13
+    
+    UserRoles:
+      type: string
+      default: customer
+      enum: [customer, admin, participant]
+      description: role assigned to user
+      example: customer
+    
+
+    ValidationErrors:
+      type: object
+      properties:
+        type:
+          type: string
+          example: field
+        value:
+          type: string
+          example: [ REDACTED ]
+        msg:
+          type: string
+          example: Username is required
+        path:
+          type: string
+          example: username
+        location:
+          type: string
+          example: body
+
+    User:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/userId'
+        email:
+          type: string
+          format: email
+          example: username@gmail.com
+        role:
+          $ref: "#/components/schemas/UserRoles"
+        created_at:
+          type: string
+          example: 2025-05-15T14:23:21.303Z
+        last_updated_at:
+            type: string
+            example: 2025-05-15T14:23:21.303Z
+        last_login_at:
+            type: string
+            example: 2025-05-15T14:23:21.303Z
+        stripe_customer_id:
+            type: string
+            example: 123456
+    
+    AnalysisDevice:
+      type: string
+      enum: [computer, mobile, tablet, other]
+      description: The device that the participants should complete the analysis on
+      example: computer
+    
+    AnalysisStatus:
+      type: string
+      default: published
+      enum: [draft, published, completed]
+      description: The status of the analysis
+
+    AnalysisEntryCompletionStatus:
+      type: string
+      default: in_progress
+      enum: [in_progress, cancelled, submitted, accepted, rejected]
+      description: The status of the analysis entry
+    
+    
+    InternalErrorMessage:
+      type: string
+      description: Indicates an internal error failure (status 500)
+      example: Internal server error - Please contact us
+  
+  
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+security:
+  - ApiKey: []
