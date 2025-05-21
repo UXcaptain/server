@@ -32,6 +32,9 @@ export const getUserByEmail = async (userEmail) => {
   try {
     const getUserByEmailQuery = await prisma.user.findUnique({
       where: { email: userEmail },
+      omit: {
+        password: true,
+      },
     });
 
     return getUserByEmailQuery;
@@ -61,6 +64,9 @@ export const getUserById = async (userId) => {
   try {
     const getUserByIdQuery = await prisma.user.findUnique({
       where: { id: userId },
+      omit: {
+        password: true,
+      },
     });
 
     return getUserByIdQuery;
