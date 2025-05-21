@@ -29,7 +29,7 @@ paths:
             required: false
             schema: 
                 $ref: "#/components/schemas/UserRoles"
-                nullable: true
+                nullable: true #! TODO - check what nullable does
           - name: email
             in: query
             description: email of the user
@@ -70,7 +70,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalError'
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
   /v1/admin/{userId}:
     get:
@@ -102,7 +107,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalError'
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
   
     delete:
       summary: Deletes one user
@@ -129,6 +139,18 @@ paths:
                         message:
                             type: string
                             example: User successfully deleted
+        403:
+          description: User deletion failed - User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - User does not have the required permissions
         404:
           description: User deletion failed - User does not exist
           content:
@@ -137,22 +159,39 @@ paths:
                     type: object
                     properties:
                         success:
-                            $ref: "#/components/schemas/SuccessTrueStatus"
+                            $ref: "#/components/schemas/SuccessFalseStatus"
                         message:
                             type: string
                             example: User deletion failed - User does not exist
+        409:
+          description: User deletion failed - Related DB entries exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - Related DB entries exist
         500:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalError'
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
     
   /v1/auth/register/local:
     post:
 
-        summary: Deletes one user
-        description: This endpoint will delete one user
+        summary: Registers one user
+        description: This endpoint will register a new user
         tags: ["auth"]
         requestBody:
             required: true
@@ -186,8 +225,20 @@ paths:
                                 example: User created successfully
                               userId:
                                 $ref: "#/components/schemas/userId"
+            409:
+              description: User already exists
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User creation failed - The email address already exists
             422:
-              description: Unexpected error
+              description: Validation error
               content:
                 application/json:
                     schema:
@@ -214,8 +265,72 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage' 
                 
-
-
+  /v1/auth/login/local:
+    post:
+        summary: Local strategy login route
+        description: Local strategy login route
+        tags: ["auth"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                                format: email
+                                example: username@gmail.com
+                            password:
+                                type: string
+                                format: password
+                                description: user password
+                                example: 123456
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: Login successful
+                              user:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                      id: 
+                                          $ref: "#/components/schemas/userId"
+                                      role: 
+                                          $ref: "#/components/schemas/UserRoles"
+            401:
+              description: User already exists
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: The combination of email and password is incorrect
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
 
 
 
