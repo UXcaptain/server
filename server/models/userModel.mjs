@@ -91,10 +91,10 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
   }
 };
 
-export const getAllCustomersInDb = async () => {
+export const getAllUsersInDb = async (filters = {}) => {
   try {
-    const getAllCustomersQuery = await prisma.user.findMany({
-      where: { role: 'customer' },
+    const getAllUsersQuery = await prisma.user.findMany({
+      where: filters,
       omit: {
         password: true,
       },
@@ -103,7 +103,7 @@ export const getAllCustomersInDb = async () => {
       },
     });
 
-    return getAllCustomersQuery;
+    return getAllUsersQuery;
   } catch (error) {
     logError('Error getting user by user ID', error);
     throw error;

@@ -1,13 +1,15 @@
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
-  getAllCustomersInDb,
+  getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
 
-export const getAllCustomers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
-    const getAllCustomerQuery = await getAllCustomersInDb();
+    const params = req.query;
+
+    const getAllCustomerQuery = await getAllUsersInDb(params);
 
     res.status(200).json({
       success: true,
