@@ -32,9 +32,9 @@ export const getUserByEmail = async (userEmail) => {
   try {
     const getUserByEmailQuery = await prisma.user.findUnique({
       where: { email: userEmail },
-      omit: {
-        password: true,
-      },
+      // omit: { //! Do not uncomment - Needed for passport auth login
+      //   password: true,
+      // },
     });
 
     return getUserByEmailQuery;
