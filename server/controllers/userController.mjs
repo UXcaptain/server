@@ -18,6 +18,7 @@ export const getUserProfile = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      message: 'user profile retrieved successfully',
       user: user,
     });
   } catch (error) {
@@ -140,7 +141,7 @@ export const checkPasswordResetTokenExpirationDate = async (req, res) => {
 
 export const updateRecoveredUserPassword = async (req, res) => {
   if (req.sanitizedErrors) {
-    return res.status(400).json({
+    return res.status(422).json({
       success: false,
       message: req.sanitizedErrors,
     });
@@ -202,7 +203,7 @@ export const updateRecoveredUserPassword = async (req, res) => {
 
 export const updateUserPassword = async (req, res) => {
   if (req.sanitizedErrors) {
-    return res.status(400).json({
+    return res.status(422).json({
       success: false,
       message: req.sanitizedErrors,
     });
