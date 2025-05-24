@@ -9,6 +9,7 @@
 # https://github.com/docker/awesome-compose
 services:
   uxmonkeys-server:
+    container_name: back_end
     build:
       context: .
     environment:
@@ -31,6 +32,7 @@ services:
       STRIPE_BIANNUAL_PRICE_ID: ${STRIPE_BIANNUAL_PRICE_ID}
       STRIPE_ANNUAL_PRICE_ID: ${STRIPE_ANNUAL_PRICE_ID}
       PORT: ${PORT}
+      MEMCACHED_URL: ${MEMCACHED_URL}
     ports:
       - 3000:3000
     develop:
@@ -41,6 +43,10 @@ services:
     depends_on:
       uxmonkeys-db:
         condition: service_started
+      uxmonkeys-memcached-cache:
+        condition: service_started
+    networks:
+      - uxmonkeys-network
 
   # web-app: // UNUSED BUT LEFT HERE FOR FUTURE REFERENCE ON HOW TO SET IT UP
   #   build: 
@@ -68,6 +74,7 @@ services:
   uxmonkeys-db:
     image: postgres:16.8
     restart: on-failure
+    container_name: postgreSQL_DB
     user: 
       postgres
     volumes:
@@ -78,6 +85,23 @@ services:
       - POSTGRES_PASSWORD=prismaORM124!
     ports:
       - 5432:5432
+    networks:
+      - uxmonkeys-network
+
+
+  uxmonkeys-memcached-cache:
+    image: memcached:1.6.38-alpine
+    container_name: uxmonkeys_memcached_cache
+    restart: on-failure
+    ports:
+      - 11211:11211
+    networks:
+      - uxmonkeys-network
+
+networks:
+  uxmonkeys-network:
+    driver: bridge
+    
     
 
 volumes:
