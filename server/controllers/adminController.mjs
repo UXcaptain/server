@@ -5,8 +5,15 @@ import {
   getUserById,
 } from '../models/userModel.mjs';
 
+import { valkeyClient } from '../config/valkey.mjs';
+
 export const getAllUsers = async (req, res) => {
   try {
+    valkeyClient.set('test_key', 'test_value');
+    const key = await valkeyClient.get('test_key');
+
+    console.log(key);
+
     const params = req.query;
 
     const getAllCustomerQuery = await getAllUsersInDb(params);
