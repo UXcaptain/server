@@ -43,7 +43,7 @@ services:
     depends_on:
       uxmonkeys-db:
         condition: service_started
-      uxmonkeys-memcached-cache:
+      uxmonkeys-cache:
         condition: service_started
     networks:
       - uxmonkeys-network
@@ -89,12 +89,12 @@ services:
       - uxmonkeys-network
 
 
-  uxmonkeys-memcached-cache:
-    image: memcached:1.6.38-alpine
-    container_name: uxmonkeys_memcached_cache
+  uxmonkeys-cache:
+    image: valkey/valkey:latest
+    container_name: uxmonkeys_cache
     restart: on-failure
     ports:
-      - 11211:11211
+      - 6379:6379
     networks:
       - uxmonkeys-network
 
