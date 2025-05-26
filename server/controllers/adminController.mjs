@@ -1,3 +1,4 @@
+import { TimeUnit } from '@valkey/valkey-glide';
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
@@ -9,23 +10,38 @@ import { valkeyClient } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   try {
-    valkeyClient.set('test_key', 'test_value');
-    const key = await valkeyClient.get('test_key');
-
-    console.log(key);
-
     const params = req.query;
 
-    const getAllCustomerQuery = await getAllUsersInDb(params);
+    const cachedUsers = await valkeyClient.get('allUsers');
 
-    res.status(200).json({
+    if (cachedUsers) {
+      return res.status(200).json({
+        success: true,
+        message: 'Users successfully retrieved - cache',
+        cacheTTL_seconds: await valkeyClient.ttl('allUsers'),
+        userCount: JSON.parse(cachedUsers).length,
+        users: JSON.parse(cachedUsers),
+      });
+    }
+
+    const users = await getAllUsersInDb(params);
+
+    await valkeyClient.set('allUsers', JSON.stringify(users), {
+      expiry: {
+        type: TimeUnit.Seconds,
+        count: 60,
+      },
+    });
+
+    return res.status(200).json({
       success: true,
-      userCount: getAllCustomerQuery.length,
-      users: getAllCustomerQuery,
+      message: 'Users successfully retrieved - DB',
+      userCount: users.length,
+      users: users,
     });
   } catch (error) {
     logError('Error getting all customers', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error getting all customers',
     });
@@ -47,6 +63,7 @@ export const getOneUserById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      message: 'User successfully retrieved - DB',
       user: getOneUserByIdQuery,
     });
   } catch (error) {
