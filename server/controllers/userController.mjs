@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { TimeUnit } from '@valkey/valkey-glide';
 import { User } from '../utils/classes/User.mjs';
 import {
   createUserInDB,
@@ -10,7 +11,6 @@ import {
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import { valkeyClient } from '../config/valkey.mjs';
-import { TimeUnit } from '@valkey/valkey-glide';
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -35,7 +35,6 @@ export const getUserProfile = async (req, res) => {
         count: 60 * 5,
       },
     });
-    
 
     return res.status(200).json({
       success: true,
@@ -44,7 +43,7 @@ export const getUserProfile = async (req, res) => {
     });
   } catch (error) {
     logError('User profile retrieval failed', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'User profile retrieval failed',
     });

@@ -20,7 +20,7 @@ paths:
   /v1/admin:
     get:
       summary: Get all users
-      description: This endpoint will return all users - Allows for filtering via query parameters
+      description: Returns all users - Allows for filtering via query parameters
       tags: ["admin"]
       parameters:
           - name: role
@@ -29,7 +29,6 @@ paths:
             required: false
             schema: 
                 $ref: "#/components/schemas/UserRoles"
-                nullable: true #! TODO - check what nullable does
           - name: email
             in: query
             description: email of the user
@@ -37,8 +36,9 @@ paths:
             schema:
                 type: string
                 format: email
-                example: username@gmail.com
-                nullable: true
+                examples: [
+                  username@gmail.com
+                ]
           - name: id
             in: query
             description: id of the user
@@ -56,10 +56,18 @@ paths:
                     properties:
                         success:
                             $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Users successfully retrieved - DB
+                          ]
                         userCount:
                             description: Indicates the number of users being returned
                             type: integer
-                            example: 1
+                            examples: [
+                              1
+                            ]
                         users:
                             type: array
                             items:
@@ -80,7 +88,7 @@ paths:
   /v1/admin/{userId}:
     get:
       summary: Returns one user
-      description: This endpoint will return one user
+      description: Returns one user by userId
       tags: ["admin"]
       parameters:
         - name: userId
@@ -100,6 +108,12 @@ paths:
                     properties:
                         success:
                             $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Users successfully retrieved - DB
+                          ]
                         user:
                             $ref: "#/components/schemas/User"
         500:
@@ -138,7 +152,9 @@ paths:
                             $ref: "#/components/schemas/SuccessTrueStatus"
                         message:
                             type: string
-                            example: User successfully deleted
+                            examples: [
+                              User successfully deleted
+                            ] 
         403:
           description: User deletion failed - User does not have the required permissions
           content:
@@ -150,7 +166,9 @@ paths:
                             $ref: "#/components/schemas/SuccessFalseStatus"
                         message:
                             type: string
-                            example: User deletion failed - User does not have the required permissions
+                            examples: [
+                              User deletion failed - User does not have the required permissions
+                            ]
         404:
           description: User deletion failed - User does not exist
           content:
@@ -162,7 +180,9 @@ paths:
                             $ref: "#/components/schemas/SuccessFalseStatus"
                         message:
                             type: string
-                            example: User deletion failed - User does not exist
+                            examples: [
+                              User deletion failed - User does not exist
+                            ] 
         409:
           description: User deletion failed - Related DB entries exist
           content:
@@ -174,7 +194,9 @@ paths:
                             $ref: "#/components/schemas/SuccessFalseStatus"
                         message:
                             type: string
-                            example: User deletion failed - Related DB entries exist
+                            example: [
+                              User deletion failed - Related DB entries exist
+                            ]
         500:
           description: Unexpected error
           content:
@@ -190,8 +212,8 @@ paths:
   /v1/auth/register/local:
     post:
 
-        summary: Registers one user
-        description: This endpoint will register a new user
+        summary: Register a new user
+        description: Registers one user
         tags: ["auth"]
         requestBody:
             required: true
@@ -199,6 +221,9 @@ paths:
                 application/json:
                     schema:
                         type: object
+                        required:
+                          - email
+                          - password
                         properties:
                             email:
                                 type: string
@@ -268,7 +293,7 @@ paths:
   /v1/auth/login/local:
     post:
         summary: Local strategy login route
-        description: Local strategy login route
+        description: Login a user using local strategy.
         tags: ["auth"]
         requestBody:
             required: true
@@ -276,6 +301,9 @@ paths:
                 application/json:
                     schema:
                         type: object
+                        required:
+                          - email
+                          - password
                         properties:
                             email:
                                 type: string
@@ -309,7 +337,7 @@ paths:
                                       role: 
                                           $ref: "#/components/schemas/UserRoles"
             401:
-              description: User already exists
+              description: Incorrect email & password combination
               content:
                 application/json:
                     schema:
@@ -320,6 +348,24 @@ paths:
                               message:
                                 type: string
                                 example: The combination of email and password is incorrect
+            
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            
             500:
               description: Unexpected error
               content:
@@ -331,6 +377,224 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/update-user-password:
+    patch:
+      summary: Update the password of a user
+      description: Update the password of a user. 
+      tags: ["auth"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - currentPassword
+                          - newPassword
+                        properties:
+                            currentPassword:
+                                type: string
+                                format: password
+                                example: 123456
+
+                            newPassword:
+                                type: string
+                                format: password
+                                description: user password
+                                example: 123456
+      responses:
+        200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: Password updated successfully
+             
+        400:
+              description: Password update failed - old password is incorrect
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: Password update failed - old password is incorrect
+            
+            
+        401:
+              description: User already exists
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User not found
+            
+            
+        422:
+                description: Validation error
+                content:
+                  application/json:
+                      schema:
+                            type: object
+                            properties:
+                                success:
+                                    $ref: "#/components/schemas/SuccessFalseStatus"
+                                message:
+                                  type: string
+                                  example: User could not be created due to validation errors
+                                errors:
+                                  type: array
+                                  items:
+                                    $ref: "#/components/schemas/ValidationErrors"
+        500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/validate-password-reset-token:
+    get:
+      summary: Validate the password reset token
+      description: Validate the password reset token.
+      tags: ["auth"]
+
+
+  /v1/auth/request-new-password:
+    post:
+      summary: Request a new password reset token
+      description: Request a new password reset token for the user.
+      tags: ["auth"]
+
+
+  /v1/auth/create-new-user-password:
+    patch:
+      summary: Create a new password for the user using the password reset token
+      tags: ["auth"]
+
+  /v1/user:
+    get:
+     summary: Returns the user profile
+     description: Returns the user profile of the currently authenticated user. 
+     tags: ["user"]
+
+     responses:
+       200:
+         description: Success
+         content:
+           application/json:
+             schema:
+              type: object
+              properties:
+                success:
+                  $ref: "#/components/schemas/SuccessTrueStatus"
+                message:
+                  type: string
+                  example: User retrieved successfully
+                user:
+                  $ref: "#/components/schemas/User"
+                
+       401:
+         description: User not authenticated
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 success:
+                   $ref: "#/components/schemas/SuccessFalseStatus"
+                 message:
+                   type: string
+                   example: Unauthorized access
+       409:
+          description: User deletion failed - Related DB entries exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - Related DB entries exist
+       500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+    delete:
+      summary: Deletes the user account
+      description: Deletes the user account and all related data from the database. This operation is irreversible and should be used with caution.
+      tags: ["user"]
+      responses:
+        200:
+         description: Success
+         content:
+           application/json:
+             schema:
+              type: object
+              properties:
+                success:
+                  $ref: "#/components/schemas/SuccessTrueStatus"
+                message:
+                  type: string
+                  example: User retrieved successfully
+                user:
+                  $ref: "#/components/schemas/User"
+        409:
+          description: User deletion failed - Related DB entries exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - Related DB entries exist
+        500:
+            description: Unexpected error
+            content:
+              application/json:
+                  schema:
+                        type: object
+                        properties:
+                            success:
+                                $ref: "#/components/schemas/SuccessFalseStatus"
+                            message:
+                                  $ref: '#/components/schemas/InternalErrorMessage'
+    
+       
+
+
 
 
 
