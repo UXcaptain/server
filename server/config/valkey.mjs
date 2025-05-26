@@ -1,5 +1,7 @@
 import { GlideClient, GlideClusterClient, Logger } from '@valkey/valkey-glide';
-// When Valkey is in standalone mode, add address of the primary node, and any replicas you'd like to be able to read from.
+import { logError } from './loggerFunctions.mjs';
+// When Valkey is in standalone mode,
+// add address of the primary node, and any replicas you'd like to be able to read from.
 const addresses = [
   {
     host: 'uxmonkeys-cache',
@@ -10,8 +12,9 @@ const addresses = [
 // Check `GlideClientConfiguration/GlideClusterClientConfiguration` for additional options.
 export const valkeyClient = await GlideClient.createClient({
   addresses: addresses,
-  // if the server uses TLS, you'll need to enable it. Otherwise, the connection attempt will time out silently.
+  // if the server uses TLS, you'll need to enable it. Otherwise,
+  // the connection attempt will time out silently.
   // useTLS: true,
   clientName: 'uxmonkeys-cache',
 });
-// The empty array signifies that there are no additional 
+// The empty array signifies that there are no additional
