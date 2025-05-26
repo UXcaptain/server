@@ -9,16 +9,37 @@ import {
 } from '../models/userModel.mjs';
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
+import { valkeyClient } from '../config/valkey.mjs';
+import { TimeUnit } from '@valkey/valkey-glide';
 
 export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    const cachedUser = await valkeyClient.get(userId);
+
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        message: 'user profile retrieved successfully - cache',
+        cacheTTL_seconds: await valkeyClient.ttl(userId),
+        user: JSON.parse(cachedUser),
+      });
+    }
+
     const user = await getUserById(userId);
 
-    res.status(200).json({
+    await valkeyClient.set(userId, JSON.stringify(user), {
+      expiry: {
+        type: TimeUnit.Seconds,
+        count: 60 * 5,
+      },
+    });
+    
+
+    return res.status(200).json({
       success: true,
-      message: 'user profile retrieved successfully',
+      message: 'user profile retrieved successfully - DB',
       user: user,
     });
   } catch (error) {
