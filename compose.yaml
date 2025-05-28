@@ -32,7 +32,8 @@ services:
       STRIPE_BIANNUAL_PRICE_ID: ${STRIPE_BIANNUAL_PRICE_ID}
       STRIPE_ANNUAL_PRICE_ID: ${STRIPE_ANNUAL_PRICE_ID}
       PORT: ${PORT}
-      MEMCACHED_URL: ${MEMCACHED_URL}
+      VALKEY_CACHE_HOST: ${VALKEY_CACHE_HOST}
+      VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
     ports:
       - 3000:3000
     develop:
@@ -42,9 +43,7 @@ services:
           target: /usr/src/app/
     depends_on:
       uxmonkeys-db:
-        condition: service_started
-      uxmonkeys-cache:
-        condition: service_started
+        condition: service_started #? Maybe need to move to service_healthy?
     networks:
       - uxmonkeys-network
 
