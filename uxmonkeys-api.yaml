@@ -60,7 +60,14 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Users successfully retrieved - DB
+                            Users successfully retrieved - DB,
+                            User successfully retrieved - cache
+                          ]
+                        cacheTTL_seconds: 
+                          type: integer
+                          description: Indicates the time to live of the cache in seconds - Only applicable when the data is obtained from cache.
+                          examples: [
+                            60,
                           ]
                         userCount:
                             description: Indicates the number of users being returned
