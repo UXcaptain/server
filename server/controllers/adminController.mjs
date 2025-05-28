@@ -1,11 +1,10 @@
-import { TimeUnit } from '@valkey/valkey-glide';
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
-
+import { TimeUnit } from '@valkey/valkey-glide';
 import { valkeyClient } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
