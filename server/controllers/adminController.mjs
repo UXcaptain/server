@@ -1,17 +1,16 @@
-import { TimeUnit } from '@valkey/valkey-glide';
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
-import { valkeyClient, getFromCache } from '../config/valkey.mjs';
+import { valkeyClient, getFromCache, storeInCache } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   try {
     const params = req.query;
 
-    // const cachedUsers = await valkeyClient.get('allUsers');
+    // TODO -- Find a way to cache with preset filters
 
     const cachedUsers = await getFromCache('allUsers');
 
@@ -19,20 +18,16 @@ export const getAllUsers = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: 'Users successfully retrieved - cache',
-        cacheTTL_seconds: await valkeyClient.ttl('allUsers'),
+        cacheTTL_seconds: await valkeyClient.ttl('allUsers'), // TODO -- investigate how to improve this
         userCount: JSON.parse(cachedUsers).length,
         users: JSON.parse(cachedUsers),
+
       });
     }
 
     const users = await getAllUsersInDb(params);
 
-    // await valkeyClient.set('allUsers', JSON.stringify(users), {
-    //   expiry: {
-    //     type: TimeUnit.Seconds,
-    //     count: 60,
-    //   },
-    // });
+    await storeInCache('allUsers', users, 60);
 
     return res.status(200).json({
       success: true,

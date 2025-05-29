@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { TimeUnit } from '@valkey/valkey-glide';
 import { User } from '../utils/classes/User.mjs';
 import {
   createUserInDB,
@@ -10,31 +9,26 @@ import {
 } from '../models/userModel.mjs';
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
-import { valkeyClient } from '../config/valkey.mjs';
+import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
 
 export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cachedUser = await valkeyClient.get(userId);
+    const cachedUser = await getFromCache(userId);
 
     if (cachedUser) {
       return res.status(200).json({
         success: true,
         message: 'user profile retrieved successfully - cache',
-        cacheTTL_seconds: await valkeyClient.ttl(userId),
+        cacheTTL_seconds: await valkeyClient.ttl(userId), // TODO -- investigate how to improve this
         user: JSON.parse(cachedUser),
       });
     }
 
     const user = await getUserById(userId);
 
-    await valkeyClient.set(userId, JSON.stringify(user), {
-      expiry: {
-        type: TimeUnit.Seconds,
-        count: 60 * 5,
-      },
-    });
+    await storeInCache(userId, user, 60 * 5); //* Cache for 5 minutes
 
     return res.status(200).json({
       success: true,
