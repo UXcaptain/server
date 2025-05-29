@@ -15,20 +15,23 @@ export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cachedUser = await getFromCache(userId);
+    const cacheKey = userId;
+
+    const cachedUser = await getFromCache(cacheKey);
 
     if (cachedUser) {
       return res.status(200).json({
         success: true,
         message: 'user profile retrieved successfully - cache',
-        cacheTTL_seconds: await valkeyClient.ttl(userId), // TODO -- investigate how to improve this
+        cacheKey: cacheKey,
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
         user: JSON.parse(cachedUser),
       });
     }
 
-    const user = await getUserById(userId);
+    const user = await getUserById(cacheKey);
 
-    await storeInCache(userId, user, 60 * 5); //* Cache for 5 minutes
+    await storeInCache(cacheKey, user, 60 * 5); //* Cache for 5 minutes
 
     return res.status(200).json({
       success: true,

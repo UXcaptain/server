@@ -8,6 +8,8 @@ import {
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
 
+import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
+
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
@@ -40,17 +42,32 @@ export const createAnalysis = async (req, res) => {
 
 export const getAllAnalyses = async (req, res) => {
   try {
-    const { id } = req.user;
+    const { id: ownerId } = req.user;
 
     const params = req.query;
 
-    const ownerId = id;
+    const cacheKey = `${ownerId}-${JSON.stringify(params)}`;
+
+    const cachedAnalysis = await getFromCache(cacheKey);
+
+    if (cachedAnalysis) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'analyses retrieved successfully - cache',
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        analysisCount: JSON.parse(cachedAnalysis).length,
+        analyses: JSON.parse(cachedAnalysis),
+      });
+    }
 
     const analyses = await getAllAnalysesFromDb(ownerId, params);
 
+    await storeInCache(cacheKey, analyses, 60 * 5); //* Cache for 5 minutes
+
     return res.status(200).send({
       success: true,
-      message: 'analyses retrieved successfully',
+      message: 'analyses retrieved successfully - DB',
       analysisCount: analyses.length,
       analyses: analyses,
     });

@@ -9,16 +9,16 @@ import { valkeyClient, getFromCache, storeInCache } from '../config/valkey.mjs';
 export const getAllUsers = async (req, res) => {
   try {
     const params = req.query;
+    const cacheKey = `allUsers-${JSON.stringify(params)}-all`; // TODO -- investigate how to improve this
 
-    // TODO -- Find a way to cache with preset filters
-
-    const cachedUsers = await getFromCache('allUsers');
+    const cachedUsers = await getFromCache(cacheKey);
 
     if (cachedUsers) {
       return res.status(200).json({
         success: true,
+        cacheKey: cacheKey,
         message: 'Users successfully retrieved - cache',
-        cacheTTL_seconds: await valkeyClient.ttl('allUsers'), // TODO -- investigate how to improve this
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
         userCount: JSON.parse(cachedUsers).length,
         users: JSON.parse(cachedUsers),
 
@@ -27,7 +27,7 @@ export const getAllUsers = async (req, res) => {
 
     const users = await getAllUsersInDb(params);
 
-    await storeInCache('allUsers', users, 60);
+    await storeInCache(cacheKey, users, 60);
 
     return res.status(200).json({
       success: true,
