@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { logError } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
@@ -7,14 +7,16 @@ export const createAnalysisInDb = async (data) => {
   try {
     const analysisCreationInDbResponse = await prisma.analysis.create({
       data: {
-        analysis_name: data.analysis_name,
-        analysis_url: data.analysis_url,
-        analysis_status: data.analysis_status,
-        analysis_tasks: data.analysis_tasks,
-        max_number_of_participants: data.max_number_of_participants,
+        name: data.name,
+        url: data.url,
+        device: data.device,
+        status: data.status,
+        tasks: data.tasks,
+        max_number_of_participants: data.maxNumberOfParticipants,
+        scenario: data.scenario,
         owner: {
           connect: {
-            id: data.analysis_owner_id,
+            id: data.owner_id,
           },
         },
       },
@@ -27,11 +29,30 @@ export const createAnalysisInDb = async (data) => {
   }
 };
 
-export const getAllAnalysesFromDb = async (ownerId) => {
+export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
   try {
+    const whereClause = {
+      owner_id: ownerId,
+      ...filters,
+    };
+
     const analyses = await prisma.analysis.findMany({
-      where: {
-        owner_id: ownerId,
+      where: whereClause,
+      omit: {
+        owner_id: true,
+        tasks: true,
+        scenario: true,
+        updated_at: true,
+      },
+      include: {
+        entries: {
+          where: {
+            status: 'submitted',
+          },
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
@@ -42,11 +63,21 @@ export const getAllAnalysesFromDb = async (ownerId) => {
   }
 };
 
-export const getAnalysisDetailsById = async (analysisId) => {
+export const getAnalysisDataById = async (analysisId) => {
   try {
     const analysis = await prisma.analysis.findUnique({
       where: {
         id: analysisId,
+      },
+      include: {
+        entries: {
+          where: {
+            status: 'submitted',
+          },
+          include: {
+            user: true,
+          },
+        },
       },
     });
 

@@ -1,7 +1,14 @@
-import { createAnalysisInDb, getAllAnalysesFromDb, getAnalysisDetailsById } from '../models/analysisModel.mjs';
+import {
+  createAnalysisInDb,
+  getAllAnalysesFromDb,
+  getAnalysisDataById,
+}
+  from '../models/analysisModel.mjs';
 
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
+
+import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -13,8 +20,7 @@ export const createAnalysis = async (req, res) => {
   }
 
   try {
-    const analysisOwner = '1843131e-e454-4603-a508-f8641c49aff2';
-    // const analysisOwner = req.user.id;
+    const analysisOwner = req.user.id;
 
     const analysis = new Analysis(req.body, analysisOwner);
 
@@ -36,14 +42,32 @@ export const createAnalysis = async (req, res) => {
 
 export const getAllAnalyses = async (req, res) => {
   try {
-    const ownerId = '1843131e-e454-4603-a508-f8641c49aff2';
-    // const analysisOwner = req.user.id;
+    const { id: ownerId } = req.user;
 
-    const analyses = await getAllAnalysesFromDb(ownerId);
+    const params = req.query;
+
+    const cacheKey = `${ownerId}-${JSON.stringify(params)}`;
+
+    const cachedAnalysis = await getFromCache(cacheKey);
+
+    if (cachedAnalysis) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'analyses retrieved successfully - cache',
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        analysisCount: JSON.parse(cachedAnalysis).length,
+        analyses: JSON.parse(cachedAnalysis),
+      });
+    }
+
+    const analyses = await getAllAnalysesFromDb(ownerId, params);
+
+    await storeInCache(cacheKey, analyses, 60 * 5); //* Cache for 5 minutes
 
     return res.status(200).send({
       success: true,
-      message: 'analyses retrieved successfully',
+      message: 'analyses retrieved successfully - DB',
       analysisCount: analyses.length,
       analyses: analyses,
     });
@@ -56,9 +80,11 @@ export const getAllAnalyses = async (req, res) => {
   }
 };
 
-export const getSinglesAnalysisDetails = async (req, res) => {
+export const getSinglesAnalysisData = async (req, res) => {
   try {
-    const analysis = await getAnalysisDetailsById(req.params.id);
+    const { id } = req.params;
+
+    const analysis = await getAnalysisDataById(id);
 
     if (!analysis) {
       return res.status(404).json({
@@ -70,7 +96,7 @@ export const getSinglesAnalysisDetails = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: 'Analysis details retrieved successfully',
-      analysisDetails: analysis,
+      analysisData: analysis,
     });
   } catch (error) {
     logError('Error in analysis details endpoint', error);

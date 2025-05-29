@@ -21,13 +21,13 @@ authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitize
 authRouter.post('/logout', (req, res, next) => {
   req.logout((err) => {
     if (err) {
-      logError('logoutError', err);
+      logError('User logout failed', err);
       return next(err);
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Logout successful',
+      message: 'User logged out successfully',
     });
   });
 });

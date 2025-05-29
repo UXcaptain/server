@@ -1,10 +1,12 @@
 export class Analysis {
   constructor(reqBody, analysisOwner) {
-    this.analysis_name = reqBody.analysisName;
-    this.analysis_url = reqBody.analysisUrl;
-    this.analysis_status = 'published';
-    this.analysis_owner_id = analysisOwner;
-    this.analysis_tasks = reqBody.analysisTasks;
-    this.max_number_of_participants = reqBody.maxNumberOfParticipants;
+    this.name = reqBody.name;
+    this.url = reqBody.url;
+    this.device = 'computer'; //* Default until we offer additional devices
+    this.status = 'published'; //* Default until we allow for drafts
+    this.owner_id = analysisOwner;
+    this.tasks = reqBody.tasks;
+    this.maxNumberOfParticipants = reqBody.maxNumberOfParticipants;
+    this.scenario = reqBody.scenario;
   }
 }

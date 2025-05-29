@@ -23,8 +23,7 @@ export const createUserInDB = async (user) => {
 
     return createUserInDbQuery;
   } catch (error) {
-    logError('Error creating user in DB', error);
-
+    logError('User creation failed', error);
     throw error;
   }
 };
@@ -33,12 +32,14 @@ export const getUserByEmail = async (userEmail) => {
   try {
     const getUserByEmailQuery = await prisma.user.findUnique({
       where: { email: userEmail },
+      // omit: { //! Do not uncomment - Needed for passport auth login
+      //   password: true,
+      // },
     });
 
     return getUserByEmailQuery;
   } catch (error) {
-    logError('Error getting user by email', error);
-
+    logError('User retrieval by email failed', error);
     throw error;
   }
 };
@@ -54,8 +55,7 @@ export const updateUserLastLoginDate = async (userId) => {
 
     return queryResult;
   } catch (error) {
-    logError('Error updating last login date', error);
-
+    logError(`Last login date update for user ${userId} failed`, error);
     throw error;
   }
 };
@@ -64,11 +64,14 @@ export const getUserById = async (userId) => {
   try {
     const getUserByIdQuery = await prisma.user.findUnique({
       where: { id: userId },
+      omit: {
+        password: true,
+      },
     });
 
     return getUserByIdQuery;
   } catch (error) {
-    logError('Error getting user by user ID', error);
+    logError(`User Id ${userId} profile retrieval failed`, error);
     throw error;
   }
 };
@@ -89,16 +92,15 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
 
     return updatePasswordQuery;
   } catch (error) {
-    logError('Error updating user password', error, { userId: userId });
-
+    logError(`Password update for userId ${userId} failed`, error);
     throw error;
   }
 };
 
-export const getAllCustomersInDb = async () => {
+export const getAllUsersInDb = async (filters = {}) => {
   try {
-    const getAllCustomersQuery = await prisma.user.findMany({
-      where: { role: 'customer' },
+    const getAllUsersQuery = await prisma.user.findMany({
+      where: filters,
       omit: {
         password: true,
       },
@@ -107,7 +109,7 @@ export const getAllCustomersInDb = async () => {
       },
     });
 
-    return getAllCustomersQuery;
+    return getAllUsersQuery;
   } catch (error) {
     logError('Error getting user by user ID', error);
     throw error;
@@ -126,7 +128,7 @@ export const deleteUserInDb = async (userId) => {
 
     return deleteUserQuery;
   } catch (error) {
-    logError('Error deleting user', error);
+    logError(`User ID: ${userId} deletion failed`, error);
     throw error;
   }
 };

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {
   deleteOneUserById,
-  getAllCustomers,
+  getAllUsers,
   getOneUserById,
 } from '../../../controllers/adminController.mjs';
 import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
@@ -12,7 +12,7 @@ export const adminRouter = Router();
 
 adminRouter.use(checkPermissionByRole('admin'));
 
-adminRouter.get('/', getAllCustomers);
+adminRouter.get('/', getAllUsers);
 
 adminRouter.get('/:userId', getOneUserById);
 

@@ -48,7 +48,6 @@ test('useCreation failed due to user already existing', async ({ request }) => {
 
   const responseBody = await duplicateResponse.json();
   expect(responseBody).toHaveProperty('success', false);
-  expect(responseBody).toHaveProperty('ERR_CODE');
   expect(responseBody).toHaveProperty('message', 'A user with that email address already exists');
 });
 

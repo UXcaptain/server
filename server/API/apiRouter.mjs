@@ -6,6 +6,7 @@ import { userRouter } from './v1/routes/userRouter.mjs';
 import { authRouter } from './v1/routes/authRouter.mjs';
 import { adminRouter } from './v1/routes/adminRouter.mjs';
 import { stripeRouter } from './v1/routes/stripeRouter.mjs';
+import { analysisRouter } from './v1/routes/analysisRouter.mjs';
 import { authenticationChecker } from '../middlewares/authenticationChecker.mjs';
 
 export const apiRouter = Router();
@@ -18,6 +19,7 @@ apiRouter.use(authenticationChecker);
 apiRouter.use('/v1/auth', authRouter);
 apiRouter.use('/v1/stripe', stripeRouter);
 apiRouter.use('/v1/user', userRouter);
+apiRouter.use('/v1/analysis', analysisRouter);
 
 apiRouter.use('/v1/admin', adminRouter);
 

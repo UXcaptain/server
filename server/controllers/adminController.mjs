@@ -1,22 +1,43 @@
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
-  getAllCustomersInDb,
+  getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
+import { valkeyClient, getFromCache, storeInCache } from '../config/valkey.mjs';
 
-export const getAllCustomers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
-    const getAllCustomerQuery = await getAllCustomersInDb();
+    const params = req.query;
+    const cacheKey = `allUsers-${JSON.stringify(params)}-all`; // TODO -- investigate how to improve this
 
-    res.status(200).json({
+    const cachedUsers = await getFromCache(cacheKey);
+
+    if (cachedUsers) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'Users successfully retrieved - cache',
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        userCount: JSON.parse(cachedUsers).length,
+        users: JSON.parse(cachedUsers),
+
+      });
+    }
+
+    const users = await getAllUsersInDb(params);
+
+    await storeInCache(cacheKey, users, 60);
+
+    return res.status(200).json({
       success: true,
-      userCount: getAllCustomerQuery.length,
-      users: getAllCustomerQuery,
+      message: 'Users successfully retrieved - DB',
+      userCount: users.length,
+      users: users,
     });
   } catch (error) {
     logError('Error getting all customers', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error getting all customers',
     });
@@ -38,6 +59,7 @@ export const getOneUserById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      message: 'User successfully retrieved - DB',
       user: getOneUserByIdQuery,
     });
   } catch (error) {
@@ -56,7 +78,7 @@ export const deleteOneUserById = async (req, res) => {
     if (!existingUser) {
       return res.status(404).json({
         success: false,
-        message: 'User does not exist',
+        message: 'User deletion failed - User does not exist',
       });
     }
 
@@ -69,9 +91,17 @@ export const deleteOneUserById = async (req, res) => {
     });
   } catch (error) {
     logError('Error deleting user', error);
-    return res.status(502).json({
+
+    if (error.code === 'P2003') {
+      res.status(409).json({
+        success: false,
+        message: 'User deletion failed - Related DB entries exist',
+      });
+    }
+
+    return res.status(500).json({
       success: false,
-      message: 'Error deleting user',
+      message: 'User deletion failed - Please try again later',
     });
   }
 };
