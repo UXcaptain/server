@@ -1,3 +1,4 @@
+import { TimeoutError, TimeUnit } from '@valkey/valkey-glide';
 import { GlideClient, Logger } from '@valkey/valkey-glide';
 import { logError } from './loggerFunctions.mjs';
 // When Valkey is in standalone mode,
@@ -24,6 +25,20 @@ export const getFromCache = async (key) => {
     return result;
   } catch (error) {
     logError('Error getting from cache', error);
+    return null;
+  }
+};
+
+export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
+  try {
+    return await valkeyClient.set(key, JSON.stringify(unstringifiedValue), {
+      expiry: {
+        type: TimeUnit.Seconds,
+        count: ttlSeconds,
+      },
+    });
+  } catch (error) {
+    logError('Error storing in cache', error);
     return null;
   }
 };
