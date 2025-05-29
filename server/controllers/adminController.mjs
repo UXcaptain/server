@@ -1,17 +1,19 @@
+import { TimeUnit } from '@valkey/valkey-glide';
 import { logError } from '../config/loggerFunctions.mjs';
 import {
   deleteUserInDb,
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
-import { TimeUnit } from '@valkey/valkey-glide';
-import { valkeyClient } from '../config/valkey.mjs';
+import { valkeyClient, getFromCache } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   try {
     const params = req.query;
 
-    const cachedUsers = await valkeyClient.get('allUsers');
+    // const cachedUsers = await valkeyClient.get('allUsers');
+
+    const cachedUsers = await getFromCache('allUsers');
 
     if (cachedUsers) {
       return res.status(200).json({
@@ -25,12 +27,12 @@ export const getAllUsers = async (req, res) => {
 
     const users = await getAllUsersInDb(params);
 
-    await valkeyClient.set('allUsers', JSON.stringify(users), {
-      expiry: {
-        type: TimeUnit.Seconds,
-        count: 60,
-      },
-    });
+    // await valkeyClient.set('allUsers', JSON.stringify(users), {
+    //   expiry: {
+    //     type: TimeUnit.Seconds,
+    //     count: 60,
+    //   },
+    // });
 
     return res.status(200).json({
       success: true,

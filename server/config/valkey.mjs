@@ -1,4 +1,5 @@
 import { GlideClient, Logger } from '@valkey/valkey-glide';
+import { logError } from './loggerFunctions.mjs';
 // When Valkey is in standalone mode,
 // add address of the primary node, and any replicas you'd like to be able to read from.
 
@@ -16,3 +17,13 @@ const valkeyOptions = {
 export const valkeyClient = await GlideClient.createClient(valkeyOptions);
 
 // The empty array signifies that there are no additional
+
+export const getFromCache = async (key) => {
+  try {
+    const result = await valkeyClient.get(key);
+    return result;
+  } catch (error) {
+    logError('Error getting from cache', error);
+    return null;
+  }
+};
