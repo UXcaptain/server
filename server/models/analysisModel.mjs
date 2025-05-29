@@ -38,6 +38,12 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
 
     const analyses = await prisma.analysis.findMany({
       where: whereClause,
+      omit: {
+        owner_id: true,
+        tasks: true,
+        scenario: true,
+        updated_at: true,
+      },
       include: {
         entries: {
           where: {
