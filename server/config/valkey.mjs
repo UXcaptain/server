@@ -12,6 +12,7 @@ const valkeyOptions = {
     },
   ],
   clientName: 'uxmonkeys-cache',
+  requestTimeout: 30, //* In MS - Enough time for a cache miss or cache error
 };
 
 // Check `GlideClientConfiguration/GlideClusterClientConfiguration` for additional options.
