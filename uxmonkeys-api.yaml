@@ -63,12 +63,10 @@ paths:
                             Users successfully retrieved - DB,
                             User successfully retrieved - cache
                           ]
+                        cacheKey:
+                          $ref: "#/components/schemas/cacheKey"
                         cacheTTL_seconds: 
-                          type: integer
-                          description: Indicates the time to live of the cache in seconds - Only applicable when the data is obtained from cache.
-                          examples: [
-                            60,
-                          ]
+                          $ref: "#/components/schemas/cacheTTL_seconds"
                         userCount:
                             description: Indicates the number of users being returned
                             type: integer
@@ -518,6 +516,10 @@ paths:
                 message:
                   type: string
                   example: User retrieved successfully
+                cacheKey:
+                  $ref: "#/components/schemas/cacheKey"
+                cacheTTL_seconds: 
+                  $ref: "#/components/schemas/cacheTTL_seconds"
                 user:
                   $ref: "#/components/schemas/User"
                 
@@ -645,6 +647,16 @@ components:
       description: role assigned to user
       example: customer
     
+    cacheTTL_seconds:
+      type: string
+      default: 60
+      description: time in seconds for cache to expire - * Returned only if cache is used
+      example: 60
+
+    cacheKey:
+      type: string
+      description: unique identifier for cache entry - * Returned only if cache is used
+      example: "allUsers-{\"role\":\"customer\"}-all"
 
     ValidationErrors:
       type: object
