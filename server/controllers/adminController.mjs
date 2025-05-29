@@ -4,21 +4,40 @@ import {
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
+import { valkeyClient, getFromCache, storeInCache } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   try {
     const params = req.query;
+    const cacheKey = `allUsers-${JSON.stringify(params)}-all`; // TODO -- investigate how to improve this
 
-    const getAllCustomerQuery = await getAllUsersInDb(params);
+    const cachedUsers = await getFromCache(cacheKey);
 
-    res.status(200).json({
+    if (cachedUsers) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'Users successfully retrieved - cache',
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        userCount: JSON.parse(cachedUsers).length,
+        users: JSON.parse(cachedUsers),
+
+      });
+    }
+
+    const users = await getAllUsersInDb(params);
+
+    await storeInCache(cacheKey, users, 60);
+
+    return res.status(200).json({
       success: true,
-      userCount: getAllCustomerQuery.length,
-      users: getAllCustomerQuery,
+      message: 'Users successfully retrieved - DB',
+      userCount: users.length,
+      users: users,
     });
   } catch (error) {
     logError('Error getting all customers', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Error getting all customers',
     });
@@ -40,6 +59,7 @@ export const getOneUserById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      message: 'User successfully retrieved - DB',
       user: getOneUserByIdQuery,
     });
   } catch (error) {

@@ -9,21 +9,38 @@ import {
 } from '../models/userModel.mjs';
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
+import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
 
 export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await getUserById(userId);
+    const cacheKey = userId;
 
-    res.status(200).json({
+    const cachedUser = await getFromCache(cacheKey);
+
+    if (cachedUser) {
+      return res.status(200).json({
+        success: true,
+        message: 'user profile retrieved successfully - cache',
+        cacheKey: cacheKey,
+        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        user: JSON.parse(cachedUser),
+      });
+    }
+
+    const user = await getUserById(cacheKey);
+
+    await storeInCache(cacheKey, user, 60 * 5); //* Cache for 5 minutes
+
+    return res.status(200).json({
       success: true,
-      message: 'user profile retrieved successfully',
+      message: 'user profile retrieved successfully - DB',
       user: user,
     });
   } catch (error) {
     logError('User profile retrieval failed', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'User profile retrieval failed',
     });
