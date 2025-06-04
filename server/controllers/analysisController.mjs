@@ -8,7 +8,7 @@ import {
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
 
-import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
+import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -55,7 +55,7 @@ export const getAllAnalyses = async (req, res) => {
         success: true,
         cacheKey: cacheKey,
         message: 'analyses retrieved successfully - cache',
-        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
         analysisCount: JSON.parse(cachedAnalysis).length,
         analyses: JSON.parse(cachedAnalysis),
       });

@@ -9,7 +9,7 @@ import {
 } from '../models/userModel.mjs';
 import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
-import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
+import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -24,7 +24,7 @@ export const getUserProfile = async (req, res) => {
         success: true,
         message: 'user profile retrieved successfully - cache',
         cacheKey: cacheKey,
-        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
         user: JSON.parse(cachedUser),
       });
     }
