@@ -1,5 +1,6 @@
-import { TimeoutError, TimeUnit } from '@valkey/valkey-glide';
-import { GlideClient, Logger } from '@valkey/valkey-glide';
+import {
+  TimeoutError, TimeUnit, GlideClient, Logger,
+} from '@valkey/valkey-glide';
 import { logError } from './loggerFunctions.mjs';
 // When Valkey is in standalone mode,
 // add address of the primary node, and any replicas you'd like to be able to read from.
@@ -22,6 +23,8 @@ export const valkeyClient = await GlideClient.createClient(valkeyOptions);
 
 export const getFromCache = async (key) => {
   try {
+    // return; //* DEBUG
+
     const result = await valkeyClient.get(key);
     return result;
   } catch (error) {
@@ -32,6 +35,8 @@ export const getFromCache = async (key) => {
 
 export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
   try {
+    // return; //* DEBUG
+
     return await valkeyClient.set(key, JSON.stringify(unstringifiedValue), {
       expiry: {
         type: TimeUnit.Seconds,
@@ -40,6 +45,17 @@ export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
     });
   } catch (error) {
     logError('Error storing in cache', error);
+    return null;
+  }
+};
+
+export const getTTLfromCache = async (key) => {
+  try {
+    // return; //* DEBUG
+    const result = await valkeyClient.ttl(key);
+    return result;
+  } catch (error) {
+    logError('Error getting TTL from cache', error);
     return null;
   }
 };
