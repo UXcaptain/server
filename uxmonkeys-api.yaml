@@ -34,11 +34,7 @@ paths:
             description: email of the user
             required: false
             schema:
-                type: string
-                format: email
-                examples: [
-                  username@gmail.com
-                ]
+                $ref: "#/components/schemas/email"
           - name: id
             in: query
             description: id of the user
@@ -231,10 +227,7 @@ paths:
                           - password
                         properties:
                             email:
-                                type: string
-                                format: email
-                                description: 8 chars minimum
-                                example: username@gmail.com
+                                $ref: "#/components/schemas/email"
                             password:
                                 type: string
                                 format: password
@@ -311,9 +304,7 @@ paths:
                           - password
                         properties:
                             email:
-                                type: string
-                                format: email
-                                example: username@gmail.com
+                                $ref: "#/components/schemas/email"
                             password:
                                 type: string
                                 format: password
@@ -642,7 +633,6 @@ components:
     
     UserRoles:
       type: string
-      default: customer
       enum: [customer, admin, participant]
       description: role assigned to user
       example: customer
@@ -683,9 +673,7 @@ components:
         id:
           $ref: '#/components/schemas/userId'
         email:
-          type: string
-          format: email
-          example: username@gmail.com
+          $ref: "#/components/schemas/email"
         role:
           $ref: "#/components/schemas/UserRoles"
         created_at:
@@ -719,6 +707,12 @@ components:
       enum: [in_progress, cancelled, submitted, accepted, rejected]
       description: The status of the analysis entry
     
+    email:
+      type: string
+      description: The email address of the user
+      examples: [
+        username@gmail.com
+      ]
     
     InternalErrorMessage:
       type: string
