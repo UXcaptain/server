@@ -20,12 +20,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.8.2
- * Query Engine version: 2060c79ba17c6bb9f5823312b6f6b7f4a845738e
+ * Prisma Client JS version: 6.9.0
+ * Query Engine version: 81e4af48011447c3cc503a190e86995b66d2a28e
  */
 Prisma.prismaVersion = {
-  client: "6.8.2",
-  engine: "2060c79ba17c6bb9f5823312b6f6b7f4a845738e"
+  client: "6.9.0",
+  engine: "81e4af48011447c3cc503a190e86995b66d2a28e"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -157,23 +157,25 @@ exports.Prisma.SubscriptionScalarFieldEnum = {
 exports.Prisma.AnalysisScalarFieldEnum = {
   id: 'id',
   owner_id: 'owner_id',
-  analysis_name: 'analysis_name',
-  analysis_tasks: 'analysis_tasks',
-  analysis_url: 'analysis_url',
-  analysis_status: 'analysis_status',
+  device: 'device',
+  name: 'name',
+  scenario: 'scenario',
+  tasks: 'tasks',
+  url: 'url',
+  status: 'status',
   created_at: 'created_at',
   updated_at: 'updated_at',
-  current_participants_count: 'current_participants_count',
   max_number_of_participants: 'max_number_of_participants'
 };
 
-exports.Prisma.AnalysisRequestsScalarFieldEnum = {
+exports.Prisma.AnalysisEntriesScalarFieldEnum = {
   id: 'id',
   analysis_id: 'analysis_id',
   user_id: 'user_id',
   status: 'status',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  url: 'url'
 };
 
 exports.Prisma.SortOrder = {
@@ -205,13 +207,20 @@ exports.userRoles = exports.$Enums.userRoles = {
   admin: 'admin'
 };
 
+exports.AnalysisDevice = exports.$Enums.AnalysisDevice = {
+  computer: 'computer',
+  mobile: 'mobile',
+  tablet: 'tablet',
+  other: 'other'
+};
+
 exports.analysisStatus = exports.$Enums.analysisStatus = {
   draft: 'draft',
   published: 'published',
   completed: 'completed'
 };
 
-exports.analysisRequestCompletionStatus = exports.$Enums.analysisRequestCompletionStatus = {
+exports.analysisEntryCompletionStatus = exports.$Enums.analysisEntryCompletionStatus = {
   in_progress: 'in_progress',
   cancelled: 'cancelled',
   submitted: 'submitted',
@@ -225,7 +234,7 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   Subscription: 'Subscription',
   Analysis: 'Analysis',
-  AnalysisRequests: 'AnalysisRequests'
+  AnalysisEntries: 'AnalysisEntries'
 };
 
 /**
