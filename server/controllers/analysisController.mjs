@@ -29,7 +29,7 @@ export const createAnalysis = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'analysis created successfully',
-      createdAnalysis: analysisCreationResponse,
+      createdAnalysisId: analysisCreationResponse.id,
     });
   } catch (error) {
     logError('Error in createAnalysis endpoint', error);
