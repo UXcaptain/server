@@ -7,6 +7,6 @@ export class Analysis {
     this.owner_id = analysisOwner;
     this.tasks = reqBody.tasks;
     this.maxNumberOfParticipants = reqBody.maxNumberOfParticipants;
-    this.scenario = reqBody.scenario;
+    this.scenario = reqBody.scenario || 'No scenario has been provided.';
   }
 }
