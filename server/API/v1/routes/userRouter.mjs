@@ -8,7 +8,7 @@ export const userRouter = Router();
 
 userRouter.use(checkPermissionByRole('customer'));
 
-userRouter.get('/profile', getUserProfile);
+userRouter.get('/', getUserProfile);
 
 userRouter.delete('/', deleteUser);
 

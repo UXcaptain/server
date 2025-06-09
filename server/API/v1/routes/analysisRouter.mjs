@@ -15,9 +15,9 @@ analysisRouter.use(checkPermissionByRole('customer'));
 
 analysisRouter.get('/', getAllAnalyses);
 
-analysisRouter.get('/analysis-details/:id', getSinglesAnalysisData);
+analysisRouter.post('/', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
 
-analysisRouter.post('/create-analysis', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+analysisRouter.get('/:id', getSinglesAnalysisData);
 
 analysisRouter.use('/*fallback', (req, res) => {
   res.status(404).send('Route not found');
