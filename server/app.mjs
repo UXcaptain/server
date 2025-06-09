@@ -1,5 +1,6 @@
 import express from 'express';
 import passport from 'passport';
+import { createServer } from 'http';
 import { cookieParserMiddleware } from './middlewares/cookieParser.mjs';
 import { corsMiddleware } from './middlewares/cors.mjs';
 import { helmetMiddleware } from './middlewares/helmet.mjs';
@@ -11,6 +12,7 @@ import { slowLimiter } from './middlewares/express-slow-down.mjs';
 import { startCronJobs } from './cron/jobsContainer.mjs';
 
 const app = express();
+const server = createServer(app);
 
 //* Middleware for ExpressJS securization
 app.use(helmetMiddleware);
@@ -41,7 +43,7 @@ app.use((err, req, res, next) => {
 });
 
 //* Start the server
-const server = app.listen(process.env.PORT, () => {
+server.listen(process.env.PORT, () => {
 // eslint-disable-next-line no-console
   console.log(`Server running at http://localhost:${process.env.PORT}/`);
 });
