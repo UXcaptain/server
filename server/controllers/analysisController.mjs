@@ -14,7 +14,7 @@ export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
-      message: 'Validation error on createAnalysis',
+      message: 'Analysis could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
