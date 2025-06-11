@@ -84,6 +84,20 @@ export const getSinglesAnalysisData = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const cacheKey = `analysis-${id}`; // Cache key for the specific analysis
+
+    const cachedAnalysis = await getFromCache(cacheKey);
+
+    if (cachedAnalysis) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'Analysis data successfully retrieved - cache',
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
+        analysisData: JSON.parse(cachedAnalysis),
+      });
+    }
+
     const analysis = await getAnalysisDataById(id);
 
     if (!analysis) {
@@ -93,13 +107,15 @@ export const getSinglesAnalysisData = async (req, res) => {
       });
     }
 
+    await storeInCache(cacheKey, analysis, 120);
+
     return res.status(200).json({
       success: true,
       message: 'Analysis details retrieved successfully',
       analysisData: analysis,
     });
   } catch (error) {
-    logError('Error in analysis details endpoint', error);
+    logError('Error retrieving analysis', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve analysis details',

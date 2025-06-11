@@ -21,7 +21,6 @@ export const getAllUsers = async (req, res) => {
         cacheTTL_seconds: await getTTLfromCache(cacheKey),
         userCount: JSON.parse(cachedUsers).length,
         users: JSON.parse(cachedUsers),
-
       });
     }
 
