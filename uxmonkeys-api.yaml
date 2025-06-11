@@ -34,13 +34,13 @@ paths:
             description: email of the user
             required: false
             schema:
-                $ref: "#/components/schemas/email"
+                $ref: "#/components/schemas/UserEmail"
           - name: id
             in: query
             description: id of the user
             required: false
             schema:
-                $ref: "#/components/schemas/userId"
+                $ref: "#/components/schemas/UserId"
 
       responses:
         200:
@@ -60,9 +60,9 @@ paths:
                             User successfully retrieved - cache
                           ]
                         cacheKey:
-                          $ref: "#/components/schemas/cacheKey"
+                          $ref: "#/components/schemas/CacheKey"
                         cacheTTL_seconds: 
-                          $ref: "#/components/schemas/cacheTTL_seconds"
+                          $ref: "#/components/schemas/CacheTTL_seconds"
                         userCount:
                             description: Indicates the number of users being returned
                             type: integer
@@ -86,17 +86,17 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/admin/{userId}:
+  /v1/admin/{UserId}:
     get:
       summary: Returns one user
-      description: Returns one user by userId
+      description: Returns one user by UserId
       tags: ["admin"]
       parameters:
-        - name: userId
+        - name: UserId
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/userId"
+            $ref: "#/components/schemas/UserId"
       
 
       responses:
@@ -134,11 +134,11 @@ paths:
       description: This endpoint will delete one user
       tags: ["admin"]
       parameters:
-        - name: userId
+        - name: UserId
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/userId"
+            $ref: "#/components/schemas/UserId"
       
 
       responses:
@@ -227,7 +227,7 @@ paths:
                           - password
                         properties:
                             email:
-                                $ref: "#/components/schemas/email"
+                                $ref: "#/components/schemas/UserEmail"
                             password:
                                 type: string
                                 format: password
@@ -246,8 +246,8 @@ paths:
                               message:
                                 type: string
                                 example: User created successfully
-                              userId:
-                                $ref: "#/components/schemas/userId"
+                              UserId:
+                                $ref: "#/components/schemas/UserId"
             409:
               description: User already exists
               content:
@@ -304,7 +304,7 @@ paths:
                           - password
                         properties:
                             email:
-                                $ref: "#/components/schemas/email"
+                                $ref: "#/components/schemas/UserEmail"
                             password:
                                 type: string
                                 format: password
@@ -329,7 +329,7 @@ paths:
                                   type: object
                                   properties:
                                       id: 
-                                          $ref: "#/components/schemas/userId"
+                                          $ref: "#/components/schemas/UserId"
                                       role: 
                                           $ref: "#/components/schemas/UserRoles"
             401:
@@ -508,9 +508,9 @@ paths:
                   type: string
                   example: User retrieved successfully
                 cacheKey:
-                  $ref: "#/components/schemas/cacheKey"
+                  $ref: "#/components/schemas/CacheKey"
                 cacheTTL_seconds: 
-                  $ref: "#/components/schemas/cacheTTL_seconds"
+                  $ref: "#/components/schemas/CacheTTL_seconds"
                 user:
                   $ref: "#/components/schemas/User"
                 
@@ -539,16 +539,16 @@ paths:
                             type: string
                             example: User deletion failed - Related DB entries exist
        500:
-              description: Unexpected error
-              content:
-                application/json:
-                    schema:
-                          type: object
-                          properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
-                              message:
-                                    $ref: '#/components/schemas/InternalErrorMessage'
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
     delete:
       summary: Deletes the user account
       description: Deletes the user account and all related data from the database. This operation is irreversible and should be used with caution.
@@ -592,8 +592,233 @@ paths:
                             message:
                                   $ref: '#/components/schemas/InternalErrorMessage'
     
-       
+  /v1/analysis:
+    get:
+      summary: Retrieve all analyses
+      description: Retrieve all analyses for a given user.
+      tags: ["Analysis"]
+      parameters:
+          - name: status
+            in: query
+            description: Indicates the status of the analysis
+            required: false
+            schema: 
+                $ref: "#/components/schemas/AnalysisStatus"
+          - name: device
+            in: query
+            description: Indicates the device in which the analysis has been run
+            required: false
+            schema:
+                $ref: "#/components/schemas/AnalysisDevice"
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Analysis successfully retrieved - DB,
+                            Analysis successfully retrieved - cache
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        analysisCount:
+                            description: Indicates the number of Analysis being returned
+                            type: integer
+                            examples: [
+                              1
+                            ]
+                        analyses:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/AnalysisWithCount'
+
+                            
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+    post:
+      summary: Create a new analysis
+      description: Creates a new analysis - given that the validation is passed.
+      tags: ["Analysis"]
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+                type: object
+                required:
+                  - name
+                  - url
+                  - maxNumberOfParticipants
+                  - device
+                  - tasks
+                properties:
+                      name:
+                        $ref: '#/components/schemas/AnalysisName'
+                      url:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      maxNumberOfParticipants:
+                        $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasks'
+                      device:
+                        $ref: '#/components/schemas/AnalysisDevice'
+
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    examples: [
+                      "Analysis created successfully"
+                    ]
+                  createdAnalysisId:
+                    $ref: "#/components/schemas/AnalysisId"
+        422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  Analysis could not be created due to validation errors
+                                ]
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+        
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis/{AnalisisId}:
+    get:
+      summary: Retrieve one analysis
+      description: Retrieve all analysis details for a given analysis.
+      tags: ["Analysis"]
+      parameters:
+        - name: AnalysisId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/AnalysisId"
+
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Analysis successfully retrieved - DB,
+                            Analysis successfully retrieved - cache
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        analysisData:
+                              type: object
+                              properties:
+                                device:
+                                  $ref: '#/components/schemas/AnalysisDevice'
+                                name:
+                                  $ref: '#/components/schemas/AnalysisName'
+                                scenario:
+                                  $ref: '#/components/schemas/AnalysisScenario'
+                                tasks:
+                                  type: array
+                                  items:
+                                    $ref:  '#/components/schemas/AnalysisTasks'
+                                url:
+                                  $ref: '#/components/schemas/AnalysisUrl'
+                                created_at:
+                                  $ref: '#/components/schemas/CreatedAt'
+                                status:
+                                  $ref: '#/components/schemas/AnalysisStatus'
+                                max_number_of_participants:
+                                  $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+                                entries:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/AnalysisEntry'
+
+                            
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                        $ref: '#/components/schemas/SuccessFalseStatus'
+                  message:
+                    type: string
+                    example: "Analysis not found"
+                  
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
 
 
@@ -611,21 +836,19 @@ components:
       type: boolean
       example: false
 
-    userId:
+    UserId:
       description: The unique identifier of a user
       type: string
       format: uuid
-      example: c20432a3-7667-4b82-a653-f0af5cf47464
-    
-    
-    analysisId:
+      example: c20432a3-7667-4b82-a653-f0af5cf47464  
+
+    AnalysisId:
         description: The unique identifier of an analysis
         type: string
         format: uuid
-        example: 53c3c74e-1d1a-4a4e-9ee1-4974d7402bfd
+        example: 0464ac85-e565-4d44-bde7-d6de0aa358ea  
     
-    
-    entryId:
+    EntryId:
         description: The unique identifier of an entry
         type: string
         format: uuid
@@ -637,13 +860,13 @@ components:
       description: role assigned to user
       example: customer
     
-    cacheTTL_seconds:
+    CacheTTL_seconds:
       type: string
       default: 60
       description: time in seconds for cache to expire - * Returned only if cache is used
       example: 60
 
-    cacheKey:
+    CacheKey:
       type: string
       description: unique identifier for cache entry - * Returned only if cache is used
       example: "allUsers-{\"role\":\"customer\"}-all"
@@ -671,24 +894,165 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/userId'
+          $ref: '#/components/schemas/UserId'
         email:
-          $ref: "#/components/schemas/email"
+          $ref: "#/components/schemas/UserEmail"
         role:
           $ref: "#/components/schemas/UserRoles"
         created_at:
-          type: string
-          example: 2025-05-15T14:23:21.303Z
+          $ref: '#/components/schemas/CreatedAt'
         last_updated_at:
-            type: string
-            example: 2025-05-15T14:23:21.303Z
+            $ref: '#/components/schemas/UpdatedAt'
         last_login_at:
-            type: string
-            example: 2025-05-15T14:23:21.303Z
+            $ref: '#/components/schemas/LastLoginAt'
         stripe_customer_id:
-            type: string
-            example: 123456
+            $ref: '#/components/schemas/StripeCustomerId'
     
+    CreatedAt:
+      type: string
+      description: Date of creation
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    UpdatedAt:
+      type: string
+      description: The date of update
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    LastLoginAt:
+      type: string
+      description: The last login time of the user
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    StripeCustomerId:
+      type: string
+      description: The Stripe customer ID associated with the user
+      examples: [
+        123456
+      ]
+
+    Analysis:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/AnalysisId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        maxNumberOfParticipants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        createdAt:
+          $ref: '#/components/schemas/CreatedAt'
+
+    AnalysisWithCount:
+      type: object
+      properties:
+        Analysis:
+          $ref: '#/components/schemas/Analysis'
+        _count:
+          $ref: '#/components/schemas/AnalysisEntryCount'
+
+    AnalysisWithEntryDetails:
+      type: object
+      properties:
+        Analysis:
+          $ref: '#/components/schemas/Analysis'
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysisEntry'
+
+    AnalysisEntryUrl:
+      type: string
+      format: url
+      description: The URL of the completed entry
+      examples: [
+        'https://www.storage.com/1234'
+      ]
+
+    AnalysisEntryCount:
+      type: number
+      description: The number of entries that have been submitted for a given analysis
+      examples: [
+        0,
+        5,
+        10,
+      ]
+
+    AnalysisEntry:
+      type: object
+      description: The details of a completed entry for an analysis
+      properties:
+        id: 
+          $ref: '#/components/schemas/EntryId'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        url:
+          $ref: '#/components/schemas/EntryStorageUrl'
+
+    EntryStorageUrl:
+      type: string
+      description: The URL where the storage is located for a submitted entry
+      format: url
+      examples: [
+        'https://www.storage.com/123',
+        'https://s3.amzon.com/1234'
+        ]
+
+
+    AnalysisName:
+      type: string
+      description: The title of the analysis - Helps the user differentiate between their analysis
+      examples: [
+        'Landing page analysis',
+        'Figma Prototype analysis'
+      ]
+
+    AnalysisMaxNumberOfParticipants:
+      type: number
+      description: The maximum number of participants that can join
+      examples: [
+        10,
+      ]          
+
+    AnalysisTasksArray:
+      description: An array of analysis tasks that make up the analysis
+      type: array
+      items:
+        $ref: "#/components/schemas/AnalysisTasks"
+
+    AnalysisTasks:
+      type: object
+      properties:
+        taskType:
+          $ref: "#/components/schemas/AnalysisTaskType"
+        taskContent:
+          $ref: "#/components/schemas/AnalysisTaskContent"
+
+    AnalysisTaskContent:
+      type: string
+      description: The content of the task that the participants should complete
+      examples: [
+        'Search for a hand bag in this website',
+        'Without clicking on anything - Share your thoughts on what this website does',
+        'Try to find the return policy of this website'
+      ]
+
+    AnalysisTaskType:
+      type: string
+      description: The type of the task being created
+      enum: [text]
+
     AnalysisDevice:
       type: string
       enum: [computer, mobile, tablet, other]
@@ -701,24 +1065,41 @@ components:
       enum: [draft, published, completed]
       description: The status of the analysis
 
+    AnalysisUrl:
+      type: string
+      format: url
+      examples: [
+        'https://www.siteToAnalyze.com',
+        'https://www.figma-prototype.com'
+      ]
+      description: The url of the site the user must visit
+
+    AnalysisScenario:
+      type: string
+      default: ''
+      examples: [
+        'Imagine you are buying a house and your budget is 5000€',
+        'Imagine its your brothers birthday and you want to gift him a dog leash with a price tag of 50€ or less'
+      ]
+      description: The scenario the user must adopt while completing the analysis
+    
     AnalysisEntryCompletionStatus:
       type: string
       default: in_progress
       enum: [in_progress, cancelled, submitted, accepted, rejected]
       description: The status of the analysis entry
     
-    email:
+    UserEmail:
       type: string
       description: The email address of the user
       examples: [
         username@gmail.com
       ]
-    
+
     InternalErrorMessage:
       type: string
       description: Indicates an internal error failure (status 500)
       example: Internal server error - Please contact us
-  
   
   securitySchemes:
     ApiKey:
