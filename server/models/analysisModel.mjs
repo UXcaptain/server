@@ -45,12 +45,13 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
         updated_at: true,
       },
       include: {
-        entries: {
-          where: {
-            status: 'submitted',
-          },
+        _count: {
           select: {
-            id: true,
+            entries: {
+              where: {
+                status: 'submitted',
+              },
+            },
           },
         },
       },
@@ -69,13 +70,20 @@ export const getAnalysisDataById = async (analysisId) => {
       where: {
         id: analysisId,
       },
+      omit: {
+        owner_id: true,
+        id: true,
+      },
       include: {
         entries: {
           where: {
             status: 'submitted',
           },
-          include: {
-            user: true,
+          omit: {
+            analysis_id: true,
+            user_id: true,
+            status: true,
+            created_at: true,
           },
         },
       },
