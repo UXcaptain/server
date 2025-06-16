@@ -35,6 +35,9 @@ server/middlewares/subscriptionChecker.mjs
 # prisma client
 
 server/generated
+
+server/config/generated
+
 server/config/generated/prisma/client/edge.js
 
 server/config/generated/prisma/client/index-browser.js
