@@ -24,10 +24,12 @@ export const storeSubscriptionInDb = async (subscriptionData) => {
 
 export const storeStripeCustomerIdInDb = async (userId, stripeCustomerId) => {
   try {
+    const whereClause = {
+      id: userId,
+    };
+
     const user = await prisma.user.update({
-      where: {
-        id: userId,
-      },
+      where: whereClause,
       data: {
         stripe_customer_id: stripeCustomerId,
       },
@@ -42,10 +44,12 @@ export const storeStripeCustomerIdInDb = async (userId, stripeCustomerId) => {
 
 export const markSubscriptionAsCancelledInDb = async (cancelData) => {
   try {
+    const whereClause = {
+      stripe_subscription_id: cancelData.id,
+    };
+
     await prisma.subscription.update({
-      where: {
-        stripe_subscription_id: cancelData.id,
-      },
+      where: whereClause,
       data: {
         status: 'cancelled',
         current_period_end_date: new Date(cancelData.cancelAt * 1000),
@@ -58,17 +62,20 @@ export const markSubscriptionAsCancelledInDb = async (cancelData) => {
 
 export const getSubscriptionDataInDb = async (userId) => {
   try {
+    const whereClause = {
+      AND: [
+        {
+          user_id: userId,
+        },
+        {
+          status: 'active',
+        },
+      ],
+
+    };
+
     const subscriptionData = await prisma.subscription.findFirst({
-      where: {
-        AND: [
-          {
-            user_id: userId,
-          },
-          {
-            status: 'active',
-          },
-        ],
-      },
+      where: whereClause,
       select: {
         status: true,
         plan_name: true,
