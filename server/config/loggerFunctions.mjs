@@ -33,6 +33,17 @@ export const logUserLoggedOut = (userId) => {
   });
 };
 
+export const logUserDeleted = async (userId) => {
+  logger.info({
+    message: 'User succesfully deleted in database',
+    context: {
+      userData: {
+        userId: userId,
+      },
+    },
+  });
+};
+
 export const logFatalMongoDbConnectionError = (error) => {
   logger.fatal({
     message: `[DB CONNECTION] Can't connect to MongoDB - ${error.errmsg}`,

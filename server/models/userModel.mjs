@@ -123,6 +123,7 @@ export const deleteUserInDb = async (userId) => {
         id: userId,
       },
     });
+  logUserDeleted(userId);
 
     posthogUserDeleteAccount(userId);
 
