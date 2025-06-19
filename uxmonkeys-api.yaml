@@ -234,7 +234,7 @@ paths:
                                 description: user password
                                 example: 123456
         responses:
-            200:
+            201:
                 description: Success
                 content:
                   application/json:
