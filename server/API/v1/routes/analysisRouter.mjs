@@ -13,9 +13,9 @@ export const analysisRouter = Router();
 
 analysisRouter.use(checkPermissionByRole('customer'));
 
-analysisRouter.get('/', getAllAnalyses);
-
 analysisRouter.post('/', checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+
+analysisRouter.get('/', getAllAnalyses);
 
 analysisRouter.get('/:id', getSinglesAnalysisData);
 
