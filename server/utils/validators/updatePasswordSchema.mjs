@@ -16,4 +16,13 @@ export const updatePasswordSchema = {
     trim: true,
     escape: true,
   },
+  passwordResetToken: {
+    notEmpty: {
+      errorMessage: 'Password reset token is required',
+    },
+    isString: {
+      errorMessage: 'Password reset token must be a string',
+    },
+    isUUID: true,
+  },
 };
