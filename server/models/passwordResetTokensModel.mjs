@@ -1,5 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { logError } from '../config/loggerFunctions.mjs';
+import { logError, logPasswordResetTokenCreated } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +10,8 @@ export const createPasswordResetToken = async (userId) => {
       token_expires: new Date(Date.now() + 3600000),
     },
   });
+
+  logPasswordResetTokenCreated(userId);
 
   return createPasswordResetTokenQuery;
 };
