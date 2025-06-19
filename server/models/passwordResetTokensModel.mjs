@@ -4,34 +4,24 @@ import { logError } from '../config/loggerFunctions.mjs';
 const prisma = new PrismaClient();
 
 export const createPasswordResetToken = async (userId) => {
-  try {
-    const createPasswordResetTokenQuery = await prisma.password_reset_tokens.create({
-      data: {
-        user_id: userId,
-        token_expires: new Date(Date.now() + 3600000),
-      },
-    });
+  const createPasswordResetTokenQuery = await prisma.password_reset_tokens.create({
+    data: {
+      user_id: userId,
+      token_expires: new Date(Date.now() + 3600000),
+    },
+  });
 
-    return createPasswordResetTokenQuery;
-  } catch (error) {
-    logError('Password reset token creation failed', error);
-    throw error;
-  }
+  return createPasswordResetTokenQuery;
 };
 
 export const getPasswordResetTokenData = async (token) => {
-  try {
-    const getPasswordResetTokenDataQuery = await prisma.password_reset_tokens.findFirst({
-      where: {
-        id: token,
-      },
-    });
+  const getPasswordResetTokenDataQuery = await prisma.password_reset_tokens.findFirst({
+    where: {
+      id: token,
+    },
+  });
 
-    return getPasswordResetTokenDataQuery;
-  } catch (error) {
-    logError(`Token Id ${token} retrieval failed`, error);
-    throw error;
-  }
+  return getPasswordResetTokenDataQuery;
 };
 
 export const deletePasswordResetTokens = async (userId) => {
@@ -54,16 +44,11 @@ export const deletePasswordResetTokens = async (userId) => {
 };
 
 export const deleteExpiredPasswordResetTokens = async () => {
-  try {
-    await prisma.password_reset_tokens.deleteMany({
-      where: {
-        token_expires: {
-          lt: new Date(),
-        },
+  await prisma.password_reset_tokens.deleteMany({
+    where: {
+      token_expires: {
+        lt: new Date(),
       },
-    });
-  } catch (error) {
-    logError('Expired token deletion failed', error);
-    throw error;
-  }
+    },
+  });
 };
