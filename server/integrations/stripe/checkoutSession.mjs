@@ -20,45 +20,40 @@ export const createStripeCheckoutSession = async (stripeCustomerId, userId, bill
       break;
   }
 
-  try {
-    const checkoutSession = await stripeInstance.checkout.sessions.create({
-      success_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=paid`,
-      line_items: [
-        {
-          price: price,
-          quantity: 1,
-        },
-      ],
-      customer_update: {
-        name: 'auto',
-        address: 'auto',
+  const checkoutSession = await stripeInstance.checkout.sessions.create({
+    success_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=paid`,
+    line_items: [
+      {
+        price: price,
+        quantity: 1,
       },
-      mode: 'subscription',
-      cancel_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=cancelled`,
-      client_reference_id: userId,
-      adaptive_pricing: {
-        enabled: true,
-      },
-      automatic_tax: {
-        enabled: true,
-      },
-      metadata: {
-        billingCycle: billingCycle,
-      },
-      customer: stripeCustomerId,
-      ui_mode: 'hosted',
-      allow_promotion_codes: true,
-      billing_address_collection: 'auto', //* Disable this for non-corporate users
-      tax_id_collection: { //* Disable this for non-corporate users
-        enabled: true,
-      },
-    });
+    ],
+    customer_update: {
+      name: 'auto',
+      address: 'auto',
+    },
+    mode: 'subscription',
+    cancel_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=cancelled`,
+    client_reference_id: userId,
+    adaptive_pricing: {
+      enabled: true,
+    },
+    automatic_tax: {
+      enabled: true,
+    },
+    metadata: {
+      billingCycle: billingCycle,
+    },
+    customer: stripeCustomerId,
+    ui_mode: 'hosted',
+    allow_promotion_codes: true,
+    billing_address_collection: 'auto', //* Disable this for non-corporate users
+    tax_id_collection: { //* Disable this for non-corporate users
+      enabled: true,
+    },
+  });
 
-    return checkoutSession;
-  } catch (error) {
-    logError('Error creating checkout session:', error);
-    throw error;
-  }
+  return checkoutSession;
 };
 
 //* Checkout Sessions are temporary. New Checkout Sessions expire after a 24 hour period.

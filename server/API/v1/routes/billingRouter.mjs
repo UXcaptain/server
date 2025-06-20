@@ -4,7 +4,7 @@ import {
   createStripeCustomerId,
   getStripeCustomerPortalUrl,
   getStripeCheckoutSessionUrl,
-  getSubscriptionData,
+  getBillingData,
 } from '../../../controllers/stripeController.mjs';
 
 export const billingRouter = Router();
@@ -13,7 +13,7 @@ export const billingRouter = Router();
 
 billingRouter.use(checkPermissionByRole('customer'));
 
-billingRouter.get('/check-subscription', getSubscriptionData);
+billingRouter.get('/', getBillingData);
 
 billingRouter.post('/create-stripe-customer-id', createStripeCustomerId);
 

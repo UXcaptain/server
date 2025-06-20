@@ -2,7 +2,7 @@ import { logError } from '../config/loggerFunctions.mjs';
 import { createStripeCustomerPortalSession } from '../integrations/stripe/customerPortalSession.mjs';
 import { createCustomerInStripe } from '../integrations/stripe/customer.mjs';
 import { createStripeCheckoutSession } from '../integrations/stripe/checkoutSession.mjs';
-import { getSubscriptionDataInDb, storeStripeCustomerIdInDb } from '../models/subscriptionModel.mjs';
+import { getBillingDataInDb, storeStripeCustomerIdInDb } from '../models/subscriptionModel.mjs';
 
 export const createStripeCustomerId = async (req, res) => {
   const {
@@ -76,7 +76,7 @@ export const getStripeCheckoutSessionUrl = async (req, res) => {
     } = req.user;
     const { requestedBillingCycle: billingCycle } = req.body;
 
-    const activeSubscription = await getSubscriptionDataInDb(internalUserId);
+    const activeSubscription = await getBillingDataInDb(internalUserId);
 
     if (activeSubscription) {
       const error = new Error('user tried to create an checkout session with an active subscriptions - should be blocked in the FE');
@@ -112,11 +112,11 @@ export const getStripeCheckoutSessionUrl = async (req, res) => {
   }
 };
 
-export const getSubscriptionData = async (req, res) => {
+export const getBillingData = async (req, res) => {
   const { id } = req.user;
 
   try {
-    const subscriptionData = await getSubscriptionDataInDb(id);
+    const subscriptionData = await getBillingDataInDb(id);
 
     res.status(200).json({
       success: true,
@@ -124,10 +124,10 @@ export const getSubscriptionData = async (req, res) => {
       subscriptionData: subscriptionData,
     });
   } catch (error) {
-    logError('error checking for active subscriptions', error);
+    logError('Failed retrieving billing data', error);
     res.status(500).json({
       success: false,
-      message: 'There was an error checking for active subscriptions',
+      message: 'Failed retrieving billing data',
     });
   }
 };

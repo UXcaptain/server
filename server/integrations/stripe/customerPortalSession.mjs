@@ -1,17 +1,11 @@
 import { stripeInstance } from '../../config/stripe.mjs';
-import { logError } from '../../config/loggerFunctions.mjs';
 
 export const createStripeCustomerPortalSession = async (stripeCustomerId) => {
-  try {
-    const customerPortalSession = await stripeInstance.billingPortal.sessions.create({
-      customer: stripeCustomerId,
-      return_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing`,
-    });
-    return customerPortalSession;
-  } catch (error) {
-    logError('Error creating customer portal session:', error);
-    throw error;
-  }
+  const customerPortalSession = await stripeInstance.billingPortal.sessions.create({
+    customer: stripeCustomerId,
+    return_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing`,
+  });
+  return customerPortalSession;
 };
 
 //* Portal sessions are temporary. New portal sessions expire after a 5 minute period.
