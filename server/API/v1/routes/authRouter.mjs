@@ -2,22 +2,19 @@ import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
   createUser,
-
   updateUserPassword,
-} from '../../../controllers/userController.mjs';
-import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
-import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
-import { userLoginValidationSchema } from '../../../utils/validators/userLoginValidationSchema.mjs';
-
-import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
-import { logError } from '../../../config/loggerFunctions.mjs';
-import {
   checkSession,
   requestPasswordResetToken,
   loginLocal,
   checkPasswordResetTokenValidity,
   updateRecoveredUserPassword,
 } from '../../../controllers/authController.mjs';
+import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
+import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
+import { userLoginValidationSchema } from '../../../utils/validators/userLoginValidationSchema.mjs';
+
+import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
+import { logError } from '../../../config/loggerFunctions.mjs';
 
 export const authRouter = Router();
 
