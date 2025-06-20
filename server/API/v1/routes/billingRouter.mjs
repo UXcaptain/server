@@ -7,20 +7,20 @@ import {
   getSubscriptionData,
 } from '../../../controllers/stripeController.mjs';
 
-export const stripeRouter = Router();
+export const billingRouter = Router();
 
 // TODO - fix authentication in tests
 
-stripeRouter.use(checkPermissionByRole('customer'));
+billingRouter.use(checkPermissionByRole('customer'));
 
-stripeRouter.get('/check-subscription', getSubscriptionData);
+billingRouter.get('/check-subscription', getSubscriptionData);
 
-stripeRouter.post('/create-stripe-customer-id', createStripeCustomerId);
+billingRouter.post('/create-stripe-customer-id', createStripeCustomerId);
 
-stripeRouter.post('/stripe-checkout-session', getStripeCheckoutSessionUrl);
+billingRouter.post('/stripe-checkout-session', getStripeCheckoutSessionUrl);
 
-stripeRouter.post('/stripe-customer-portal', getStripeCustomerPortalUrl);
+billingRouter.post('/stripe-customer-portal', getStripeCustomerPortalUrl);
 
-stripeRouter.use('/*fallback', (req, res) => {
+billingRouter.use('/*fallback', (req, res) => {
   res.status(404).send('The requested route is not available or does not exist'); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });
