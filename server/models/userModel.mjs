@@ -45,6 +45,21 @@ export const updateUserLastLoginDate = async (userId) => {
   return queryResult;
 };
 
+export const getUserPassword = async (userId) => {
+  const whereClause = {
+    id: userId,
+  };
+
+  const getUserPasswordQuery = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      password: true,
+    },
+  });
+
+  return getUserPasswordQuery;
+};
+
 export const getUserById = async (userId) => {
   const getUserByIdQuery = await prisma.user.findUnique({
     where: { id: userId },

@@ -9,6 +9,7 @@ import {
   createUserInDB,
   getUserById,
   deleteUserInDb,
+  getUserPassword,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
@@ -251,37 +252,32 @@ export const updateUserPassword = async (req, res) => {
   } = req.body;
 
   try {
-    const userId = req.user.id;
-    const user = await getUserById(userId);
+    const { id: userId } = req.user;
 
-    if (user === null) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found',
-      });
-    }
-    const storedPasswordHash = user.password;
+    const currentHashedPasswordQuery = await getUserPassword(userId);
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const { password: currentHashedPassword } = currentHashedPasswordQuery;
 
     // Compare current password with stored hash
-    const isMatch = await bcrypt.compare(currentPassword, storedPasswordHash);
+    const isMatch = await bcrypt.compare(currentPassword, currentHashedPassword);
 
     if (!isMatch) {
       return res.status(400).json({
         success: false,
-        message: 'Password update failed - old password is incorrect',
+        message: 'Current password is incorrect',
       });
     }
 
+    // Hash the new password
+    const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
     // Update password in database
-    const updatedUser = await updateUserPasswordInDB(userId, hashedPassword);
+    const updatedUser = await updateUserPasswordInDB(userId, newHashedPassword);
 
     return res.status(200).json({
       success: true,
       message: 'Password updated successfully',
-      result: updatedUser,
+      userId: updatedUser.id,
     });
   } catch (error) {
     logError('Password update failed', error);
@@ -292,7 +288,7 @@ export const updateUserPassword = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res) => { //! ERR_LENGTH_MISSMATCH error - need to fix this
   try {
     await deleteUserInDb(req.user.id);
 
