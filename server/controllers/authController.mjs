@@ -1,12 +1,13 @@
+import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
 import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
 
-import { getUserByEmail } from '../models/userModel.mjs';
-import { createPasswordResetToken } from '../models/passwordResetTokensModel.mjs';
+import { getUserByEmail, updateUserPasswordInDB } from '../models/userModel.mjs';
+import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
 
-export const forgotPasswordRequest = async (req, res) => {
+export const requestPasswordResetToken = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -18,6 +19,8 @@ export const forgotPasswordRequest = async (req, res) => {
       await sendResetPasswordTokenToUser(email, tokenCreation.id);
     }
 
+    //* Not checking / notifying for user existence to prevent security leaks
+
     return res.status(200).json({
       success: true,
       message: 'If this email exists, a reset link will be sent',
@@ -28,6 +31,106 @@ export const forgotPasswordRequest = async (req, res) => {
       success: false,
       message: 'An error occurred, please try again later',
       error: error,
+    });
+  }
+};
+
+export const checkPasswordResetTokenValidity = async (req, res) => {
+  try {
+    const { passwordResetToken } = req.query;
+
+    if (!passwordResetToken) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token is required',
+      });
+    }
+
+    const passwordResetTokenData = await getPasswordResetTokenData(passwordResetToken);
+
+    if (!passwordResetTokenData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Password reset token does not exist',
+      });
+    }
+
+    const {
+      token_expires: tokenExpirationDate,
+    } = passwordResetTokenData;
+
+    if (new Date(tokenExpirationDate) < new Date()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Token expired - Please request a new password reset link',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Successfully retrieved password reset token',
+      tokenData: passwordResetTokenData,
+    });
+  } catch (error) {
+    logError('Failed retrieving password reset token', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Token expiration date retrieval failed',
+    });
+  }
+};
+
+export const updateRecoveredUserPassword = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: req.sanitizedErrors,
+    });
+  }
+
+  try {
+    const {
+      newPassword,
+      confirmNewPassword,
+      passwordResetToken,
+    } = req.body;
+
+    const passwordResetTokenData = await getPasswordResetTokenData(passwordResetToken);
+
+    const {
+      user_id: userId,
+      tokenExpires,
+    } = passwordResetTokenData;
+
+    if (new Date(tokenExpires) < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Token expired - Please request a new password reset link',
+      });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Passwords do not match',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await updateUserPasswordInDB(userId, hashedPassword);
+
+    await deletePasswordResetTokens(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: 'User password updated successfully using password reset token',
+    });
+  } catch (error) {
+    logError('Error updating user password', error);
+    return res.status(500).json({
+      success: false,
+      message: 'An error occurred, please try again later',
     });
   }
 };

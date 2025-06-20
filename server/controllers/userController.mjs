@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import { User } from '../utils/classes/User.mjs';
 import {
   createUserInDB,
@@ -7,7 +6,6 @@ import {
   deleteUserInDb,
   updateUserPasswordInDB,
 } from '../models/userModel.mjs';
-import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
@@ -107,113 +105,6 @@ export const createUser = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'User creation failed - Please try again in a few minutes',
-    });
-  }
-};
-
-export const checkPasswordResetTokenExpirationDate = async (req, res) => {
-  try {
-    const { token } = req.query;
-
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token is required',
-      });
-    }
-
-    const passwordResetTokenData = await getPasswordResetTokenData(token);
-
-    if (!passwordResetTokenData) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token not found',
-      });
-    }
-
-    const {
-      token_expires: tokenExpirationDate,
-    } = passwordResetTokenData;
-
-    if (new Date(tokenExpirationDate) < new Date()) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token expired - Please request a new password reset link',
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Token is valid',
-      tokenData: passwordResetTokenData,
-    });
-  } catch (error) {
-    logError('Token expiration date retrieval failed', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Token expiration date retrieval failed',
-    });
-  }
-};
-
-export const updateRecoveredUserPassword = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(422).json({
-      success: false,
-      message: req.sanitizedErrors,
-    });
-  }
-
-  try {
-    const {
-      newPassword,
-      confirmNewPassword,
-      token,
-    } = req.body;
-
-    const passwordResetTokenData = await getPasswordResetTokenData(token);
-
-    if (!passwordResetTokenData) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid token',
-      });
-    }
-
-    const {
-      userId,
-      tokenExpires,
-    } = passwordResetTokenData;
-
-    if (new Date(tokenExpires) < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Token expired - Please request a new password reset link',
-      });
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Passwords do not match',
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    await updateUserPasswordInDB(userId, hashedPassword);
-
-    await deletePasswordResetTokens(userId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Password updated successfully',
-    });
-  } catch (error) {
-    logError('Error updating user password', error);
-    return res.status(500).json({
-      success: false,
-      message: 'An error occurred, please try again later',
     });
   }
 };

@@ -17,10 +17,12 @@ export const createPasswordResetToken = async (userId) => {
 };
 
 export const getPasswordResetTokenData = async (token) => {
+  const whereClause = {
+    id: token,
+  };
+
   const getPasswordResetTokenDataQuery = await prisma.password_reset_tokens.findFirst({
-    where: {
-      id: token,
-    },
+    where: whereClause,
   });
 
   return getPasswordResetTokenDataQuery;
@@ -28,10 +30,12 @@ export const getPasswordResetTokenData = async (token) => {
 
 export const deletePasswordResetTokens = async (userId) => {
   try {
+    const whereClause = {
+      user_id: userId,
+    };
+
     const deleteResult = await prisma.password_reset_tokens.deleteMany({
-      where: {
-        user_id: userId,
-      },
+      where: whereClause,
     });
 
     return {
@@ -46,11 +50,13 @@ export const deletePasswordResetTokens = async (userId) => {
 };
 
 export const deleteExpiredPasswordResetTokens = async () => {
-  await prisma.password_reset_tokens.deleteMany({
-    where: {
-      token_expires: {
-        lt: new Date(),
-      },
+  const whereClause = {
+    token_expires: {
+      lt: new Date(),
     },
+  };
+
+  await prisma.password_reset_tokens.deleteMany({
+    where: whereClause,
   });
 };

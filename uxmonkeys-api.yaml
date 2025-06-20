@@ -229,10 +229,7 @@ paths:
                             email:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
         responses:
             201:
                 description: Success
@@ -306,10 +303,7 @@ paths:
                             email:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
         responses:
             200:
                 description: Success
@@ -390,15 +384,9 @@ paths:
                           - newPassword
                         properties:
                             currentPassword:
-                                type: string
-                                format: password
-                                example: 123456
-
+                                $ref: "#/components/schemas/UserPassword"
                             newPassword:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
       responses:
         200:
                 description: Success
@@ -411,8 +399,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
-                                example: Password updated successfully
-             
+                                example: Password updated successfully  
         400:
               description: Password update failed - old password is incorrect
               content:
@@ -469,24 +456,183 @@ paths:
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/validate-password-reset-token:
+  /v1/auth/password-reset:
     get:
       summary: Validate the password reset token
       description: Validate the password reset token.
       tags: ["auth"]
+      parameters:
+          - name: token
+            in: query
+            description: Indicates the status of token
+            required: true
+            schema: 
+                $ref: "#/components/schemas/PasswordResetToken"
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Successfully retrieved password reset token
+        400:
+          description: Password reset token has not been provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Password reset token not provided 
+        403:
+          description: Password reset token is expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Token expired - Please request a new password reset link 
+        404:
+          description: Password reset token was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Password reset token does not exist 
+        
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/request-new-password:
     post:
       summary: Request a new password reset token
       description: Request a new password reset token for the user.
       tags: ["auth"]
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+                type: object
+                required:
+                  - email
+                properties:
+                      email:
+                        $ref: '#/components/schemas/UserEmail'
+      
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: If this email exists, a reset link will be sent
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/create-new-user-password:
     patch:
-      summary: Create a new password for the user using the password reset token
+      summary: Update user password using password reset token
       tags: ["auth"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  newPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  confirmNewPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  passwordResetToken:
+                      $ref: "#/components/schemas/PasswordResetToken"
+
+
+      responses:
+        200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessTrueStatus"
+                    message:
+                      type: string
+                      example: User password updated successfully using password reset token
+        422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  Analysis could not be created due to validation errors
+                                ]
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
   /v1/user:
     get:
@@ -1094,6 +1240,20 @@ components:
       description: The email address of the user
       examples: [
         username@gmail.com
+      ]
+
+    UserPassword:
+      type: string
+      format: password
+      description: user password
+      example: 123456
+
+    PasswordResetToken:
+      type: string
+      format: uuid
+      description: Token for restoring password
+      examples: [
+        9f4398c9-c049-40dd-85f7-28d04eb7b3ae
       ]
 
     InternalErrorMessage:

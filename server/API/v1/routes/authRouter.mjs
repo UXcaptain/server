@@ -1,9 +1,8 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
-  checkPasswordResetTokenExpirationDate,
   createUser,
-  updateRecoveredUserPassword,
+
   updateUserPassword,
 } from '../../../controllers/userController.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
@@ -12,7 +11,13 @@ import { userLoginValidationSchema } from '../../../utils/validators/userLoginVa
 
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
 import { logError } from '../../../config/loggerFunctions.mjs';
-import { checkSession, forgotPasswordRequest, loginLocal } from '../../../controllers/authController.mjs';
+import {
+  checkSession,
+  requestPasswordResetToken,
+  loginLocal,
+  checkPasswordResetTokenValidity,
+  updateRecoveredUserPassword,
+} from '../../../controllers/authController.mjs';
 
 export const authRouter = Router();
 
@@ -36,11 +41,11 @@ authRouter.post('/register/local', checkSchema(createUserValidationSchema), sani
 
 authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
 
-authRouter.get('/validate-password-reset-token', checkPasswordResetTokenExpirationDate);
+authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
-authRouter.post('/request-new-password', forgotPasswordRequest);
+authRouter.post('/password-reset', requestPasswordResetToken);
 
-authRouter.patch('/create-new-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateRecoveredUserPassword);
+authRouter.patch('/password-reset', checkSchema(updatePasswordSchema), sanitizerResult, updateRecoveredUserPassword);
 
 authRouter.get('/check-session', checkSession);
 
