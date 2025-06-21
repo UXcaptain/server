@@ -104,7 +104,7 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Stripe`s checkout session generated successfully',
+      message: 'Billing checkout session generated successfully',
       checkoutSessionUrl: url,
     });
   } catch (error) {

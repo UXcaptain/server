@@ -880,7 +880,7 @@ paths:
                           message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis/{AnalisisId}:
+  /v1/analysis/{AnalysisId}:
     get:
       summary: Retrieve one analysis
       description: Retrieve all analysis details for a given analysis.
@@ -1071,8 +1071,8 @@ paths:
 
   /v1/billing/checkout-session:
     post:
-      summary: Creates a billing portal checkout session
-      description: Creates a stripe customer ID for the currently authenticated user
+      summary: Creates a billing checkout session
+      description: Creates a billing checkout session for the currently authenticated user
       tags: ["billing"]
       requestBody:
         content:
@@ -1102,12 +1102,12 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Customer created successfully
+                            Billing checkout session generated successfully
                           ]
-                        StripeCustomerId:
-                          $ref: '#/components/schemas/StripeCustomerId'
-        403:
-          description: Customer already has a stripe customer id
+                        checkoutSessionUrl:
+                          $ref: '#/components/schemas/BillingCheckoutSessionUrl'
+        500:
+          description: Unexpected error
           content:
             application/json:
               schema:
@@ -1116,14 +1116,32 @@ paths:
                               success:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
-                                type: string
-                                examples: [
-                                  customer already has a stripe customer id
-                                ]
-                              StripeCustomerId:
-                                $ref: '#/components/schemas/StripeCustomerId'
-        
-        
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing/customer-portal:
+    post:
+      summary: Creates a billing portal
+      description: Creates a billing checkout session for the currently authenticated user
+      tags: ["billing"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Billing checkout session generated successfully
+                          ]
+                        customerPortalUrl:
+                          $ref: '#/components/schemas/BillingCustomerPortalUrl'
         500:
           description: Unexpected error
           content:
@@ -1453,8 +1471,6 @@ components:
         enterprise
       ]
 
-
-
     BillingPlanStatus:
       type: string
       enum: [active, refunded, cancelled]
@@ -1465,7 +1481,21 @@ components:
         cancelled
       ]
 
+    BillingCheckoutSessionUrl:
+      type: string
+      format: url
+      description: Indicates the checkout session URL provided by the billing partner
+      examples: [
+        https://checkout.stripe.com/c/pay/cs_test_b1hyOpSnwbXh52Fd7u33UIgaiUayRJPKj2ByJWknbODW0T83p9f2RQYeyj#fid2cGd2ZndsdXFsamtQa2x0cGBrYHZ2QGtkZ2lgYSc%2FY2RpdmApJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXPHJcXDFAUW13UU02QHFhXzFQZEZoVGlHVU9fNVBMVkpdVUl%2FU0Jrb3Z3Zkl1YT1gZktmajY8f2hwU0ZhUjJAZjFMfTNSXGFrfWtoUkoxfERiS1VOT2Y1NWhHf21WUnBsJyknY3dqaFZgd3Ngdyc%2FcXdwYCknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl
+      ]
 
+    BillingCustomerPortalUrl:
+      type: string
+      format: url
+      description: Indicates the billing portal URL provided by the billing partner
+      examples: [
+        https://billing.stripe.com/p/session/test_YWNjdF8xUjl3WVk0RVRoclRIM0V0LF9TWGRGSnZnZFNVa1l2M3FZZEJwTzRrYllnWFBiZXVU01008zqe7Luk
+      ]
 
     InternalErrorMessage:
       type: string
