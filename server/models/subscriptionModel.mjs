@@ -12,12 +12,11 @@ export const storeSubscriptionInDb = async (subscriptionData) => {
       },
       plan_name: subscriptionData.planType || 'basic',
       status: subscriptionData.status,
-
     },
   });
 };
 
-export const storeStripeCustomerIdInDb = async (userId, stripeCustomerId) => {
+export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
   const whereClause = {
     id: userId,
   };
@@ -49,20 +48,31 @@ export const markSubscriptionAsCancelledInDb = async (cancelData) => {
 export const getBillingDataInDb = async (userId) => {
   const whereClause = {
     id: userId,
-    // AND: [
-    //   {
-    //   },
-      // {
-      //   status: 'active',
-      // },
-    // ],
-
   };
 
   const billingData = await prisma.user.findUnique({
     where: whereClause,
+    omit: {
+      id: true,
+      email: true,
+      role: true,
+      created_at: true,
+      last_updated_at: true,
+      last_login_at: true,
+      password: true,
+    },
     include: {
-      subscriptions: true,
+      Subscription: {
+        omit: {
+          id: true,
+          user_id: true,
+          created_at: true,
+          updated_at: true,
+        },
+        where: {
+          status: 'active',
+        },
+      },
     },
   });
   return billingData;

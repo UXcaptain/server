@@ -1,30 +1,28 @@
-import { logError } from '../../config/loggerFunctions.mjs';
 import { stripeInstance } from '../../config/stripe.mjs';
 
-export const createStripeCheckoutSession = async (stripeCustomerId, userId, billingCycle) => {
-  let price;
+export const createStripeCheckoutSession = async (
+  stripeCustomerId,
+  userId,
+  planName,
+  planBillingCycle,
+) => {
+  const priceIdsProd = {
+    basicmonthly: 'price_1RcXRcKwyQnTsu7pzA3sHJ0i',
+    basicannual: 'price_1RcXRcKwyQnTsu7p7MQDyGL5',
+    // proMonthly: 'price_1RBxMl4EThrTH3EtJfelo9Dp',
+    // proAnnual: 'price_1RBxMl4EThrTH3EtJfelo9Dp',
+  };
 
-  switch (billingCycle) {
-    case 'monthly':
-      price = process.env.STRIPE_MONTHLY_PRICE_ID;
-      break;
-    // case 'biannual': //* CURRENTLY NOT USED
-    //   price = process.env.STRIPE_BIANNUAL_PRICE_ID;
-    //   break;
-    case 'annual':
-      price = process.env.STRIPE_ANNUAL_PRICE_ID;
-      break;
-    default:
-      price = process.env.STRIPE_MONTHLY_PRICE_ID; // Default to monthly if no plan type is provided
-      logError('No plan type provided. Defaulting to monthly.');
-      break;
-  }
+  const priceIdsDev = {
+    basicmonthly: 'price_1RcXYn4EThrTH3EtBV4SNesj',
+    basicannual: 'price_1RcXZ64EThrTH3EtiQQB7i36',
+  };
 
   const checkoutSession = await stripeInstance.checkout.sessions.create({
     success_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=paid`,
     line_items: [
       {
-        price: price,
+        price: process.NODE_ENV === 'production' ? priceIdsProd[`${planName}${planBillingCycle}`] : priceIdsDev[`${planName}${planBillingCycle}`],
         quantity: 1,
       },
     ],
@@ -42,7 +40,8 @@ export const createStripeCheckoutSession = async (stripeCustomerId, userId, bill
       enabled: true,
     },
     metadata: {
-      billingCycle: billingCycle,
+      planName: planName,
+      planBillingCycle: planBillingCycle,
     },
     customer: stripeCustomerId,
     ui_mode: 'hosted',

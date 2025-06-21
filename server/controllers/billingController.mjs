@@ -1,10 +1,11 @@
 import { logError } from '../config/loggerFunctions.mjs';
 import { createStripeCustomerPortalSession } from '../integrations/stripe/customerPortalSession.mjs';
-import { createCustomerInStripe } from '../integrations/stripe/customer.mjs';
+import { createCustomerInStripe } from '../integrations/stripe/customerId.mjs';
 import { createStripeCheckoutSession } from '../integrations/stripe/checkoutSession.mjs';
-import { getBillingDataInDb, storeStripeCustomerIdInDb } from '../models/subscriptionModel.mjs';
+import { getBillingDataInDb, storeBillingCustomerIdInDb } from '../models/subscriptionModel.mjs';
+import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
-export const createStripeCustomerId = async (req, res) => {
+export const createBillingCustomerId = async (req, res) => {
   const {
     email,
     id: userId,
@@ -12,9 +13,9 @@ export const createStripeCustomerId = async (req, res) => {
   } = req.user;
 
   if (stripeCustomerId) {
-    return res.status(200).json({
+    return res.status(400).json({
       success: false,
-      message: 'Customer already exists',
+      message: 'customer already has a stripe customer id',
       stripeCustomerId: stripeCustomerId,
     });
   }
@@ -24,7 +25,7 @@ export const createStripeCustomerId = async (req, res) => {
 
     const { id: createdStripeCustomerId } = customerCreationQuery;
 
-    await storeStripeCustomerIdInDb(
+    await storeBillingCustomerIdInDb(
       userId,
       customerCreationQuery.id,
     );
@@ -44,7 +45,7 @@ export const createStripeCustomerId = async (req, res) => {
   }
 };
 
-export const getStripeCustomerPortalUrl = async (req, res) => {
+export const getBillingCustomerPortalUrl = async (req, res) => {
   try {
     const {
       stripe_customer_id: stripeCustomerId,
@@ -68,21 +69,21 @@ export const getStripeCustomerPortalUrl = async (req, res) => {
   }
 };
 
-export const getStripeCheckoutSessionUrl = async (req, res) => {
+export const getBillingCheckoutSessionUrl = async (req, res) => {
   try {
     const {
       stripe_customer_id: stripeCustomerId,
       id: internalUserId,
     } = req.user;
-    const { requestedBillingCycle: billingCycle } = req.body;
 
-    const activeSubscription = await getBillingDataInDb(internalUserId);
+    const billingData = await getBillingDataInDb(internalUserId);
 
-    if (activeSubscription) {
-      const error = new Error('user tried to create an checkout session with an active subscriptions - should be blocked in the FE');
-      error.name = 'Create checkout session error';
+    const { Subscription: activeSubscription } = billingData;
 
-      logError('user tried to create a checkout session with an active subscription', error);
+    if (activeSubscription.length >= 1) {
+      const error = new Error('Create checkout session error');
+
+      logError('user tried to create a checkout session with an active subscription - should be blocked in the frontend', error);
 
       return res.status(403).json({
         success: false,
@@ -90,10 +91,13 @@ export const getStripeCheckoutSessionUrl = async (req, res) => {
       });
     }
 
+    const { planName, planBillingCycle } = req.body;
+
     const checkoutSession = await createStripeCheckoutSession(
       stripeCustomerId,
       internalUserId,
-      billingCycle,
+      planName,
+      planBillingCycle,
     );
 
     const { url } = checkoutSession;
@@ -123,7 +127,7 @@ export const getBillingData = async (req, res) => {
     if (cachedBillingData) {
       return res.status(200).json({
         success: true,
-        message: 'user profile retrieved successfully - cache',
+        message: 'Billing data retrieved successfully - cache',
         cacheKey: cacheKey,
         cacheTTL_seconds: await getTTLfromCache(cacheKey),
         billingData: JSON.parse(cachedBillingData),
@@ -136,7 +140,7 @@ export const getBillingData = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: 'Successfully fetched user subscriptions',
+      message: 'Billing data retrieved successfully - DB',
       billingData: billingData,
     });
   } catch (error) {

@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
 import {
-  createStripeCustomerId,
-  getStripeCustomerPortalUrl,
-  getStripeCheckoutSessionUrl,
+  createBillingCustomerId,
+  getBillingCustomerPortalUrl,
+  getBillingCheckoutSessionUrl,
   getBillingData,
-} from '../../../controllers/stripeController.mjs';
+} from '../../../controllers/billingController.mjs';
 
 export const billingRouter = Router();
 
@@ -15,11 +15,11 @@ billingRouter.use(checkPermissionByRole('customer'));
 
 billingRouter.get('/', getBillingData);
 
-billingRouter.post('/create-stripe-customer-id', createStripeCustomerId);
+billingRouter.post('/', createBillingCustomerId);
 
-billingRouter.post('/stripe-checkout-session', getStripeCheckoutSessionUrl);
+billingRouter.post('/checkout-session', getBillingCheckoutSessionUrl);
 
-billingRouter.post('/stripe-customer-portal', getStripeCustomerPortalUrl);
+billingRouter.post('/customer-portal', getBillingCustomerPortalUrl);
 
 billingRouter.use('/*fallback', (req, res) => {
   res.status(404).send('The requested route is not available or does not exist'); //* Will catch failed requests even though they are authenticated & have the appropiate role
