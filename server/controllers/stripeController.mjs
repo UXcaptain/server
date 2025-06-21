@@ -115,17 +115,33 @@ export const getStripeCheckoutSessionUrl = async (req, res) => {
 export const getBillingData = async (req, res) => {
   const { id } = req.user;
 
-  try {
-    const subscriptionData = await getBillingDataInDb(id);
+  const cacheKey = `billing-${id}`;
 
-    res.status(200).json({
+  try {
+    const cachedBillingData = await getFromCache(cacheKey);
+
+    if (cachedBillingData) {
+      return res.status(200).json({
+        success: true,
+        message: 'user profile retrieved successfully - cache',
+        cacheKey: cacheKey,
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
+        billingData: JSON.parse(cachedBillingData),
+      });
+    }
+
+    const billingData = await getBillingDataInDb(id);
+
+    await storeInCache(cacheKey, billingData, 60 * 5); //* Cache for 5 minutes
+
+    return res.status(200).json({
       success: true,
       message: 'Successfully fetched user subscriptions',
-      subscriptionData: subscriptionData,
+      billingData: billingData,
     });
   } catch (error) {
     logError('Failed retrieving billing data', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed retrieving billing data',
     });
