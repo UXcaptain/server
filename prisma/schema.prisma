@@ -55,6 +55,7 @@ model Subscription {
   // Subscription information
   plan_name String
   status    String // active, refunded, cancelled
+  billing_cycle String // monthly, bianually, annual
 
   // Timestamps - createdAt and updatedAt are automatically managed by Prisma
   created_at DateTime @default(now())
