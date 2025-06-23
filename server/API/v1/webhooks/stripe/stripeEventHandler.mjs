@@ -1,17 +1,23 @@
 import { logError } from '../../../../config/loggerFunctions.mjs';
 import { posthogUserPaymentCompleted } from '../../../../models/posthogModel.mjs';
 import { markSubscriptionAsCancelledInDb, storeSubscriptionInDb } from '../../../../models/subscriptionModel.mjs';
+import { stripeInstance } from '../../../../config/stripe.mjs';
 
-export const stripeEventHandler = async (req, res) => { // * Should probably add a
-// * more specific name but cant think of any since all the stripe
-// * events are handled in this function
+export const stripeEventHandler = async (req, res) => {
   try {
-    const event = req.body;
+    let event;
+    const stripeSignature = req.headers['stripe-signature']; // TODO - CHECK WHAT THESE DO
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    try {
+      event = stripeInstance.webhooks.constructEvent(req.body, stripeSignature, endpointSecret);
+    } catch (err) {
+      logError('error in stripe webhook', err); // Log the error to the console
+      res.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
 
     // console.log('Stripe event received:', event.type); //* Use for debugging incoming events
-
-    // const stripeSignature = req.headers['stripe-signature'];
-    // const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     switch (event.type) {
       case 'checkout.session.completed':
@@ -87,7 +93,8 @@ export const stripeEventHandler = async (req, res) => { // * Should probably add
         // case 'invoice.payment_failed':
         //   // Sent when an invoice payment attempt fails.
         //   // This can happen for various reasons, such as insufficient funds or an expired card.
-        //   // notify users about the failed payment and prompting them to update their payment method.
+        //   // notify users about the failed payment and
+        // prompting them to update their payment method.
         //   // TODO -- send an email to the user about the failed payment
         //   break;
 
@@ -97,7 +104,7 @@ export const stripeEventHandler = async (req, res) => { // * Should probably add
         // Useful for notifying users about the refund.
         // TODO -- send an email to the user about the refund
         // TODO -- update the user subscription status in the database
-        break;
+        // break;
 
       // ... handle other event types
       default:
