@@ -10,6 +10,7 @@ import { indexRouter } from './routers/indexRouter.mjs';
 import { limiter } from './middlewares/express-rate-limiter.mjs';
 import { slowLimiter } from './middlewares/express-slow-down.mjs';
 import { startCronJobs } from './cron/jobsContainer.mjs';
+import { globalErrorHandler } from './middlewares/globalErrorHandler.mjs';
 
 const app = express();
 const server = createServer(app);
@@ -36,11 +37,7 @@ app.use('/api/', apiRouter);
 app.use('/', indexRouter);
 
 //* Middleware to catch & handle errors
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).send(err.message);
-
-  next();
-});
+app.use(globalErrorHandler);
 
 //* Start the server
 server.listen(process.env.PORT, () => {
