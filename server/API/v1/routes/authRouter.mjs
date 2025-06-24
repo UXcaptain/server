@@ -33,7 +33,7 @@ authRouter.post('/password-reset', requestPasswordResetToken);
 
 authRouter.patch('/password-reset', checkSchema(recoverPasswordSchema), sanitizerResult, updateRecoveredUserPassword);
 
-authRouter.get('/check-session', checkSession);
+authRouter.get('/session', checkSession);
 
 authRouter.get('/*fallback', (req, res) => {
   res.status(404).send('requested API Route does not exist in the userRouter');

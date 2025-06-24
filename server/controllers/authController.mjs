@@ -7,7 +7,6 @@ import { User } from '../utils/classes/User.mjs';
 import {
   getUserByEmail, updateUserPasswordInDB,
   createUserInDB,
-  getUserById,
   deleteUserInDb,
   getUserPassword,
 } from '../models/userModel.mjs';

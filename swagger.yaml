@@ -209,7 +209,51 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
-    
+
+  /v1/auth/session:
+    get:
+      summary: Checks if the session is active
+      description: Checks if the session is active for a given UserId
+      tags: ["auth"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Session is valid
+                          ]
+                        user:
+                            type: object
+                            properties:
+                              id:
+                                $ref: '#/components/schemas/UserId'
+                              role:
+                                $ref: '#/components/schemas/UserRoles'
+        401:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  Session is invalid
+                                ]
+
   /v1/auth/register/local:
     post:
 
