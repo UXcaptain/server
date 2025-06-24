@@ -1,6 +1,5 @@
 import { Router } from 'express';
 
-import { stripeEventHandler } from './v1/webhooks/stripe/stripeEventHandler.mjs';
 import { userRouter } from './v1/routes/userRouter.mjs';
 
 import { authRouter } from './v1/routes/authRouter.mjs';
@@ -10,8 +9,6 @@ import { analysisRouter } from './v1/routes/analysisRouter.mjs';
 import { authenticationChecker } from '../middlewares/authenticationChecker.mjs';
 
 export const apiRouter = Router();
-
-apiRouter.post('/v1/webhooks/stripe', stripeEventHandler);
 
 // Auth protected routes
 apiRouter.use(authenticationChecker);
