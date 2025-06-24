@@ -368,6 +368,53 @@ paths:
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
+  /v1/auth/logout:
+    post:
+        summary: Local strategy logout  route
+        description: Logs out a currently authenticated user using local strategy.
+        tags: ["auth"]
+
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  User logged out successfully
+                                ]
+            400:
+              description: User is not logged in
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                  type: string
+                                  examples: [
+                                    User is not logged in
+                                  ]
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
   /v1/auth/update-user-password:
     patch:
       summary: Update the password of a user

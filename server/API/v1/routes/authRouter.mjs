@@ -8,32 +8,20 @@ import {
   loginLocal,
   checkPasswordResetTokenValidity,
   updateRecoveredUserPassword,
+  logoutUser,
 } from '../../../controllers/authController.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
 import { userLoginValidationSchema } from '../../../utils/validators/userLoginValidationSchema.mjs';
 
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
-import { logError } from '../../../config/loggerFunctions.mjs';
 import { recoverPasswordSchema } from '../../../utils/validators/recoverPasswordSchema.mjs';
 
 export const authRouter = Router();
 
 authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-authRouter.post('/logout', (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      logError('User logout failed', err);
-      return next(err);
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'User logged out successfully',
-    });
-  });
-});
+authRouter.post('/logout', logoutUser);
 
 authRouter.post('/register/local', checkSchema(createUserValidationSchema), sanitizerResult, createUser);
 

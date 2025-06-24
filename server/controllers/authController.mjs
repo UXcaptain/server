@@ -312,3 +312,24 @@ export const deleteUser = async (req, res) => { //! ERR_LENGTH_MISSMATCH error -
     });
   }
 };
+
+export const logoutUser = (req, res, next) => {
+  if (!req.user) {
+    return res.status(400).json({
+      success: false,
+      message: 'User is not logged in',
+    });
+  }
+
+  return req.logout((err) => {
+    if (err) {
+      logError('User logout failed', err);
+      return next(err);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'User logged out successfully',
+    });
+  });
+};
