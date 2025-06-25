@@ -42,5 +42,6 @@ module.exports = {
     'import/extensions': 'off',
     'object-shorthand': 'off',
     'import/no-relative-packages': 'off',
+    'no-case-declarations': 'off',
   },
 };
