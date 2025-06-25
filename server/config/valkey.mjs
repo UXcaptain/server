@@ -59,3 +59,13 @@ export const getTTLfromCache = async (key) => {
     return null;
   }
 };
+
+export const removeFromCache = async (key) => {
+  try {
+    const result = await valkeyClient.del(key);
+    return result;
+  } catch (error) {
+    logError('Error removing from cache', error);
+    return null;
+  }
+};
