@@ -51,14 +51,34 @@ export const posthogUserLoggedOut = async (distinctId) => {
   }
 };
 
-export const posthogUserPaymentCompleted = async (distinctId) => {
+export const posthogUserSubscriptionCreated = async (distinctId) => {
   try {
     client.capture({
       distinctId: `${distinctId}`,
-      event: 'paymentCompleted',
+      event: 'subscriptionCreated',
+      properties: {
+        $set: {
+          planName: 'basic',
+          planBillingCycle: 'monthly',
+        },
+
+      },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'paymentCompleted');
+    logError('error sending event to posthog', error, 'subscriptionCreated');
+  } finally {
+    client.shutdown();
+  }
+};
+
+export const posthogUserSubscriptionCancelled = async (distinctId) => {
+  try {
+    client.capture({
+      distinctId: `${distinctId}`,
+      event: 'subscriptionCancelled',
+    });
+  } catch (error) {
+    logError('error sending event to posthog', error, 'subscriptionCanceled');
   } finally {
     client.shutdown();
   }
