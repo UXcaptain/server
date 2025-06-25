@@ -9,6 +9,7 @@ import {
   createUserInDB,
   deleteUserInDb,
   getUserPassword,
+  updateUserLastLoginDate,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
@@ -184,8 +185,11 @@ export const loginLocal = async (req, res, next) => {
         });
       }
 
-      posthogUserSuccessLoggedIn(user.id, 'local');
       // Successful login
+      posthogUserSuccessLoggedIn(user.id, 'local');
+
+      updateUserLastLoginDate(user.id);
+
       return res.status(200).json({
         success: true,
         message: 'Login successful',

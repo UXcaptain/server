@@ -1,5 +1,6 @@
 import {
-  TimeoutError, TimeUnit, GlideClient, Logger,
+  TimeUnit,
+  GlideClient,
 } from '@valkey/valkey-glide';
 import { logError } from './loggerFunctions.mjs';
 // When Valkey is in standalone mode,
