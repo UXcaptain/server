@@ -8,14 +8,14 @@ export const posthogUserSignedUp = async (user) => {
       event: 'userSignedUp',
       properties: {
         $set: {
-        //   userEmail: user.userDetails.email,
-        //* Not needed for now and its safer in regards to GDPR
-          userRole: user.role,
+          email: user.email,
+          role: user.role,
         },
       },
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'userSignedUp');
+    return;
   } finally {
     await client.shutdown();
   }
