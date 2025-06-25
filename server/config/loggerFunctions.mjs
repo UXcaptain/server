@@ -33,7 +33,7 @@ export const logPasswordResetTokenCreated = (userId) => {
       },
     },
   });
-}
+};
 
 export const logUserLoggedOut = (userId) => {
   logger.info({
