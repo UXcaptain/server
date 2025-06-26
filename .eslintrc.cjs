@@ -43,5 +43,6 @@ module.exports = {
     'object-shorthand': 'off',
     'import/no-relative-packages': 'off',
     'no-case-declarations': 'off',
+    'max-len': 'off',
   },
 };
