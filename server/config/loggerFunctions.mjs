@@ -24,11 +24,33 @@ export const logUserCreatedInDB = (userId, user) => {
   });
 };
 
+export const logPasswordResetTokenCreated = (userId) => {
+  logger.info({
+    message: 'User password reset token succesfully created in database',
+    context: {
+      userData: {
+        userId: userId,
+      },
+    },
+  });
+};
+
 export const logUserLoggedOut = (userId) => {
   logger.info({
     message: 'User logged out successfully',
     context: {
       userId: userId,
+    },
+  });
+};
+
+export const logUserDeleted = async (userId) => {
+  logger.info({
+    message: 'User succesfully deleted in database',
+    context: {
+      userData: {
+        userId: userId,
+      },
     },
   });
 };

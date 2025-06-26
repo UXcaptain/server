@@ -29,8 +29,6 @@ model User {
   Password_reset_tokens Password_reset_tokens[]
   Analysis              Analysis[]
   AnalysisRequests      AnalysisEntries[]
-
-  @@index([id, email])
 }
 
 model Password_reset_tokens {
@@ -48,25 +46,16 @@ model Session {
   expiresAt DateTime
 }
 
-enum userRoles {
-  customer
-  admin
-}
 
 model Subscription {
-  id      Int    @id @default(autoincrement())
+  id      String    @id
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
 
-  // Subscription information
-  plan_name String
-  status    String // active, refunded, cancelled
-
   // Timestamps - createdAt and updatedAt are automatically managed by Prisma
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 
-  @@index([user_id, status])
+  @@index([user_id])
 }
 
 model Analysis {
@@ -84,20 +73,7 @@ model Analysis {
   max_number_of_participants Int
   entries                    AnalysisEntries[]
 
-  @@index([owner_id])
-}
-
-enum AnalysisDevice {
-  computer
-  mobile
-  tablet
-  other
-}
-
-enum analysisStatus {
-  draft // analysis has been created but not yet published
-  published // analysis has been published and participants can join the analysis
-  completed // analysis has been completed and no more participants are accepted
+  @@index([owner_id]) // Not a unique field, but requires an index
 }
 
 model AnalysisEntries {
@@ -111,7 +87,25 @@ model AnalysisEntries {
   updated_at   DateTime                      @updatedAt
   url String?
 
-  @@index([created_at, status])
+  @@index([analysis_id, status])
+}
+
+enum userRoles {
+  customer
+  admin
+}
+
+enum AnalysisDevice {
+  computer
+  mobile
+  tablet
+  other
+}
+
+enum analysisStatus {
+  draft // analysis has been created but not yet published
+  published // analysis has been published and participants can join the analysis
+  completed // analysis has been completed and no more participants are accepted
 }
 
 enum analysisEntryCompletionStatus {

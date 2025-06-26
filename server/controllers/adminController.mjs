@@ -4,12 +4,12 @@ import {
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
-import { valkeyClient, getFromCache, storeInCache } from '../config/valkey.mjs';
+import { getTTLfromCache, getFromCache, storeInCache } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   try {
     const params = req.query;
-    const cacheKey = `allUsers-${JSON.stringify(params)}-all`; // TODO -- investigate how to improve this
+    const cacheKey = `allUsers-${JSON.stringify(params)}-all`;
 
     const cachedUsers = await getFromCache(cacheKey);
 
@@ -18,10 +18,9 @@ export const getAllUsers = async (req, res) => {
         success: true,
         cacheKey: cacheKey,
         message: 'Users successfully retrieved - cache',
-        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
         userCount: JSON.parse(cachedUsers).length,
         users: JSON.parse(cachedUsers),
-
       });
     }
 

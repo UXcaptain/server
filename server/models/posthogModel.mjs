@@ -1,5 +1,6 @@
 import { client } from '../config/posthog-node.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
+import { getUserByStripeCustomerId } from './userModel.mjs';
 
 export const posthogUserSignedUp = async (user) => {
   try {
@@ -8,14 +9,14 @@ export const posthogUserSignedUp = async (user) => {
       event: 'userSignedUp',
       properties: {
         $set: {
-        //   userEmail: user.userDetails.email,
-        //* Not needed for now and its safer in regards to GDPR
-          userRole: user.role,
+          email: user.email,
+          role: user.role,
         },
       },
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'userSignedUp');
+    return;
   } finally {
     await client.shutdown();
   }
@@ -51,14 +52,29 @@ export const posthogUserLoggedOut = async (distinctId) => {
   }
 };
 
-export const posthogUserPaymentCompleted = async (distinctId) => {
+export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: `${distinctId}`,
-      event: 'paymentCompleted',
+      distinctId: checkoutSessionData.userId,
+      event: 'subscriptionCreated',
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'paymentCompleted');
+    logError('error sending event to posthog', error, 'subscriptionCreated');
+  } finally {
+    client.shutdown();
+  }
+};
+
+export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => {
+  try {
+    const user = await getUserByStripeCustomerId(subscriptionDeletionData.customerId);
+
+    client.capture({
+      distinctId: user.id,
+      event: 'subscriptionCancelled',
+    });
+  } catch (error) {
+    logError('error sending event to posthog', error, 'subscriptionCanceled');
   } finally {
     client.shutdown();
   }

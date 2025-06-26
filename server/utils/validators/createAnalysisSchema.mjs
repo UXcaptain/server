@@ -7,6 +7,14 @@ export const createAnalysisSchema = {
     trim: true,
     escape: true,
   },
+  device: {
+    notEmpty: {
+      errorMessage: 'Device information is required',
+    },
+    isString: true,
+    trim: true,
+    escape: true,
+  },
   url: {
     notEmpty: {
       errorMessage: 'Analysis URL is required',
@@ -50,7 +58,6 @@ export const createAnalysisSchema = {
     },
   },
   scenario: {
-    notEmpty: true,
     trim: true,
     escape: true,
   },

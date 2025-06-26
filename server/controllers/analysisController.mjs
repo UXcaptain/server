@@ -8,13 +8,13 @@ import {
 import { logError } from '../config/loggerFunctions.mjs';
 import { Analysis } from '../utils/classes/Analysis.mjs';
 
-import { getFromCache, storeInCache, valkeyClient } from '../config/valkey.mjs';
+import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
-      message: 'Validation error on createAnalysis',
+      message: 'Analysis could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
@@ -29,7 +29,7 @@ export const createAnalysis = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: 'analysis created successfully',
-      createdAnalysis: analysisCreationResponse,
+      createdAnalysisId: analysisCreationResponse.id,
     });
   } catch (error) {
     logError('Error in createAnalysis endpoint', error);
@@ -55,7 +55,7 @@ export const getAllAnalyses = async (req, res) => {
         success: true,
         cacheKey: cacheKey,
         message: 'analyses retrieved successfully - cache',
-        cacheTTL_seconds: await valkeyClient.ttl(cacheKey),
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
         analysisCount: JSON.parse(cachedAnalysis).length,
         analyses: JSON.parse(cachedAnalysis),
       });
@@ -84,6 +84,20 @@ export const getSinglesAnalysisData = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const cacheKey = `analysis-${id}`; // Cache key for the specific analysis
+
+    const cachedAnalysis = await getFromCache(cacheKey);
+
+    if (cachedAnalysis) {
+      return res.status(200).json({
+        success: true,
+        cacheKey: cacheKey,
+        message: 'Analysis data successfully retrieved - cache',
+        cacheTTL_seconds: await getTTLfromCache(cacheKey),
+        analysisData: JSON.parse(cachedAnalysis),
+      });
+    }
+
     const analysis = await getAnalysisDataById(id);
 
     if (!analysis) {
@@ -93,13 +107,15 @@ export const getSinglesAnalysisData = async (req, res) => {
       });
     }
 
+    await storeInCache(cacheKey, analysis, 120);
+
     return res.status(200).json({
       success: true,
       message: 'Analysis details retrieved successfully',
       analysisData: analysis,
     });
   } catch (error) {
-    logError('Error in analysis details endpoint', error);
+    logError('Error retrieving analysis', error);
     return res.status(500).json({
       success: false,
       message: 'Failed to retrieve analysis details',

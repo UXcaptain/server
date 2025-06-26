@@ -35,6 +35,9 @@ server/middlewares/subscriptionChecker.mjs
 # prisma client
 
 server/generated
+
+server/config/generated
+
 server/config/generated/prisma/client/edge.js
 
 server/config/generated/prisma/client/index-browser.js
@@ -48,3 +51,17 @@ server/config/generated/prisma/client/package.json
 server/config/generated/prisma/client/schema.prisma
 
 server/config/generated/prisma/client/wasm.js
+
+server/config/generated/prisma/client/libquery_engine-darwin-arm64.dylib.node
+
+server/config/generated/prisma/client/runtime/edge-esm.js
+
+server/config/generated/prisma/client/runtime/edge.js
+
+server/config/generated/prisma/client/runtime/library.d.ts
+
+server/config/generated/prisma/client/runtime/library.js
+
+server/config/generated/prisma/client/runtime/react-native.js
+
+server/config/generated/prisma/client/runtime/wasm-compiler-edge.js
