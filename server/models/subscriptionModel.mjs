@@ -2,16 +2,15 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 
 const prisma = new PrismaClient();
 
-export const storeSubscriptionInDb = async (subscriptionData) => {
+export const storeSubscriptionInDb = async (checkoutSessionData) => {
   await prisma.subscription.create({
     data: {
       user: {
         connect: {
-          stripe_customer_id: subscriptionData.customer,
+          id: checkoutSessionData.userId,
         },
       },
-      plan_name: subscriptionData.planType || 'basic',
-      status: subscriptionData.status,
+      id: checkoutSessionData.subscriptionId,
     },
   });
 };
@@ -31,17 +30,13 @@ export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
   return user;
 };
 
-export const markSubscriptionAsCancelledInDb = async (cancelData) => {
+export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
   const whereClause = {
-    stripe_subscription_id: cancelData.id,
+    stripe_subscription_id: subscriptionDeletionData.subscriptionId,
   };
 
-  await prisma.subscription.update({
+  await prisma.subscription.delete({
     where: whereClause,
-    data: {
-      status: 'cancelled',
-      current_period_end_date: new Date(cancelData.cancelAt * 1000),
-    },
   });
 };
 

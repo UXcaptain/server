@@ -114,3 +114,15 @@ export const deleteUserInDb = async (userId) => {
 
   return deleteUserQuery;
 };
+
+export const getUserByStripeCustomerId = async (stripeCustomerId) => {
+  const whereClause = {
+    stripe_customer_id: stripeCustomerId,
+  };
+
+  const user = await prisma.user.findUnique({
+    where: whereClause,
+  });
+
+  return user;
+};

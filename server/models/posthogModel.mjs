@@ -1,5 +1,6 @@
 import { client } from '../config/posthog-node.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
+import { getUserByStripeCustomerId } from './userModel.mjs';
 
 export const posthogUserSignedUp = async (user) => {
   try {
@@ -51,18 +52,11 @@ export const posthogUserLoggedOut = async (distinctId) => {
   }
 };
 
-export const posthogUserSubscriptionCreated = async (distinctId) => {
+export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: `${distinctId}`,
+      distinctId: checkoutSessionData.userId,
       event: 'subscriptionCreated',
-      properties: {
-        $set: {
-          planName: 'basic',
-          planBillingCycle: 'monthly',
-        },
-
-      },
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'subscriptionCreated');
@@ -71,10 +65,12 @@ export const posthogUserSubscriptionCreated = async (distinctId) => {
   }
 };
 
-export const posthogUserSubscriptionCancelled = async (distinctId) => {
+export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => {
   try {
+    const user = await getUserByStripeCustomerId(subscriptionDeletionData.customerId);
+
     client.capture({
-      distinctId: `${distinctId}`,
+      distinctId: user.id,
       event: 'subscriptionCancelled',
     });
   } catch (error) {
