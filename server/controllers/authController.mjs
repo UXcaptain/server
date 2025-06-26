@@ -291,7 +291,7 @@ export const updateUserPassword = async (req, res) => {
   }
 };
 
-export const deleteUser = async (req, res) => { //! ERR_LENGTH_MISSMATCH error - need to fix this
+export const deleteUser = async (req, res) => {
   try {
     await deleteUserInDb(req.user.id);
 
@@ -303,7 +303,7 @@ export const deleteUser = async (req, res) => { //! ERR_LENGTH_MISSMATCH error -
     logError('User deletion failed', error);
 
     if (error.code === 'P2003') {
-      res.status(409).json({
+      return res.status(409).json({
         success: false,
         message: 'User deletion failed - Related DB entries exist',
       });
