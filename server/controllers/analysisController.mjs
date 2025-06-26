@@ -46,7 +46,7 @@ export const getAllAnalyses = async (req, res) => {
 
     const params = req.query;
 
-    const cacheKey = `${ownerId}-${JSON.stringify(params)}`;
+    const cacheKey = `Analysis-${ownerId}-${JSON.stringify(params)}`;
 
     const cachedAnalysis = await getFromCache(cacheKey);
 

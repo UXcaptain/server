@@ -1262,36 +1262,51 @@ components:
       description: The unique identifier of a user
       type: string
       format: uuid
-      example: c20432a3-7667-4b82-a653-f0af5cf47464  
+      examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
 
     AnalysisId:
         description: The unique identifier of an analysis
         type: string
         format: uuid
-        example: 0464ac85-e565-4d44-bde7-d6de0aa358ea  
+        examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
     
     EntryId:
         description: The unique identifier of an entry
         type: string
         format: uuid
-        example: d7c8843e-b500-45be-a3e6-7f2d3c33ae13
+        examples: [
+          "d7c8843e-b500-45be-a3e6-7f2d3c33ae13"
+        ]
     
     UserRoles:
       type: string
       enum: [customer, admin, participant]
       description: role assigned to user
-      example: customer
+      examples: [
+        customer,
+        admin,
+        participant
+      ]
     
     CacheTTL_seconds:
       type: string
       default: 60
       description: time in seconds for cache to expire - * Returned only if cache is used
-      example: 60
+      examples: [
+        60
+      ]
 
     CacheKey:
       type: string
       description: unique identifier for cache entry - * Returned only if cache is used
-      example: "allUsers-{\"role\":\"customer\"}-all"
+      examples: [
+        "allUsers-{\"role\":\"customer\"}-all",
+        "userId-5586eab9-e25c-48b6-a3c9-73a567218b81",
+      ]
 
     ValidationErrors:
       type: object
@@ -1533,15 +1548,18 @@ components:
         9f4398c9-c049-40dd-85f7-28d04eb7b3ae
       ]
 
+    StripeSubscriptionId:
+      type: string
+      description: The Stripe subscription ID associated with a user's subscription
+      examples: [
+        sub_1ReNIs4EThrTH3Et8fmPxMXe
+      ]
+
     SubscriptionData:
       type: object
       properties:
-        plan_name:
-          $ref: '#/components/schemas/BillingPlanName'
-        status:
-          $ref: '#/components/schemas/BillingPlanStatus'
-        billing_cycle:
-          $ref: '#/components/schemas/BillingPlanBillingCycle'
+        subscriptionId:
+          $ref: '#/components/schemas/StripeSubscriptionId'
 
     BillingPlanBillingCycle:
       type: string

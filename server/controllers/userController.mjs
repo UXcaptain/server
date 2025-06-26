@@ -8,7 +8,7 @@ export const getUserProfile = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const cacheKey = userId;
+    const cacheKey = `userId-${userId}`;
 
     const cachedUser = await getFromCache(cacheKey);
 

@@ -59,13 +59,8 @@ export const getBillingDataInDb = async (userId) => {
     include: {
       Subscription: {
         omit: {
-          id: true,
           user_id: true,
           created_at: true,
-          updated_at: true,
-        },
-        where: {
-          status: 'active',
         },
       },
     },
