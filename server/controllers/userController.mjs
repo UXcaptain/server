@@ -22,7 +22,7 @@ export const getUserProfile = async (req, res) => {
       });
     }
 
-    const user = await getUserById(cacheKey);
+    const user = await getUserById(req.user.id);
 
     await storeInCache(cacheKey, user, 60 * 5); //* Cache for 5 minutes
 
