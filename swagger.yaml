@@ -1611,10 +1611,10 @@ components:
       description: Indicates an internal error failure (status 500)
       example: Internal server error - Please contact us
   
-  securitySchemes:
-    ApiKey:
-      type: apiKey
-      in: header
-      name: X-Api-Key
-security:
-  - ApiKey: []
+#   securitySchemes: # * Not using API Key for now, but will be used later
+#     ApiKey:
+#       type: apiKey
+#       in: header
+#       name: X-Api-Key
+# security:
+#   - ApiKey: []
