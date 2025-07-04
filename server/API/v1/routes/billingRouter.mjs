@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
 import {
   createBillingCustomerId,
   getBillingCustomerPortalUrl,
@@ -8,10 +7,6 @@ import {
 } from '../../../controllers/billingController.mjs';
 
 export const billingRouter = Router();
-
-// TODO - fix authentication in tests
-
-billingRouter.use(checkPermissionByRole('customer'));
 
 billingRouter.get('/', getBillingData);
 

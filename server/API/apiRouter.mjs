@@ -6,18 +6,43 @@ import { authRouter } from './v1/routes/authRouter.mjs';
 import { adminRouter } from './v1/routes/adminRouter.mjs';
 import { billingRouter } from './v1/routes/billingRouter.mjs';
 import { analysisRouter } from './v1/routes/analysisRouter.mjs';
+import { checkAuthentication } from '../middlewares/authenticationChecker.mjs';
+import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.mjs';
 
 export const apiRouter = Router();
 
-// Auth protected routes
+const customerRole = 'customer';
+const adminRole = 'admin';
 
 apiRouter.use('/v1/auth', authRouter);
 
-apiRouter.use('/v1/billing', billingRouter);
-apiRouter.use('/v1/user', userRouter);
-apiRouter.use('/v1/analysis', analysisRouter);
+//* Globally auth protected routes
 
-apiRouter.use('/v1/admin', adminRouter);
+apiRouter.use(checkAuthentication());
+
+apiRouter.use(
+  '/v1/billing',
+  checkPermissionByRole(customerRole),
+  billingRouter,
+);
+
+apiRouter.use(
+  '/v1/user',
+  checkPermissionByRole(customerRole),
+  userRouter,
+);
+
+apiRouter.use(
+  '/v1/analysis',
+  checkPermissionByRole(customerRole),
+  analysisRouter,
+);
+
+apiRouter.use(
+  '/v1/admin',
+  checkPermissionByRole(adminRole),
+  adminRouter,
+);
 
 apiRouter.use('/*fallback', (req, res) => {
   res.status(404).send('The requested route is not available or does not exist');

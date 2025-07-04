@@ -16,22 +16,25 @@ import { userLoginValidationSchema } from '../../../utils/validators/userLoginVa
 
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
 import { recoverPasswordSchema } from '../../../utils/validators/recoverPasswordSchema.mjs';
+import { checkAuthentication } from '../../../middlewares/authenticationChecker.mjs';
 
 export const authRouter = Router();
 
 authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-authRouter.post('/logout', logoutUser);
-
 authRouter.post('/register/local', checkSchema(createUserValidationSchema), sanitizerResult, createUser);
-
-authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
 
 authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
 authRouter.post('/password-reset', requestPasswordResetToken);
 
 authRouter.patch('/password-reset', checkSchema(recoverPasswordSchema), sanitizerResult, updateRecoveredUserPassword);
+
+authRouter.use(checkAuthentication());
+
+authRouter.post('/logout', logoutUser);
+
+authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
 
 authRouter.get('/session', checkSession);
 
