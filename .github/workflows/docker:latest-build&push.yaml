@@ -30,7 +30,7 @@ jobs:
                 context: .
                 platforms: linux/amd64,linux/arm64
                 push: true
-                tags: sergion14/server-uxmonkeys:latest
+                tags: sergion14/uxmonkeys:server-latest
     
     
     koyeb-deploy:
@@ -129,7 +129,7 @@ jobs:
                     service-ports: "3000:http"
                     service-routes: "/:3000"
                     service-regions: "fra" # https://www.koyeb.com/docs/reference/regions
-                    docker: "sergion14/uxmonkeys-server:latest"
+                    docker: "sergion14/uxmonkeys:server-latest"
                     docker-private-registry-secret: "SNR" # MANAGED in https://app.koyeb.com/settings/registry-configuration
                     docker-command: "./startLocal.sh"
                     
