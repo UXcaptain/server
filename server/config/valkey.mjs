@@ -13,9 +13,12 @@ const valkeyOptions = {
       port: process.env.VALKEY_CACHE_PORT,
     },
   ],
-  serverCredentials: 'e42e16a0-9670-4227-865c-611544f5d6f4',
-  clientName: 'uxmonkeys-cache',
+  credentials: { // https://valkey.io/valkey-glide/node/BaseClient/interfaces/ServerCredentials/
+    password: process.env.VALKEY_CACHE_PASSWORD,
+  },
+  clientName: 'backend-server',
   requestTimeout: 30, //* In MS - Enough time for a cache miss or cache error
+  lazyConnect: true, // https://valkey.io/valkey-glide/node/BaseClient/interfaces/BaseClientConfiguration/#lazyconnect
 };
 
 // Check `GlideClientConfiguration/GlideClusterClientConfiguration` for additional options.
