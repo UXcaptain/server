@@ -24,7 +24,7 @@ export const valkeyClient = await GlideClient.createClient(valkeyOptions);
 
 export const getFromCache = async (key) => {
   try {
-    // return; //* DEBUG
+    return; //* DEBUG
 
     const result = await valkeyClient.get(key);
     return result;
@@ -36,7 +36,7 @@ export const getFromCache = async (key) => {
 
 export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
   try {
-    // return; //* DEBUG
+    return; //* DEBUG
 
     return await valkeyClient.set(key, JSON.stringify(unstringifiedValue), {
       expiry: {
@@ -52,7 +52,7 @@ export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
 
 export const getTTLfromCache = async (key) => {
   try {
-    // return; //* DEBUG
+    return; //* DEBUG
     const result = await valkeyClient.ttl(key);
     return result;
   } catch (error) {
@@ -63,6 +63,8 @@ export const getTTLfromCache = async (key) => {
 
 export const removeFromCache = async (key) => {
   try {
+    return; //* DEBUG
+
     const result = await valkeyClient.del(key);
     return result;
   } catch (error) {
