@@ -13,19 +13,19 @@ const valkeyOptions = {
       port: process.env.VALKEY_CACHE_PORT,
     },
   ],
+  serverCredentials: 'e42e16a0-9670-4227-865c-611544f5d6f4',
   clientName: 'uxmonkeys-cache',
   requestTimeout: 30, //* In MS - Enough time for a cache miss or cache error
 };
 
 // Check `GlideClientConfiguration/GlideClusterClientConfiguration` for additional options.
-export const valkeyClient = await GlideClient.createClient(valkeyOptions);
+export const valkeyClient = null;
+// export const valkeyClient = await GlideClient.createClient(valkeyOptions);
 
 // The empty array signifies that there are no additional
 
 export const getFromCache = async (key) => {
   try {
-    return; //* DEBUG
-
     const result = await valkeyClient.get(key);
     return result;
   } catch (error) {
@@ -36,8 +36,6 @@ export const getFromCache = async (key) => {
 
 export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
   try {
-    return; //* DEBUG
-
     return await valkeyClient.set(key, JSON.stringify(unstringifiedValue), {
       expiry: {
         type: TimeUnit.Seconds,
@@ -52,7 +50,6 @@ export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
 
 export const getTTLfromCache = async (key) => {
   try {
-    return; //* DEBUG
     const result = await valkeyClient.ttl(key);
     return result;
   } catch (error) {
@@ -63,8 +60,6 @@ export const getTTLfromCache = async (key) => {
 
 export const removeFromCache = async (key) => {
   try {
-    return; //* DEBUG
-
     const result = await valkeyClient.del(key);
     return result;
   } catch (error) {
