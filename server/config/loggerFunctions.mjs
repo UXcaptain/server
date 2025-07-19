@@ -2,18 +2,22 @@ import { logger } from './logger.mjs';
 import { sendErrorLogsToTelegram, sendInfoLogsToTelegram } from '../integrations/telegram/sendLogsToTelegram.mjs';
 
 export const logError = (errorMessage, error, additionalInfo = 'N/A') => {
-  logger.error({
-    message: errorMessage,
-    context: {
-      name: error.name,
-      errorMessage: error.message,
-      // errorStack: error.stack,
-      errorDetails: error, // I will log the entire error object for now just in case
-      additionalInfo: additionalInfo,
-    },
-  });
+  try {
+    logger.error({
+      message: errorMessage,
+      context: {
+        name: error.name,
+        errorMessage: error.message,
+        // errorStack: error.stack,
+        errorDetails: error, // I will log the entire error object for now just in case
+        additionalInfo: additionalInfo,
+      },
+    });
 
-  sendErrorLogsToTelegram(errorMessage, error);
+    sendErrorLogsToTelegram(errorMessage, error);
+  } catch (error) {
+    return;
+  }
 };
 
 export const logWarn = async (message, error, additionalInfo = 'N/A') => {
