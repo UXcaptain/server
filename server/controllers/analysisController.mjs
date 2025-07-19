@@ -18,7 +18,7 @@ export const createAnalysis = async (req, res) => {
     });
   }
 
-  if (req.user.id) { //* Defensive programming - Its an error because should never happen
+  if (!req.user.id) { //* Defensive programming - Its an error because should never happen
     const error = new Error();
     error.name = 'user ID does not exist';
     error.status = 403;
@@ -48,43 +48,44 @@ export const createAnalysis = async (req, res) => {
 };
 
 export const getAllAnalyses = async (req, res) => {
-  try {
-    const { id: ownerId } = req.user;
+  const { id } = req.user;
 
-    const params = req.query;
+  if (!req.user.id) { //* Defensive programming - Its an error because should never happen
+    const error = new Error();
+    error.name = 'user ID does not exist';
+    error.status = 403;
+    error.message = 'User ID should have been sent in the request but has not been received';
 
-    const cacheKey = `Analysis-${ownerId}-${JSON.stringify(params)}`;
+    throw error;
+  }
 
-    const cachedAnalysis = await getFromCache(cacheKey);
+  const filters = req.query;
 
-    if (cachedAnalysis) {
-      return res.status(200).json({
-        success: true,
-        cacheKey: cacheKey,
-        message: 'analyses retrieved successfully - cache',
-        cacheTTL_seconds: await getTTLfromCache(cacheKey),
-        analysisCount: JSON.parse(cachedAnalysis).length,
-        analyses: JSON.parse(cachedAnalysis),
-      });
-    }
+  const cacheKey = `Analysis-${id}-${JSON.stringify(filters)}`;
 
-    const analyses = await getAllAnalysesFromDb(ownerId, params);
+  const cachedAnalysis = await getFromCache(cacheKey);
 
-    await storeInCache(cacheKey, analyses, 60 * 5); //* Cache for 5 minutes
-
-    return res.status(200).send({
+  if (cachedAnalysis) {
+    return res.status(200).json({
       success: true,
-      message: 'analyses retrieved successfully - DB',
-      analysisCount: analyses.length,
-      analyses: analyses,
-    });
-  } catch (error) {
-    logError('Error in get all analyses endpoint', error);
-    return res.status(500).send({
-      success: false,
-      message: 'analyses could not be retrieved',
+      cacheKey: cacheKey,
+      message: 'analyses retrieved successfully - cache',
+      cacheTTL_seconds: await getTTLfromCache(cacheKey),
+      analysisCount: JSON.parse(cachedAnalysis).length,
+      analyses: JSON.parse(cachedAnalysis),
     });
   }
+
+  const analyses = await getAllAnalysesFromDb(id, filters);
+
+  await storeInCache(cacheKey, analyses, 60 * 5); //* Cache for 5 minutes
+
+  return res.status(200).send({
+    success: true,
+    message: 'analyses retrieved successfully - DB',
+    analysisCount: analyses.length,
+    analyses: analyses,
+  });
 };
 
 export const getSingleAnalysisData = async (req, res) => {
