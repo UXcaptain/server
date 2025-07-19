@@ -6,7 +6,6 @@ import {
   from '../models/analysisModel.mjs';
 
 import { logError } from '../config/loggerFunctions.mjs';
-import { Analysis } from '../utils/classes/Analysis.mjs';
 
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
@@ -22,9 +21,18 @@ export const createAnalysis = async (req, res) => {
   try {
     const analysisOwner = req.user.id;
 
-    const analysis = new Analysis(req.body, analysisOwner);
+    const analysisData = {
+      name: req.body.name,
+      url: req.body.url,
+      device: req.body.device,
+      status: 'published', //* Default until we allow for drafts
+      tasks: req.body.tasks,
+      maxNumberOfParticipants: req.body.maxNumberOfParticipants,
+      scenario: req.body.scenario || 'No scenario has been provided.',
+      owner_id: analysisOwner,
+    };
 
-    const analysisCreationResponse = await createAnalysisInDb(analysis);
+    const analysisCreationResponse = await createAnalysisInDb(analysisData);
 
     return res.status(201).json({
       success: true,

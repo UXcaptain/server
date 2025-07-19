@@ -2,23 +2,29 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 
 const prisma = new PrismaClient();
 
-export const createAnalysisInDb = async (data) => {
+export const createAnalysisInDb = async (analysisData) => {
+  console.log(analysisData);
+
   const analysisCreationInDbResponse = await prisma.analysis.create({
     data: {
-      name: data.name,
-      url: data.url,
-      device: data.device,
-      status: data.status,
-      tasks: data.tasks,
-      max_number_of_participants: data.maxNumberOfParticipants,
-      scenario: data.scenario,
+      name: analysisData.name,
+      url: analysisData.url,
+      device: analysisData.device,
+      status: analysisData.status,
+      tasks: analysisData.tasks,
+      max_number_of_participants: analysisData.maxNumberOfParticipants,
+      scenario: analysisData.scenario,
       owner: {
         connect: {
-          id: data.owner_id,
+          id: analysisData.owner_id,
         },
       },
     },
   });
+
+  // TODO -- add posthog event
+
+  // TODO -- add logs for analysis creation
 
   return analysisCreationInDbResponse;
 };
@@ -76,6 +82,9 @@ export const getAnalysisDataById = async (analysisId) => {
       },
     },
   });
+
+  // TODO - add logs for analysis retrieved
+  // TODO - add logs for analysis retrieved
 
   return analysis;
 };
