@@ -41,8 +41,8 @@ services:
     depends_on: #* References the SERVICE name - NOT the container_name
       backend-db:
         condition: service_started
-      uxmonkeys-cache: 
-        condition: service_started
+      # uxmonkeys-cache: 
+      #   condition: service_started
     networks:
       - uxmonkeys-network
 
