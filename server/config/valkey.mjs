@@ -32,7 +32,7 @@ export const getFromCache = async (key) => {
     const result = await valkeyClient.get(key);
     return result;
   } catch (error) {
-    logError('Error getting from cache', error);
+    logError(`Error getting key: ${key} from cache`, error);
     return null;
   }
 };
@@ -46,7 +46,7 @@ export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
       },
     });
   } catch (error) {
-    logError('Error storing in cache', error);
+    logError(`Error storing key: ${key} in cache`, error);
     return null;
   }
 };
@@ -56,7 +56,7 @@ export const getTTLfromCache = async (key) => {
     const result = await valkeyClient.ttl(key);
     return result;
   } catch (error) {
-    logError('Error getting TTL from cache', error);
+    logError(`Error getting TTL for key ${key} from cache`, error);
     return null;
   }
 };
@@ -66,7 +66,7 @@ export const removeFromCache = async (key) => {
     const result = await valkeyClient.del(key);
     return result;
   } catch (error) {
-    logError('Error removing from cache', error);
+    logError(`Error removing key: ${key} from cache`, error);
     return null;
   }
 };
