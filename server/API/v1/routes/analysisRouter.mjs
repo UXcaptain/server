@@ -3,7 +3,7 @@ import { checkSchema } from 'express-validator';
 import {
   createAnalysis,
   getAllAnalyses,
-  getSinglesAnalysisData,
+  getSingleAnalysisData,
 } from '../../../controllers/analysisController.mjs';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
@@ -14,7 +14,7 @@ analysisRouter.post('/', checkSchema(createAnalysisSchema), sanitizerResult, cre
 
 analysisRouter.get('/', getAllAnalyses);
 
-analysisRouter.get('/:id', getSinglesAnalysisData);
+analysisRouter.get('/:id', getSingleAnalysisData);
 
 analysisRouter.use('/*fallback', (req, res) => {
   res.status(404).send('Route not found');

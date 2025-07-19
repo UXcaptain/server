@@ -87,7 +87,7 @@ export const getAllAnalyses = async (req, res) => {
   }
 };
 
-export const getSinglesAnalysisData = async (req, res) => {
+export const getSingleAnalysisData = async (req, res) => {
   try {
     const { id } = req.params;
 
