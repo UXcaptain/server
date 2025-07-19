@@ -185,7 +185,7 @@ export const loginLocal = async (req, res, next) => {
       }
 
       // Successful login
-      posthogUserSuccessLoggedIn(user.id, 'local');
+      // posthogUserSuccessLoggedIn(user.id, 'local');
 
       updateUserLastLoginDate(user.id);
 
