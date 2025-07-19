@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
-import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
+// import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
 
 import {
   getUserByEmail, updateUserPasswordInDB,

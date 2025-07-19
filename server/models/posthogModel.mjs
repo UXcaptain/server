@@ -18,7 +18,7 @@ export const posthogUserSignedUp = async (user) => {
     logError('error sending event to posthog', error, 'userSignedUp');
     return;
   } finally {
-    await client.shutdown();
+    await client.shutdown(); // TODO - investigate the crash caused by posthog on high volume traffic
   }
 };
 
