@@ -8,17 +8,19 @@ import {
 
 const prisma = new PrismaClient();
 
-export const createUserInDB = async (user) => {
+export const createUserInDB = async (userData) => {
   const createUserInDbQuery = await prisma.user.create({
     data: {
-      email: user.userDetails.email,
-      password: user.userDetails.password,
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
+
     },
   });
 
-  logUserCreatedInDB(createUserInDbQuery.id, user);
+  logUserCreatedInDB(createUserInDbQuery.id, userData);
 
-  posthogUserSignedUp(createUserInDbQuery);
+  // posthogUserSignedUp(createUserInDbQuery);
 
   return createUserInDbQuery;
 };

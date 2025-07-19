@@ -2,7 +2,6 @@ import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
 import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
-import { User } from '../utils/classes/User.mjs';
 
 import {
   getUserByEmail, updateUserPasswordInDB,
@@ -215,18 +214,19 @@ export const createUser = async (req, res) => {
     const userData = {
       username: req.body.username,
       password: await bcrypt.hash(req.body.password, 10),
+      role: 'customer', //* Hardcoded role for simplicity
     };
 
-    const existingUser = await getUserByEmail(userData.username);
+    const isExistingUser = await getUserByEmail(userData.username);
 
-    if (existingUser !== null) {
+    if (isExistingUser !== null) {
       return res.status(409).json({
         success: false,
         message: 'User creation failed - The email address already exists',
       });
     }
 
-    const createdUser = await createUserInDB(new User(userData));
+    const createdUser = await createUserInDB(userData);
 
     return res.status(201).json({
       success: true,
@@ -234,6 +234,7 @@ export const createUser = async (req, res) => {
       userId: createdUser.id,
     });
   } catch (error) {
+    logError('user cration failed', error);
     return res.status(500).json({
       success: false,
       message: 'User creation failed - Please try again in a few minutes',
