@@ -1,10 +1,9 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
+import { logInfo } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
 
 export const createAnalysisInDb = async (analysisData) => {
-  console.log(analysisData);
-
   const analysisCreationInDbResponse = await prisma.analysis.create({
     data: {
       name: analysisData.name,
@@ -22,9 +21,9 @@ export const createAnalysisInDb = async (analysisData) => {
     },
   });
 
-  // TODO -- add posthog event
+  logInfo(`analysis ${analysisCreationInDbResponse.id} created in db`, analysisData);
 
-  // TODO -- add logs for analysis creation
+  // TODO -- add posthog event
 
   return analysisCreationInDbResponse;
 };
@@ -83,8 +82,7 @@ export const getAnalysisDataById = async (analysisId) => {
     },
   });
 
-  // TODO - add logs for analysis retrieved
-  // TODO - add logs for analysis retrieved
+  //* No need for logs or posthog event
 
   return analysis;
 };
