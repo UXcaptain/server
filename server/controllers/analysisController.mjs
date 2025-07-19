@@ -5,8 +5,6 @@ import {
 }
   from '../models/analysisModel.mjs';
 
-import { logError } from '../config/loggerFunctions.mjs';
-
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const createAnalysis = async (req, res) => {
@@ -89,51 +87,43 @@ export const getAllAnalyses = async (req, res) => {
 };
 
 export const getSingleAnalysisData = async (req, res) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    const cacheKey = `analysis-${id}`; // Cache key for the specific analysis
+  const cacheKey = `analysis-${id}`; // Cache key for the specific analysis
 
-    const cachedAnalysis = await getFromCache(cacheKey);
+  const cachedAnalysis = await getFromCache(cacheKey);
 
-    if (cachedAnalysis) {
-      return res.status(200).json({
-        success: true,
-        cacheKey: cacheKey,
-        message: 'Analysis data successfully retrieved - cache',
-        cacheTTL_seconds: await getTTLfromCache(cacheKey),
-        analysisData: JSON.parse(cachedAnalysis),
-      });
-    }
-
-    const analysis = await getAnalysisDataById(id);
-
-    if (analysis.owner_id !== req.user.id) {
-      return res.status(403).json({
-        success: false,
-        message: 'You do not have permission to access this analysis.',
-      });
-    }
-
-    if (!analysis) {
-      return res.status(404).json({
-        success: false,
-        message: 'Analysis not found',
-      });
-    }
-
-    await storeInCache(cacheKey, analysis, 120);
-
+  if (cachedAnalysis) {
     return res.status(200).json({
       success: true,
-      message: 'Analysis details retrieved successfully',
-      analysisData: analysis,
-    });
-  } catch (error) {
-    logError('Error retrieving analysis', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve analysis details',
+      cacheKey: cacheKey,
+      message: 'Analysis data successfully retrieved - cache',
+      cacheTTL_seconds: await getTTLfromCache(cacheKey),
+      analysisData: JSON.parse(cachedAnalysis),
     });
   }
+
+  const analysis = await getAnalysisDataById(id);
+
+  if (!analysis) {
+    return res.status(404).json({
+      success: false,
+      message: 'Analysis not found',
+    });
+  }
+
+  if (analysis.owner_id !== req.user.id) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to access this analysis.',
+    });
+  }
+
+  await storeInCache(cacheKey, analysis, 120);
+
+  return res.status(200).json({
+    success: true,
+    message: 'Analysis details retrieved successfully',
+    analysisData: analysis,
+  });
 };
