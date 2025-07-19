@@ -1,9 +1,7 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { posthogUserUpdatedPassword, posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.mjs';
 import {
-  logUserCreatedInDB,
-  logPasswordUpdated,
-  logUserDeleted,
+  logInfo,
 } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
@@ -14,11 +12,10 @@ export const createUserInDB = async (userData) => {
       email: userData.username,
       password: userData.password,
       role: userData.role,
-
     },
   });
 
-  logUserCreatedInDB(createUserInDbQuery.id, userData);
+  logInfo(`User ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
   // posthogUserSignedUp(createUserInDbQuery);
 
@@ -82,9 +79,9 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
     },
   });
 
-  logPasswordUpdated(userId);
+  logInfo(`Password updated successfully for User ${userId}`);
 
-  posthogUserUpdatedPassword(userId);
+  posthogUserUpdatedPassword(userId); // TODO - Revisit if this is needed
 
   return updatePasswordQuery;
 };
@@ -110,7 +107,7 @@ export const deleteUserInDb = async (userId) => {
     },
   });
 
-  logUserDeleted(userId);
+  logInfo(`User ${userId} succesfully deleted`);
 
   posthogUserDeleteAccount(userId);
 

@@ -29,7 +29,7 @@ export const logWarn = async (message, error, additionalInfo = 'N/A') => {
   });
 };
 
-export const logInfo = async (message, context) => {
+export const logInfo = async (message, context = 'no context') => {
   try {
     logger.info({
       message: message,
@@ -53,22 +53,6 @@ export const logUserLoggedInSuccessfully = (userId, loginMethod) => {
   });
 };
 
-export const logUserCreatedInDB = (userId) => {
-  try {
-    logger.info({
-      message: 'User succesfully created in database',
-      context: {
-        userData: {
-          userId: userId,
-          role: userData.role,
-        },
-      },
-    });
-  } catch (error) {
-    logError('error in logUserCreatedInDB', error);
-  }
-};
-
 export const logPasswordResetTokenCreated = (userId) => {
   logger.info({
     message: 'User password reset token succesfully created in database',
@@ -85,17 +69,6 @@ export const logUserLoggedOut = (userId) => {
     message: 'User logged out successfully',
     context: {
       userId: userId,
-    },
-  });
-};
-
-export const logUserDeleted = async (userId) => {
-  logger.info({
-    message: 'User succesfully deleted in database',
-    context: {
-      userData: {
-        userId: userId,
-      },
     },
   });
 };
@@ -117,15 +90,6 @@ export const logFatalMongoDBSessionInitError = (error) => {
       errorMessage: error.message,
       errorStack: error.stack,
       errorDetails: error, // I will log the entire error object for now just in case}
-    },
-  });
-};
-
-export const logPasswordUpdated = (userId) => {
-  logger.info({
-    message: 'Password updated successfully',
-    context: {
-      userId: userId,
     },
   });
 };
