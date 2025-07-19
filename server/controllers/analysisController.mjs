@@ -108,6 +108,13 @@ export const getSingleAnalysisData = async (req, res) => {
 
     const analysis = await getAnalysisDataById(id);
 
+    if (analysis.owner_id !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to access this analysis.',
+      });
+    }
+
     if (!analysis) {
       return res.status(404).json({
         success: false,

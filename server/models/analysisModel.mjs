@@ -64,7 +64,6 @@ export const getAnalysisDataById = async (analysisId) => {
       id: analysisId,
     },
     omit: {
-      owner_id: true,
       id: true,
     },
     include: {
