@@ -44,21 +44,23 @@ export const posthogUserLoggedOut = async (distinctId) => {
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'userLoggedOut');
-  } finally {
-    await client.shutdown();
   }
 };
 
 export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: checkoutSessionData.userId,
+      distinctId: checkoutSessionData.metadata.userId,
       event: 'subscriptionCreated',
+      properties: {
+        $set: {
+          planName: checkoutSessionData.metadata.planName,
+          planBillingCycle: checkoutSessionData.metadata.planBillingCycle,
+        },
+      },
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'subscriptionCreated');
-  } finally {
-    client.shutdown();
   }
 };
 
@@ -72,8 +74,6 @@ export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => 
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'subscriptionCanceled');
-  } finally {
-    client.shutdown();
   }
 };
 
@@ -85,8 +85,6 @@ export const posthogUserDeleteAccount = async (distinctId) => {
     });
   } catch (error) {
     logError('error sending posthogUserDeleteAccount event to posthog', error, 'userDeletedAccount');
-  } finally {
-    await client.shutdown();
   }
 };
 
@@ -98,7 +96,27 @@ export const posthogUserUpdatedPassword = async (distinctId) => {
     });
   } catch (error) {
     logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
-  } finally {
-    await client.shutdown();
+  }
+};
+
+export const posthogAnalysisCreated = async (distinctId) => {
+  try {
+    client.capture({
+      distinctId,
+      event: 'userUpdatedPassword',
+    });
+  } catch (error) {
+    logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
+  }
+};
+
+export const posthogCreateBillingId = (distinctId) => {
+  try {
+    client.capture({
+      distinctId: distinctId,
+      event: 'createBillingId',
+    });
+  } catch (error) {
+    logError('error sending event to posthog', error, 'subscriptionCanceled');
   }
 };

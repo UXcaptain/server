@@ -1,4 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
+import { posthogCreateBillingId, posthogUserSubscriptionCreated } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -13,6 +14,8 @@ export const storeSubscriptionInDb = async (checkoutSessionData) => {
       id: checkoutSessionData.subscriptionId,
     },
   });
+
+  posthogUserSubscriptionCreated(checkoutSessionData.userId);
 };
 
 export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
@@ -26,6 +29,8 @@ export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
       stripe_customer_id: stripeCustomerId,
     },
   });
+
+  posthogCreateBillingId(userId);
 
   return user;
 };

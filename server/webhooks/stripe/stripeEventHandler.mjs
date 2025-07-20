@@ -1,5 +1,5 @@
 import { logError } from '../../config/loggerFunctions.mjs';
-import { posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from '../../models/posthogModel.mjs';
+import { posthogUserSubscriptionEnded } from '../../models/posthogModel.mjs';
 import { deleteSubscriptionInDb, storeSubscriptionInDb } from '../../models/subscriptionModel.mjs';
 import { stripeInstance } from '../../config/stripe.mjs';
 
@@ -32,8 +32,6 @@ export const stripeEventHandler = async (req, res) => {
         };
 
         storeSubscriptionInDb(checkoutSessionData);
-
-        posthogUserSubscriptionCreated(checkoutSessionData);
 
         // TODO -- send an email to the user about the subscription update
         break;
