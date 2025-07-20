@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
-// import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
+import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
 
 import {
   getUserByEmail, updateUserPasswordInDB,
@@ -185,7 +185,7 @@ export const loginLocal = async (req, res, next) => {
       }
 
       // Successful login
-      // posthogUserSuccessLoggedIn(user.id, 'local');
+      posthogUserSuccessLoggedIn(user.id, 'local');
 
       updateUserLastLoginDate(user.id);
 
@@ -210,36 +210,28 @@ export const createUser = async (req, res) => {
     });
   }
 
-  try {
-    const userData = {
-      username: req.body.username,
-      password: await bcrypt.hash(req.body.password, 10),
-      role: 'customer', //* Hardcoded role for simplicity
-    };
+  const userData = {
+    username: req.body.username,
+    password: await bcrypt.hash(req.body.password, 10),
+    role: 'customer', //* Hardcoded role for simplicity
+  };
 
-    const isExistingUser = await getUserByEmail(userData.username);
+  const isExistingUser = await getUserByEmail(userData.username);
 
-    if (isExistingUser !== null) {
-      return res.status(409).json({
-        success: false,
-        message: 'User creation failed - The email address already exists',
-      });
-    }
-
-    const createdUser = await createUserInDB(userData);
-
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
-    });
-  } catch (error) {
-    logError('user cration failed', error);
-    return res.status(500).json({
+  if (isExistingUser !== null) {
+    return res.status(409).json({
       success: false,
-      message: 'User creation failed - Please try again in a few minutes',
+      message: 'User creation failed - User already exists',
     });
   }
+
+  const createdUser = await createUserInDB(userData);
+
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
 };
 
 export const updateUserPassword = async (req, res) => {

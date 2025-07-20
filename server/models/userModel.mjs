@@ -17,7 +17,7 @@ export const createUserInDB = async (userData) => {
 
   logInfo(`User ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
-  // posthogUserSignedUp(createUserInDbQuery);
+  posthogUserSignedUp(createUserInDbQuery);
 
   return createUserInDbQuery;
 };

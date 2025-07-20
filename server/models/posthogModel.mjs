@@ -8,7 +8,7 @@ export const posthogUserSignedUp = async (user) => {
       distinctId: user.id,
       event: 'userSignedUp',
       properties: {
-        $set: {
+        $set_once: {
           email: user.email,
           role: user.role,
         },
@@ -16,9 +16,6 @@ export const posthogUserSignedUp = async (user) => {
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'userSignedUp');
-    return;
-  } finally {
-    await client.shutdown(); // TODO - investigate the crash caused by posthog on high volume traffic
   }
 };
 
@@ -28,13 +25,13 @@ export const posthogUserSuccessLoggedIn = async (distinctId, loginMethod) => {
       distinctId: distinctId,
       event: 'userLoggedIn',
       properties: {
-        loginMethod,
+        $set: {
+          loginMethod: loginMethod,
+        },
       },
     });
   } catch (error) {
     logError('error sending event to posthog', error, 'userSuccessLogin');
-  } finally {
-    await client.shutdown();
   }
 };
 
