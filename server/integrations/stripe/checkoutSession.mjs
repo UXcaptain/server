@@ -6,23 +6,18 @@ export const createStripeCheckoutSession = async (
   planName,
   planBillingCycle,
 ) => {
-  const priceIdsProd = {
-    basicmonthly: 'price_1RcXRcKwyQnTsu7pzA3sHJ0i',
-    basicannual: 'price_1RcXRcKwyQnTsu7p7MQDyGL5',
-    // proMonthly: 'price_1RBxMl4EThrTH3EtJfelo9Dp',
-    // proAnnual: 'price_1RBxMl4EThrTH3EtJfelo9Dp',
-  };
-
-  const priceIdsDev = {
-    basicmonthly: 'price_1RcXYn4EThrTH3EtBV4SNesj',
-    basicannual: 'price_1RcXZ64EThrTH3EtiQQB7i36',
+  const priceIds = {
+    prod_basic_monthly: 'price_1RcXRcKwyQnTsu7pzA3sHJ0i',
+    prod_basic_annual: 'price_1RcXRcKwyQnTsu7p7MQDyGL5',
+    dev_basic_monthly: 'price_1RcXYn4EThrTH3EtBV4SNesj',
+    dev_basic_annual: 'price_1RcXZ64EThrTH3EtiQQB7i36',
   };
 
   const checkoutSession = await stripeInstance.checkout.sessions.create({
     success_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=paid`,
     line_items: [
       {
-        price: process.NODE_ENV === 'production' ? priceIdsProd[`${planName}${planBillingCycle}`] : priceIdsDev[`${planName}${planBillingCycle}`],
+        price: process.NODE_ENV === 'production' ? priceIds[`prod_${planName}_${planBillingCycle}`] : priceIds[`dev_${planName}_${planBillingCycle}`],
         quantity: 1,
       },
     ],
