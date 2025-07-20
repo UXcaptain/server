@@ -112,7 +112,7 @@ export const getSingleAnalysisData = async (req, res) => {
     });
   }
 
-  if (analysis.owner_id !== req.user.id) {
+  if (analysis.owner_id !== req.user.id && req.user.role !== 'admin') {
     return res.status(403).json({
       success: false,
       message: 'You do not have permission to access this analysis.',

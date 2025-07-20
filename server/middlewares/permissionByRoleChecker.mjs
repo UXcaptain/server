@@ -1,7 +1,7 @@
 export const checkPermissionByRole = (role) => (req, res, next) => {
   // return next(); //* Enable for debugging
 
-  if (req.user && req.user.role === role) {
+  if ((req.user && req.user.role === role) || req.user.role === 'admin') {
     next();
   } else {
     res.status(401).json({
