@@ -66,10 +66,8 @@ export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
 
 export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => {
   try {
-    const user = await getUserByStripeCustomerId(subscriptionDeletionData.customerId);
-
     client.capture({
-      distinctId: user.id,
+      distinctId: subscriptionDeletionData.metadata.userId,
       event: 'subscriptionCancelled',
     });
   } catch (error) {

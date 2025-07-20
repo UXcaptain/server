@@ -1,5 +1,4 @@
 import { logError } from '../../config/loggerFunctions.mjs';
-import { posthogUserSubscriptionEnded } from '../../models/posthogModel.mjs';
 import { deleteSubscriptionInDb, storeSubscriptionInDb } from '../../models/subscriptionModel.mjs';
 import { stripeInstance } from '../../config/stripe.mjs';
 
@@ -73,8 +72,6 @@ export const stripeEventHandler = async (req, res) => {
           customerId: event.data.object.customer,
         };
         deleteSubscriptionInDb(subscriptionDeletionData);
-
-        posthogUserSubscriptionEnded(subscriptionDeletionData);
 
         // TODO -- send an email to the user about the subscription end
         break;

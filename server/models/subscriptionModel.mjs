@@ -1,5 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogCreateBillingId, posthogUserSubscriptionCreated } from './posthogModel.mjs';
+import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -8,14 +8,14 @@ export const storeSubscriptionInDb = async (checkoutSessionData) => {
     data: {
       user: {
         connect: {
-          id: checkoutSessionData.userId,
+          id: checkoutSessionData.metadata.userId,
         },
       },
       id: checkoutSessionData.subscriptionId,
     },
   });
 
-  posthogUserSubscriptionCreated(checkoutSessionData.userId);
+  posthogUserSubscriptionCreated(checkoutSessionData);
 };
 
 export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
@@ -43,6 +43,8 @@ export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
   await prisma.subscription.delete({
     where: whereClause,
   });
+
+  posthogUserSubscriptionEnded(subscriptionDeletionData);
 };
 
 export const getBillingDataInDb = async (userId) => {
