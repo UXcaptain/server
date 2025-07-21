@@ -15,7 +15,7 @@ export const posthogUserSignedUp = async (user) => {
       },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userSignedUp');
+    logError('error sending posthogUserSignedUp event to posthog', error, 'userSignedUp');
   }
 };
 
@@ -31,7 +31,7 @@ export const posthogUserSuccessLoggedIn = async (distinctId, loginMethod) => {
       },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userSuccessLogin');
+    logError('error sending posthogUserSuccessLoggedIn event to posthog', error, 'userSuccessLogin');
   }
 };
 
@@ -43,7 +43,7 @@ export const posthogUserLoggedOut = async (distinctId) => {
       event: 'userLoggedOut',
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userLoggedOut');
+    logError('error sending posthogUserLoggedOut event to posthog', error, 'userLoggedOut');
   }
 };
 
@@ -60,7 +60,7 @@ export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
       },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'subscriptionCreated');
+    logError('error sending posthogUserSubscriptionCreated event to posthog', error, 'subscriptionCreated');
   }
 };
 
@@ -71,7 +71,7 @@ export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => 
       event: 'subscriptionCancelled',
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'subscriptionCanceled');
+    logError('error sending posthogUserSubscriptionEnded event to posthog', error, 'subscriptionEnded');
   }
 };
 
@@ -80,6 +80,12 @@ export const posthogUserDeleteAccount = async (distinctId) => {
     client.capture({
       distinctId: distinctId,
       event: 'userDeletedAccount',
+      properties: {
+        set: {
+          isDeleted: true,
+        },
+        $unset: ['email'],
+      },
     });
   } catch (error) {
     logError('error sending posthogUserDeleteAccount event to posthog', error, 'userDeletedAccount');
