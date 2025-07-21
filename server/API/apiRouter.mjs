@@ -8,6 +8,7 @@ import { billingRouter } from './v1/routes/billingRouter.mjs';
 import { analysisRouter } from './v1/routes/analysisRouter.mjs';
 import { checkAuthentication } from '../middlewares/authenticationChecker.mjs';
 import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.mjs';
+import { entryRouter } from './v1/routes/entryRouter.mjs';
 
 export const apiRouter = Router();
 
@@ -36,6 +37,12 @@ apiRouter.use(
   '/v1/analysis',
   checkPermissionByRole(customerRole),
   analysisRouter,
+);
+
+apiRouter.use(
+  '/v1/entry',
+  checkPermissionByRole(customerRole),
+  entryRouter,
 );
 
 apiRouter.use(
