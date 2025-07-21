@@ -1,5 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogUserUpdatedPassword, posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.mjs';
+import { posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.mjs';
 import {
   logInfo,
 } from '../config/loggerFunctions.mjs';
@@ -80,8 +80,6 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
   });
 
   logInfo(`Password updated successfully for User ${userId}`);
-
-  posthogUserUpdatedPassword(userId); // TODO - Revisit if this is needed
 
   return updatePasswordQuery;
 };

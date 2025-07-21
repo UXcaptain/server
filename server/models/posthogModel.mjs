@@ -75,6 +75,17 @@ export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => 
   }
 };
 
+export const posthogCreateBillingId = (distinctId) => {
+  try {
+    client.capture({
+      distinctId: distinctId,
+      event: 'createBillingId',
+    });
+  } catch (error) {
+    logError('error sending event to posthog', error, 'subscriptionCanceled');
+  }
+};
+
 export const posthogUserDeleteAccount = async (distinctId) => {
   try {
     client.capture({
@@ -92,17 +103,6 @@ export const posthogUserDeleteAccount = async (distinctId) => {
   }
 };
 
-export const posthogUserUpdatedPassword = async (distinctId) => {
-  try {
-    client.capture({
-      distinctId,
-      event: 'userUpdatedPassword',
-    });
-  } catch (error) {
-    logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
-  }
-};
-
 export const posthogAnalysisCreated = async (distinctId) => {
   try {
     client.capture({
@@ -111,16 +111,5 @@ export const posthogAnalysisCreated = async (distinctId) => {
     });
   } catch (error) {
     logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
-  }
-};
-
-export const posthogCreateBillingId = (distinctId) => {
-  try {
-    client.capture({
-      distinctId: distinctId,
-      event: 'createBillingId',
-    });
-  } catch (error) {
-    logError('error sending event to posthog', error, 'subscriptionCanceled');
   }
 };
