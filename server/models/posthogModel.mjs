@@ -25,9 +25,7 @@ export const posthogUserSuccessLoggedIn = async (distinctId, loginMethod) => {
       distinctId: distinctId,
       event: 'userLoggedIn',
       properties: {
-        $set: {
-          loginMethod: loginMethod,
-        },
+        loginMethod: loginMethod,
       },
     });
   } catch (error) {
@@ -53,7 +51,7 @@ export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
       distinctId: checkoutSessionData.metadata.userId,
       event: 'subscriptionCreated',
       properties: {
-        $set: {
+        $set: { // TODO - decide if this should be a person or event property
           planName: checkoutSessionData.metadata.planName,
           planBillingCycle: checkoutSessionData.metadata.planBillingCycle,
         },
@@ -92,7 +90,7 @@ export const posthogUserDeleteAccount = async (distinctId) => {
       distinctId: distinctId,
       event: 'userDeletedAccount',
       properties: {
-        set: {
+        $set: {
           isDeleted: true,
         },
         $unset: ['email'],
@@ -103,11 +101,16 @@ export const posthogUserDeleteAccount = async (distinctId) => {
   }
 };
 
-export const posthogAnalysisCreated = async (distinctId) => {
+export const posthogAnalysisCreated = async (analysisData) => {
   try {
     client.capture({
-      distinctId,
-      event: 'userUpdatedPassword',
+      distinctId: analysisData.owner_id,
+      event: 'AnalysisCreated',
+      properties: {
+        device: analysisData.device,
+        // status: analysisData.status, //* for now, will always be created as 'published'
+        max_number_of_participants: analysisData.maxNumberOfParticipants,
+      },
     });
   } catch (error) {
     logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
