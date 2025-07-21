@@ -54,20 +54,11 @@ export const getBillingDataInDb = async (userId) => {
 
   const billingData = await prisma.user.findUnique({
     where: whereClause,
-    omit: {
-      id: true,
-      email: true,
-      role: true,
-      created_at: true,
-      last_updated_at: true,
-      last_login_at: true,
-      password: true,
-    },
-    include: {
+    select: {
+      stripe_customer_id: true,
       Subscription: {
-        omit: {
-          user_id: true,
-          created_at: true,
+        select: {
+          id: true,
         },
       },
     },

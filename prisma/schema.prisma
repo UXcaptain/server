@@ -78,7 +78,7 @@ model Analysis {
 
 model AnalysisEntries {
   id           String                        @id @default(uuid())
-  analysis     Analysis                      @relation(fields: [analysis_id], references: [id])
+  Analysis     Analysis                      @relation(fields: [analysis_id], references: [id])
   analysis_id  String
   user         User                          @relation(fields: [user_id], references: [id])
   user_id      String
