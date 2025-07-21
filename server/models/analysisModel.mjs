@@ -37,19 +37,18 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
 
   const analyses = await prisma.analysis.findMany({
     where: whereClause,
-    omit: {
-      owner_id: true,
-      tasks: true,
-      scenario: true,
-      updated_at: true,
-    },
-    include: {
+    select: {
+      id: true,
+      device: true,
+      name: true,
+      url: true,
+      status: true,
+      created_at: true,
+      max_number_of_participants: true,
       _count: {
         select: {
           entries: {
-            where: {
-              status: 'submitted',
-            },
+            where: { status: 'submitted' },
           },
         },
       },
@@ -72,11 +71,8 @@ export const getAnalysisDataById = async (analysisId) => {
         where: {
           status: 'submitted',
         },
-        omit: {
-          analysis_id: true,
-          user_id: true,
-          status: true,
-          created_at: true,
+        select: {
+          id: true,
         },
       },
     },
