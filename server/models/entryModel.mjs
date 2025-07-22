@@ -3,10 +3,7 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 const prisma = new PrismaClient();
 
 export const getEntryDetailsById = async (entryId) => {
-  
-  console.log(entryId);
-
-    const whereClause = {
+  const whereClause = {
     id: entryId,
   };
 

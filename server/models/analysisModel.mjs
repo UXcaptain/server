@@ -72,6 +72,7 @@ export const getAnalysisDataById = async (analysisId) => {
           status: 'submitted',
         },
         select: {
+          id: true,
           updated_at: true,
           url: true,
           Participants_profile: {
@@ -80,6 +81,7 @@ export const getAnalysisDataById = async (analysisId) => {
               last_name: true,
               country: true,
               age: true,
+              gender: true,
             },
           },
         },
