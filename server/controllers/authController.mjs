@@ -213,7 +213,7 @@ export const createUser = async (req, res) => {
   const userData = {
     username: req.body.username,
     password: await bcrypt.hash(req.body.password, 10),
-    role: 'customer', //* Hardcoded role for simplicity
+    role: req.body.role, //* Hardcoded role for simplicity
   };
 
   const isExistingUser = await getUserByEmail(userData.username);

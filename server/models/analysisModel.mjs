@@ -72,13 +72,21 @@ export const getAnalysisDataById = async (analysisId) => {
           status: 'submitted',
         },
         select: {
-          id: true,
+          updated_at: true,
+          url: true,
+          Participants_profile: {
+            select: {
+              name: true,
+              last_name: true,
+              country: true,
+              age: true,
+            },
+          },
         },
       },
     },
-  });
 
-  //* No need for logs or posthog event
+  });
 
   return analysis;
 };
