@@ -8,7 +8,7 @@ export const storeSubscriptionInDb = async (checkoutSessionData) => {
     data: {
       user: {
         connect: {
-          id: checkoutSessionData.metadata.userId,
+          id: checkoutSessionData.userId,
         },
       },
       id: checkoutSessionData.subscriptionId,

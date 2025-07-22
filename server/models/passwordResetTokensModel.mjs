@@ -4,7 +4,7 @@ import { logError, logPasswordResetTokenCreated } from '../config/loggerFunction
 const prisma = new PrismaClient();
 
 export const createPasswordResetToken = async (userId) => {
-  const createPasswordResetTokenQuery = await prisma.password_reset_tokens.create({
+  const createPasswordResetTokenQuery = await prisma.passwordResetTokens.create({
     data: {
       user_id: userId,
       token_expires: new Date(Date.now() + 3600000),
@@ -21,7 +21,7 @@ export const getPasswordResetTokenData = async (token) => {
     id: token,
   };
 
-  const getPasswordResetTokenDataQuery = await prisma.password_reset_tokens.findFirst({
+  const getPasswordResetTokenDataQuery = await prisma.passwordResetTokens.findFirst({
     where: whereClause,
   });
 
@@ -34,7 +34,7 @@ export const deletePasswordResetTokens = async (userId) => {
       user_id: userId,
     };
 
-    const deleteResult = await prisma.password_reset_tokens.deleteMany({
+    const deleteResult = await prisma.passwordResetTokens.deleteMany({
       where: whereClause,
     });
 
@@ -56,7 +56,7 @@ export const deleteExpiredPasswordResetTokens = async () => {
     },
   };
 
-  await prisma.password_reset_tokens.deleteMany({
+  await prisma.passwordResetTokens.deleteMany({
     where: whereClause,
   });
 };

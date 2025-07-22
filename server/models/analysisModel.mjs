@@ -47,7 +47,7 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
       max_number_of_participants: true,
       _count: {
         select: {
-          entries: {
+          AnalysisEntries: {
             where: { status: 'submitted' },
           },
         },
@@ -67,7 +67,7 @@ export const getAnalysisDataById = async (analysisId) => {
       id: true,
     },
     include: {
-      entries: {
+      AnalysisEntries: {
         where: {
           status: 'submitted',
         },
@@ -75,7 +75,7 @@ export const getAnalysisDataById = async (analysisId) => {
           id: true,
           updated_at: true,
           url: true,
-          Participants_profile: {
+          ParticipantsProfile: {
             select: {
               name: true,
               last_name: true,

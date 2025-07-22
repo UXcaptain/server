@@ -26,13 +26,13 @@ model User {
   stripe_customer_id String?
 
   Subscription          Subscription[]
-  Password_reset_tokens Password_reset_tokens[]
+  PasswordResetTokens PasswordResetTokens[]
   Analysis              Analysis[]
-  Participants_profile  Participants_profile[]
-  Customer_profile      Customer_profile[]
+  Participants_profile  ParticipantsProfile[]
+  CustomerProfile      CustomerProfile[]
 }
 
-model Participants_profile {
+model ParticipantsProfile {
   id               String            @id
   name             String?
   last_name        String?
@@ -43,22 +43,22 @@ model Participants_profile {
   devices          String[]          @default([])
   created_at       DateTime          @default(now())
   updated_at       DateTime          @default(now()) @updatedAt
-  user             User              @relation(fields: [user_id], references: [id])
+  User             User              @relation(fields: [user_id], references: [id])
   user_id          String            @unique
-  analysis_entries AnalysisEntries[]
+  AnalysisEntries AnalysisEntries[]
 }
 
-model Customer_profile {
+model CustomerProfile {
   id           String  @id
   company_name String?
   position     String?
-  user         User    @relation(fields: [user_id], references: [id])
+  User         User    @relation(fields: [user_id], references: [id])
   user_id      String
 }
 
-model Password_reset_tokens {
+model PasswordResetTokens {
   id            String   @id @unique @default(uuid())
-  user          User     @relation(fields: [user_id], references: [id])
+  User          User     @relation(fields: [user_id], references: [id])
   user_id       String
   token_expires DateTime
   created_at    DateTime @default(now())
@@ -73,7 +73,7 @@ model Session {
 
 model Subscription {
   id      String @id
-  user    User   @relation(fields: [user_id], references: [id])
+  User    User   @relation(fields: [user_id], references: [id])
   user_id String
 
   // Timestamps - createdAt and updatedAt are automatically managed by Prisma
@@ -84,18 +84,18 @@ model Subscription {
 
 model Analysis {
   id                         String            @id @default(uuid())
-  owner                      User              @relation(fields: [owner_id], references: [id])
+  User                      User              @relation(fields: [owner_id], references: [id])
   owner_id                   String
   device                     AnalysisDevice
   name                       String
   scenario                   String
   tasks                      Json
   url                        String
-  status                     analysisStatus    @default(draft)
+  status                    AnalysisStatus    @default(draft)
   created_at                 DateTime          @default(now())
   updated_at                 DateTime          @default(now()) @updatedAt
   max_number_of_participants Int
-  entries                    AnalysisEntries[]
+  AnalysisEntries                    AnalysisEntries[]
 
   @@index([owner_id]) // Not a unique field, but requires an index
 }
@@ -104,9 +104,9 @@ model AnalysisEntries {
   id                  String                        @id @default(uuid())
   Analysis            Analysis                      @relation(fields: [analysis_id], references: [id])
   analysis_id         String
-  Participants_profile Participants_profile          @relation(fields: [user_id], references: [user_id])
+  ParticipantsProfile ParticipantsProfile          @relation(fields: [user_id], references: [user_id])
   user_id             String
-  status              analysisEntryCompletionStatus @default(in_progress)
+  status              AnalysisEntryCompletionStatus @default(in_progress)
   created_at          DateTime                      @default(now())
   updated_at          DateTime                      @default(now()) @updatedAt
   url                 String?
@@ -133,13 +133,13 @@ enum AnalysisDevice {
   other
 }
 
-enum analysisStatus {
+enum AnalysisStatus {
   draft // analysis has been created but not yet published
   published // analysis has been published and participants can join the analysis
   completed // analysis has been completed and no more participants are accepted
 }
 
-enum analysisEntryCompletionStatus {
+enum AnalysisEntryCompletionStatus {
   in_progress // participant has started the analysis
   cancelled // analysis has been started by the participant but not submitted in time - Serves to prevent the participant from participating AGAIN in the analysis
   submitted // participant has submitted the analysis by the user
