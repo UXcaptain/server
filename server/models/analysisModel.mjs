@@ -14,7 +14,7 @@ export const createAnalysisInDb = async (analysisData) => {
       tasks: analysisData.tasks,
       max_number_of_participants: analysisData.maxNumberOfParticipants,
       scenario: analysisData.scenario,
-      owner: {
+      User: {
         connect: {
           id: analysisData.owner_id,
         },
