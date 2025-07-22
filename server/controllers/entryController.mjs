@@ -31,7 +31,7 @@ export const getAnalysisEntryPresignedUrl = async (req, res) => {
   if (!analysisEntryDetails.url) {
     return res.status(404).json({
       success: false,
-      message: 'Analysis entry not found',
+      message: 'Analysis does not have a video url',
     });
   }
 

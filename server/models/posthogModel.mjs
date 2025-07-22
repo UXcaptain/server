@@ -48,14 +48,14 @@ export const posthogUserLoggedOut = async (distinctId) => {
 export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: checkoutSessionData.metadata.userId,
+      distinctId: checkoutSessionData.userId,
       event: 'subscriptionCreated',
-      properties: {
+      /* properties: {
         $set: { // TODO - decide if this should be a person or event property
-          planName: checkoutSessionData.metadata.planName,
-          planBillingCycle: checkoutSessionData.metadata.planBillingCycle,
-        },
+        planName: checkoutSessionData.metadata.planName, // TODO - ADD THIS VALUE
+        planBillingCycle: checkoutSessionData.metadata.planBillingCycle, // TODO - ADD THIS VALUE
       },
+    }, */
     });
   } catch (error) {
     logError('error sending posthogUserSubscriptionCreated event to posthog', error, 'subscriptionCreated');
