@@ -1,6 +1,5 @@
 import { client } from '../config/posthog-node.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
-import { getUserByStripeCustomerId } from './userModel.mjs';
 
 export const posthogUserSignedUp = async (user) => {
   try {
