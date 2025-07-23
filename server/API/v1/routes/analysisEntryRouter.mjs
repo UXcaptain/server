@@ -1,5 +1,5 @@
 import Router from 'express';
-import { getAnalysisEntryPresignedUrl } from '../../../controllers/analysysEntryController.mjs';
+import { getAnalysisEntryPresignedUrl } from '../../../controllers/analysisEntryController.mjs';
 
 export const analysisEntryRouter = new Router();
 

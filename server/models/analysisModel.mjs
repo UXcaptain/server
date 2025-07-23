@@ -74,7 +74,7 @@ export const getAnalysisDataById = async (analysisId) => {
         select: {
           id: true,
           updated_at: true,
-          url: true,
+          aws_object_key: true,
           ParticipantsProfile: {
             select: {
               name: true,

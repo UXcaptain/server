@@ -25,26 +25,26 @@ model User {
   last_login_at      DateTime?
   stripe_customer_id String?
 
-  Subscription          Subscription[]
-  PasswordResetTokens PasswordResetTokens[]
-  Analysis              Analysis[]
-  Participants_profile  ParticipantsProfile[]
+  Subscription         Subscription[]
+  PasswordResetTokens  PasswordResetTokens[]
+  Analysis             Analysis[]
+  Participants_profile ParticipantsProfile[]
   CustomerProfile      CustomerProfile[]
 }
 
 model ParticipantsProfile {
-  id               String            @id
-  name             String?
-  last_name        String?
-  age              String? // String to allow for prefer not to say option
-  gender           Genders?
-  invited_by       String?
-  country          String?
-  devices          String[]          @default([])
-  created_at       DateTime          @default(now())
-  updated_at       DateTime          @default(now()) @updatedAt
-  User             User              @relation(fields: [user_id], references: [id])
-  user_id          String            @unique
+  id              String            @id
+  name            String?
+  last_name       String?
+  age             String? // String to allow for prefer not to say option
+  gender          Genders?
+  invited_by      String?
+  country         String?
+  devices         String[]          @default([])
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now()) @updatedAt
+  User            User              @relation(fields: [user_id], references: [id])
+  user_id         String            @unique
   AnalysisEntries AnalysisEntries[]
 }
 
@@ -84,18 +84,18 @@ model Subscription {
 
 model Analysis {
   id                         String            @id @default(uuid())
-  User                      User              @relation(fields: [owner_id], references: [id])
+  User                       User              @relation(fields: [owner_id], references: [id])
   owner_id                   String
   device                     AnalysisDevice
   name                       String
   scenario                   String
   tasks                      Json
   url                        String
-  status                    AnalysisStatus    @default(draft)
+  status                     AnalysisStatus    @default(draft)
   created_at                 DateTime          @default(now())
   updated_at                 DateTime          @default(now()) @updatedAt
   max_number_of_participants Int
-  AnalysisEntries                    AnalysisEntries[]
+  AnalysisEntries            AnalysisEntries[]
 
   @@index([owner_id]) // Not a unique field, but requires an index
 }
@@ -104,12 +104,12 @@ model AnalysisEntries {
   id                  String                        @id @default(uuid())
   Analysis            Analysis                      @relation(fields: [analysis_id], references: [id])
   analysis_id         String
-  ParticipantsProfile ParticipantsProfile          @relation(fields: [user_id], references: [user_id])
+  ParticipantsProfile ParticipantsProfile           @relation(fields: [user_id], references: [user_id])
   user_id             String
   status              AnalysisEntryCompletionStatus @default(in_progress)
   created_at          DateTime                      @default(now())
   updated_at          DateTime                      @default(now()) @updatedAt
-  url                 String?
+  aws_object_key      String?
 
   @@index([analysis_id, status])
 }

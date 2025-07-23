@@ -1,7 +1,7 @@
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { s3client } from '../integrations/aws/s3.mjs';
-import { getEntryDetailsById } from '../models/analysysEntryModel.mjs';
+import { getEntryDetailsById } from '../models/analysisEntryModel.mjs';
 
 export const uploadAnalysisEntry = async () => {
   // TODO -- create this function
@@ -28,7 +28,14 @@ export const getAnalysisEntryPresignedUrl = async (req, res) => {
 
   const analysisEntryDetails = await getEntryDetailsById(id);
 
-  if (!analysisEntryDetails.url) {
+  if (!analysisEntryDetails) {
+    return res.status(404).json({
+      success: false,
+      message: 'Analysis not found',
+    });
+  }
+
+  if (!analysisEntryDetails.aws_object_key) {
     return res.status(404).json({
       success: false,
       message: 'Analysis does not have a video url',
@@ -42,20 +49,14 @@ export const getAnalysisEntryPresignedUrl = async (req, res) => {
     });
   }
 
-  return res.status(200).json({
-    sucess: true,
-    message: 'video entry retrieved successfully',
-    entryUrl: 'exampleurl',
-  });
-
   const command = new GetObjectCommand({
-    Bucket: process.env.S3_BUCKET_NAME,
-    Key: analysisEntryDetails.url,
+    Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+    Key: `analysisEntry/${analysisEntryDetails.aws_object_key}`,
 
   });
 
   const analysisEntryUrl = await getSignedUrl(s3client, command, { expiresIn: 3600 });
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     analysisEntryUrl: analysisEntryUrl,
   });
