@@ -2,7 +2,7 @@ name: Push to Docker Hub, build and deploy :next tag image to Koyeb
 
 on:
     pull_request:
-        branches: [ "next" ]
+        branches: [ "latest" ]
 
 jobs:
     docker-build-and-push:
