@@ -1,5 +1,5 @@
-export const authenticationChecker = (req, res, next) => {
-  return next(); //* Enable for debugging
+export const checkAuthentication = () => (req, res, next) => {
+  // return next(); //* Enable for debugging
 
   if (!req.isAuthenticated()) {
     return res.status(401).json(

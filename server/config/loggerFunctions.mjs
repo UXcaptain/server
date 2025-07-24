@@ -1,5 +1,50 @@
 import { logger } from './logger.mjs';
-import { sendErrorLogsToTelegram } from '../integrations/telegram/sendErrorLogsToTelegram.mjs';
+import { sendErrorLogsToTelegram, sendInfoLogsToTelegram } from '../integrations/telegram/sendLogsToTelegram.mjs';
+
+export const logError = (errorMessage, error, additionalInfo = 'N/A') => {
+  try {
+    logger.error({
+      message: errorMessage,
+      context: {
+        name: error.name,
+        errorMessage: error.message,
+        // errorStack: error.stack,
+        errorDetails: error, // I will log the entire error object for now just in case
+        additionalInfo: additionalInfo,
+      },
+    });
+
+    sendErrorLogsToTelegram(errorMessage, error);
+  } catch (error) {
+    return;
+  }
+};
+
+export const logWarn = async (message, error, additionalInfo = 'N/A') => {
+  logger.warn({
+    message: message,
+    context: {
+      name: error.name || 'no error name',
+      errorMessage: error.message || 'no error message',
+      errorStack: error.stack || 'no error stack',
+      errorDetails: error, // I will log the entire error object for now just in case
+      additionalInfo: additionalInfo,
+    },
+  });
+};
+
+export const logInfo = async (message, context = 'no context') => {
+  try {
+    logger.info({
+      message: message,
+      context: context,
+    });
+
+    sendInfoLogsToTelegram(message);
+  } catch (error) {
+    logError(`error in storing INFO logs for: ${message}`, error);
+  }
+};
 
 export const logUserLoggedInSuccessfully = (userId, loginMethod) => {
   logger.info({
@@ -12,13 +57,12 @@ export const logUserLoggedInSuccessfully = (userId, loginMethod) => {
   });
 };
 
-export const logUserCreatedInDB = (userId, user) => {
+export const logPasswordResetTokenCreated = (userId) => {
   logger.info({
-    message: 'User succesfully created in database',
+    message: 'User password reset token succesfully created in database',
     context: {
       userData: {
         userId: userId,
-        role: user.userDetails.role,
       },
     },
   });
@@ -50,43 +94,6 @@ export const logFatalMongoDBSessionInitError = (error) => {
       errorMessage: error.message,
       errorStack: error.stack,
       errorDetails: error, // I will log the entire error object for now just in case}
-    },
-  });
-};
-
-export const logPasswordUpdated = (userId) => {
-  logger.info({
-    message: 'Password updated successfully',
-    context: {
-      userId: userId,
-    },
-  });
-};
-
-export const logError = (message, error, additionalInfo = 'N/A') => {
-  logger.error({
-    message: message,
-    context: {
-      name: error.name,
-      errorMessage: error.message,
-      // errorStack: error.stack,
-      errorDetails: error, // I will log the entire error object for now just in case
-      additionalInfo: additionalInfo,
-    },
-  });
-
-  sendErrorLogsToTelegram(error);
-};
-
-export const logWarn = async (message, error, additionalInfo = 'N/A') => {
-  logger.warn({
-    message: message,
-    context: {
-      name: error.name || 'no error name',
-      errorMessage: error.message || 'no error message',
-      errorStack: error.stack || 'no error stack',
-      errorDetails: error, // I will log the entire error object for now just in case
-      additionalInfo: additionalInfo,
     },
   });
 };

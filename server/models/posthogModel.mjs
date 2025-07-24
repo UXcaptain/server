@@ -1,5 +1,6 @@
 import { client } from '../config/posthog-node.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
+import { getUserByStripeCustomerId } from './userModel.mjs';
 
 export const posthogUserSignedUp = async (user) => {
   try {
@@ -7,17 +8,14 @@ export const posthogUserSignedUp = async (user) => {
       distinctId: user.id,
       event: 'userSignedUp',
       properties: {
-        $set: {
-        //   userEmail: user.userDetails.email,
-        //* Not needed for now and its safer in regards to GDPR
-          userRole: user.role,
+        $set_once: {
+          email: user.email,
+          role: user.role,
         },
       },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userSignedUp');
-  } finally {
-    await client.shutdown();
+    logError('error sending posthogUserSignedUp event to posthog', error, 'userSignedUp');
   }
 };
 
@@ -27,13 +25,13 @@ export const posthogUserSuccessLoggedIn = async (distinctId, loginMethod) => {
       distinctId: distinctId,
       event: 'userLoggedIn',
       properties: {
-        loginMethod,
+        $set: {
+          loginMethod: loginMethod,
+        },
       },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userSuccessLogin');
-  } finally {
-    await client.shutdown();
+    logError('error sending posthogUserSuccessLoggedIn event to posthog', error, 'userSuccessLogin');
   }
 };
 
@@ -45,22 +43,46 @@ export const posthogUserLoggedOut = async (distinctId) => {
       event: 'userLoggedOut',
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'userLoggedOut');
-  } finally {
-    await client.shutdown();
+    logError('error sending posthogUserLoggedOut event to posthog', error, 'userLoggedOut');
   }
 };
 
-export const posthogUserPaymentCompleted = async (distinctId) => {
+export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: `${distinctId}`,
-      event: 'paymentCompleted',
+      distinctId: checkoutSessionData.metadata.userId,
+      event: 'subscriptionCreated',
+      properties: {
+        $set: {
+          planName: checkoutSessionData.metadata.planName,
+          planBillingCycle: checkoutSessionData.metadata.planBillingCycle,
+        },
+      },
     });
   } catch (error) {
-    logError('error sending event to posthog', error, 'paymentCompleted');
-  } finally {
-    client.shutdown();
+    logError('error sending posthogUserSubscriptionCreated event to posthog', error, 'subscriptionCreated');
+  }
+};
+
+export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => {
+  try {
+    client.capture({
+      distinctId: subscriptionDeletionData.metadata.userId,
+      event: 'subscriptionCancelled',
+    });
+  } catch (error) {
+    logError('error sending posthogUserSubscriptionEnded event to posthog', error, 'subscriptionEnded');
+  }
+};
+
+export const posthogCreateBillingId = (distinctId) => {
+  try {
+    client.capture({
+      distinctId: distinctId,
+      event: 'createBillingId',
+    });
+  } catch (error) {
+    logError('error sending event to posthog', error, 'subscriptionCanceled');
   }
 };
 
@@ -69,15 +91,19 @@ export const posthogUserDeleteAccount = async (distinctId) => {
     client.capture({
       distinctId: distinctId,
       event: 'userDeletedAccount',
+      properties: {
+        set: {
+          isDeleted: true,
+        },
+        $unset: ['email'],
+      },
     });
   } catch (error) {
     logError('error sending posthogUserDeleteAccount event to posthog', error, 'userDeletedAccount');
-  } finally {
-    await client.shutdown();
   }
 };
 
-export const posthogUserUpdatedPassword = async (distinctId) => {
+export const posthogAnalysisCreated = async (distinctId) => {
   try {
     client.capture({
       distinctId,
@@ -85,7 +111,5 @@ export const posthogUserUpdatedPassword = async (distinctId) => {
     });
   } catch (error) {
     logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
-  } finally {
-    await client.shutdown();
   }
 };

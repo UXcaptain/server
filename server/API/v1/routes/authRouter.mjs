@@ -1,48 +1,42 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
-  checkPasswordResetTokenExpirationDate,
   createUser,
-  updateRecoveredUserPassword,
   updateUserPassword,
-} from '../../../controllers/userController.mjs';
+  checkSession,
+  requestPasswordResetToken,
+  loginLocal,
+  checkPasswordResetTokenValidity,
+  updateRecoveredUserPassword,
+  logoutUser,
+} from '../../../controllers/authController.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
 import { userLoginValidationSchema } from '../../../utils/validators/userLoginValidationSchema.mjs';
 
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
-import { logError } from '../../../config/loggerFunctions.mjs';
-import { checkSession, forgotPasswordRequest, loginLocal } from '../../../controllers/authController.mjs';
+import { recoverPasswordSchema } from '../../../utils/validators/recoverPasswordSchema.mjs';
+import { checkAuthentication } from '../../../middlewares/authenticationChecker.mjs';
 
 export const authRouter = Router();
 
 authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-authRouter.post('/logout', (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      logError('User logout failed', err);
-      return next(err);
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'User logged out successfully',
-    });
-  });
-});
-
 authRouter.post('/register/local', checkSchema(createUserValidationSchema), sanitizerResult, createUser);
+
+authRouter.get('/password-reset', checkPasswordResetTokenValidity);
+
+authRouter.post('/password-reset', requestPasswordResetToken);
+
+authRouter.patch('/password-reset', checkSchema(recoverPasswordSchema), sanitizerResult, updateRecoveredUserPassword);
+
+authRouter.use(checkAuthentication());
+
+authRouter.post('/logout', logoutUser);
 
 authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
 
-authRouter.get('/validate-password-reset-token', checkPasswordResetTokenExpirationDate);
-
-authRouter.post('/request-new-password', forgotPasswordRequest);
-
-authRouter.patch('/create-new-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateRecoveredUserPassword);
-
-authRouter.get('/check-session', checkSession);
+authRouter.get('/session', checkSession);
 
 authRouter.get('/*fallback', (req, res) => {
   res.status(404).send('requested API Route does not exist in the userRouter');

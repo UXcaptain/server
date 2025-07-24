@@ -1,7 +1,7 @@
 import { apiInstance, emailInstance } from './brevo.mjs';
 import { logError } from '../../../config/loggerFunctions.mjs';
 
-export const sendResetPasswordTokenToUser = async (email, token) => {
+export const sendResetPasswordTokenToUser = async (userEmail, passwordResetToken) => {
   try {
     emailInstance.sender = {
       // name: "XXX", //* Managed in the template
@@ -9,17 +9,18 @@ export const sendResetPasswordTokenToUser = async (email, token) => {
     };
 
     emailInstance.to = [{
-      email: email,
+      email: userEmail,
     }];
 
     emailInstance.templateId = 2; //* Direct link to the template --> https://my.brevo.com/camp/template/2/setup
 
     emailInstance.params = {
-      token: token,
+      passwordResetToken: passwordResetToken,
     };
 
-    await apiInstance.sendTransacEmail(emailInstance);
+    return await apiInstance.sendTransacEmail(emailInstance);
   } catch (error) {
-    logError('error sending sendResetPasswordTokenToUser', error);
+    return logError('error sending sendResetPasswordTokenToUser', error); //* NOT throwing an error since req-res
+    //*  flow should not be interrupted with this email send operation
   }
 };

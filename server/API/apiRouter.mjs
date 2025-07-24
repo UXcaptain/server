@@ -1,27 +1,48 @@
 import { Router } from 'express';
 
-import { stripeEventHandler } from './v1/webhooks/stripe/stripeEventHandler.mjs';
 import { userRouter } from './v1/routes/userRouter.mjs';
 
 import { authRouter } from './v1/routes/authRouter.mjs';
 import { adminRouter } from './v1/routes/adminRouter.mjs';
-import { stripeRouter } from './v1/routes/stripeRouter.mjs';
+import { billingRouter } from './v1/routes/billingRouter.mjs';
 import { analysisRouter } from './v1/routes/analysisRouter.mjs';
-import { authenticationChecker } from '../middlewares/authenticationChecker.mjs';
+import { checkAuthentication } from '../middlewares/authenticationChecker.mjs';
+import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.mjs';
 
 export const apiRouter = Router();
 
-apiRouter.post('/v1/webhooks/stripe', stripeEventHandler);
-
-// Auth protected routes
-apiRouter.use(authenticationChecker);
+const customerRole = 'customer';
+const adminRole = 'admin';
 
 apiRouter.use('/v1/auth', authRouter);
-apiRouter.use('/v1/stripe', stripeRouter);
-apiRouter.use('/v1/user', userRouter);
-apiRouter.use('/v1/analysis', analysisRouter);
 
-apiRouter.use('/v1/admin', adminRouter);
+//* Globally auth protected routes
+
+apiRouter.use(checkAuthentication());
+
+apiRouter.use(
+  '/v1/billing',
+  checkPermissionByRole(customerRole),
+  billingRouter,
+);
+
+apiRouter.use(
+  '/v1/user',
+  checkPermissionByRole(customerRole),
+  userRouter,
+);
+
+apiRouter.use(
+  '/v1/analysis',
+  checkPermissionByRole(customerRole),
+  analysisRouter,
+);
+
+apiRouter.use(
+  '/v1/admin',
+  checkPermissionByRole(adminRole),
+  adminRouter,
+);
 
 apiRouter.use('/*fallback', (req, res) => {
   res.status(404).send('The requested route is not available or does not exist');

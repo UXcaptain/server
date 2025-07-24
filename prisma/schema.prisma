@@ -19,7 +19,7 @@ model User {
   id                 String    @id @default(uuid())
   email              String    @unique
   password           String
-  role               userRoles @default(customer)
+  role               userRoles
   created_at         DateTime  @default(now())
   last_updated_at    DateTime  @updatedAt
   last_login_at      DateTime?
@@ -48,19 +48,14 @@ model Session {
 
 
 model Subscription {
-  id      Int    @id @default(autoincrement())
+  id      String    @id
   user    User   @relation(fields: [user_id], references: [id])
   user_id String
 
-  // Subscription information
-  plan_name String
-  status    String // active, refunded, cancelled
-
   // Timestamps - createdAt and updatedAt are automatically managed by Prisma
   created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
 
-  @@index([user_id, status])
+  @@index([user_id])
 }
 
 model Analysis {

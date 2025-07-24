@@ -1,90 +1,76 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { logError } from '../config/loggerFunctions.mjs';
+import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
-export const storeSubscriptionInDb = async (subscriptionData) => {
-  try {
-    await prisma.subscription.create({
-      data: {
-        user: {
-          connect: {
-            stripe_customer_id: subscriptionData.customer,
-          },
+export const storeSubscriptionInDb = async (checkoutSessionData) => {
+  await prisma.subscription.create({
+    data: {
+      user: {
+        connect: {
+          id: checkoutSessionData.metadata.userId,
         },
-        plan_name: subscriptionData.planType || 'basic',
-        status: subscriptionData.status,
-
       },
-    });
-  } catch (error) {
-    logError('Error storing transaction:', error);
-  }
+      id: checkoutSessionData.subscriptionId,
+    },
+  });
+
+  posthogUserSubscriptionCreated(checkoutSessionData);
 };
 
-export const storeStripeCustomerIdInDb = async (userId, stripeCustomerId) => {
-  try {
-    const whereClause = {
-      id: userId,
-    };
+export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
+  const whereClause = {
+    id: userId,
+  };
 
-    const user = await prisma.user.update({
-      where: whereClause,
-      data: {
-        stripe_customer_id: stripeCustomerId,
-      },
-    });
+  const user = await prisma.user.update({
+    where: whereClause,
+    data: {
+      stripe_customer_id: stripeCustomerId,
+    },
+  });
 
-    return user;
-  } catch (error) {
-    logError('Error storing Stripe customer ID:', error);
-    throw error;
-  }
+  posthogCreateBillingId(userId);
+
+  return user;
 };
 
-export const markSubscriptionAsCancelledInDb = async (cancelData) => {
-  try {
-    const whereClause = {
-      stripe_subscription_id: cancelData.id,
-    };
+export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
+  const whereClause = {
+    stripe_subscription_id: subscriptionDeletionData.subscriptionId,
+  };
 
-    await prisma.subscription.update({
-      where: whereClause,
-      data: {
-        status: 'cancelled',
-        current_period_end_date: new Date(cancelData.cancelAt * 1000),
-      },
-    });
-  } catch (error) {
-    logError('error marking subscription as cancelled', error);
-  }
+  await prisma.subscription.delete({
+    where: whereClause,
+  });
+
+  posthogUserSubscriptionEnded(subscriptionDeletionData);
 };
 
-export const getSubscriptionDataInDb = async (userId) => {
-  try {
-    const whereClause = {
-      AND: [
-        {
-          user_id: userId,
-        },
-        {
-          status: 'active',
-        },
-      ],
+export const getBillingDataInDb = async (userId) => {
+  const whereClause = {
+    id: userId,
+  };
 
-    };
-
-    const subscriptionData = await prisma.subscription.findFirst({
-      where: whereClause,
-      select: {
-        status: true,
-        plan_name: true,
+  const billingData = await prisma.user.findUnique({
+    where: whereClause,
+    omit: {
+      id: true,
+      email: true,
+      role: true,
+      created_at: true,
+      last_updated_at: true,
+      last_login_at: true,
+      password: true,
+    },
+    include: {
+      Subscription: {
+        omit: {
+          user_id: true,
+          created_at: true,
+        },
       },
-    });
-
-    return subscriptionData;
-  } catch (error) {
-    logError('error checking for active subscriptions', error);
-    throw error;
-  }
+    },
+  });
+  return billingData;
 };

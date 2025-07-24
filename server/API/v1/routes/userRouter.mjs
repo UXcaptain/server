@@ -1,12 +1,8 @@
 import { Router } from 'express';
-import { getUserProfile, deleteUser } from '../../../controllers/userController.mjs';
-import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
+import { getUserProfile } from '../../../controllers/userController.mjs';
+import { deleteUser } from '../../../controllers/authController.mjs';
 
 export const userRouter = Router();
-
-// TODO - fix authentication in tests
-
-userRouter.use(checkPermissionByRole('customer'));
 
 userRouter.get('/', getUserProfile);
 

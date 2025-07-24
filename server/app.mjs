@@ -10,6 +10,8 @@ import { indexRouter } from './routers/indexRouter.mjs';
 import { limiter } from './middlewares/express-rate-limiter.mjs';
 import { slowLimiter } from './middlewares/express-slow-down.mjs';
 import { startCronJobs } from './cron/jobsContainer.mjs';
+import { globalErrorHandler } from './middlewares/globalErrorHandler.mjs';
+import { webhookRouter } from './webhooks/webhooksRouter.mjs';
 
 const app = express();
 const server = createServer(app);
@@ -20,6 +22,9 @@ app.use(corsMiddleware);
 app.use(cookieParserMiddleware);
 if (process.env.NODE_ENV === 'production') app.use(slowLimiter);
 if (process.env.NODE_ENV === 'production') app.use(limiter);
+
+//* Webhooks router
+app.use('/webhooks', webhookRouter);
 
 //* Middleware to create parse request (read req.body from form data & JSON) & parse query
 app.use(express.urlencoded());
@@ -36,11 +41,7 @@ app.use('/api/', apiRouter);
 app.use('/', indexRouter);
 
 //* Middleware to catch & handle errors
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).send(err.message);
-
-  next();
-});
+app.use(globalErrorHandler);
 
 //* Start the server
 server.listen(process.env.PORT, () => {

@@ -1,274 +1,32 @@
-import bcrypt from 'bcryptjs';
-import { User } from '../utils/classes/User.mjs';
 import {
-  createUserInDB,
-  getUserByEmail,
   getUserById,
-  deleteUserInDb,
-  updateUserPasswordInDB,
 } from '../models/userModel.mjs';
-import { deletePasswordResetTokens, getPasswordResetTokenData } from '../models/passwordResetTokensModel.mjs';
-import { logError } from '../config/loggerFunctions.mjs';
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const getUserProfile = async (req, res) => {
-  try {
-    const userId = req.user.id;
+  const userId = req.user.id;
 
-    const cacheKey = userId;
+  const cacheKey = `userId-${userId}`;
 
-    const cachedUser = await getFromCache(cacheKey);
+  const cachedUser = await getFromCache(cacheKey);
 
-    if (cachedUser) {
-      return res.status(200).json({
-        success: true,
-        message: 'user profile retrieved successfully - cache',
-        cacheKey: cacheKey,
-        cacheTTL_seconds: await getTTLfromCache(cacheKey),
-        user: JSON.parse(cachedUser),
-      });
-    }
-
-    const user = await getUserById(cacheKey);
-
-    await storeInCache(cacheKey, user, 60 * 5); //* Cache for 5 minutes
-
+  if (cachedUser) {
     return res.status(200).json({
       success: true,
-      message: 'user profile retrieved successfully - DB',
-      user: user,
-    });
-  } catch (error) {
-    logError('User profile retrieval failed', error);
-    return res.status(500).json({
-      success: false,
-      message: 'User profile retrieval failed',
-    });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  try {
-    await deleteUserInDb(req.user.id);
-
-    return res.status(200).json({
-      success: true,
-      message: 'User deleted successfully',
-    });
-  } catch (error) {
-    logError('User deletion failed', error);
-
-    if (error.code === 'P2003') {
-      res.status(409).json({
-        success: false,
-        message: 'User deletion failed - Related DB entries exist',
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: 'User deletion failed - Please try again later',
-    });
-  }
-};
-
-export const createUser = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(422).json({
-      success: false,
-      message: 'User could not be created due to validation errors',
-      errors: req.sanitizedErrors,
+      message: 'user profile retrieved successfully - cache',
+      cacheKey: cacheKey,
+      cacheTTL_seconds: await getTTLfromCache(cacheKey),
+      user: JSON.parse(cachedUser),
     });
   }
 
-  try {
-    const userData = {
-      username: req.body.username,
-      password: await bcrypt.hash(req.body.password, 10),
-    };
+  const user = await getUserById(req.user.id);
 
-    const existingUser = await getUserByEmail(userData.username);
+  await storeInCache(cacheKey, user, 60 * 5); //* Cache for 5 minutes
 
-    if (existingUser !== null) {
-      return res.status(409).json({
-        success: false,
-        message: 'User creation failed - The email address already exists',
-      });
-    }
-
-    const createdUser = await createUserInDB(new User(userData));
-
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: 'User creation failed - Please try again in a few minutes',
-    });
-  }
-};
-
-export const checkPasswordResetTokenExpirationDate = async (req, res) => {
-  try {
-    const { token } = req.query;
-
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token is required',
-      });
-    }
-
-    const passwordResetTokenData = await getPasswordResetTokenData(token);
-
-    if (!passwordResetTokenData) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token not found',
-      });
-    }
-
-    const {
-      token_expires: tokenExpirationDate,
-    } = passwordResetTokenData;
-
-    if (new Date(tokenExpirationDate) < new Date()) {
-      return res.status(401).json({
-        success: false,
-        message: 'Token expired - Please request a new password reset link',
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: 'Token is valid',
-      tokenData: passwordResetTokenData,
-    });
-  } catch (error) {
-    logError('Token expiration date retrieval failed', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Token expiration date retrieval failed',
-    });
-  }
-};
-
-export const updateRecoveredUserPassword = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(422).json({
-      success: false,
-      message: req.sanitizedErrors,
-    });
-  }
-
-  try {
-    const {
-      newPassword,
-      confirmNewPassword,
-      token,
-    } = req.body;
-
-    const passwordResetTokenData = await getPasswordResetTokenData(token);
-
-    if (!passwordResetTokenData) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid token',
-      });
-    }
-
-    const {
-      userId,
-      tokenExpires,
-    } = passwordResetTokenData;
-
-    if (new Date(tokenExpires) < new Date()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Token expired - Please request a new password reset link',
-      });
-    }
-
-    if (newPassword !== confirmNewPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Passwords do not match',
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    await updateUserPasswordInDB(userId, hashedPassword);
-
-    await deletePasswordResetTokens(userId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Password updated successfully',
-    });
-  } catch (error) {
-    logError('Error updating user password', error);
-    return res.status(500).json({
-      success: false,
-      message: 'An error occurred, please try again later',
-    });
-  }
-};
-
-export const updateUserPassword = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(422).json({
-      success: false,
-      message: req.sanitizedErrors,
-    });
-  }
-
-  const {
-    currentPassword,
-    newPassword,
-  } = req.body;
-
-  try {
-    const userId = req.user.id;
-    const user = await getUserById(userId);
-
-    if (user === null) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found',
-      });
-    }
-    const storedPasswordHash = user.password;
-
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Compare current password with stored hash
-    const isMatch = await bcrypt.compare(currentPassword, storedPasswordHash);
-
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password update failed - old password is incorrect',
-      });
-    }
-
-    // Update password in database
-    const updatedUser = await updateUserPasswordInDB(userId, hashedPassword);
-
-    return res.status(200).json({
-      success: true,
-      message: 'Password updated successfully',
-      result: updatedUser,
-    });
-  } catch (error) {
-    logError('Password update failed', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Password update failed',
-    });
-  }
+  return res.status(200).json({
+    success: true,
+    message: 'user profile retrieved successfully - DB',
+    user: user,
+  });
 };

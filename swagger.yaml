@@ -209,7 +209,51 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
-    
+
+  /v1/auth/session:
+    get:
+      summary: Checks if the session is active
+      description: Checks if the session is active for a given UserId
+      tags: ["auth"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Session is valid
+                          ]
+                        user:
+                            type: object
+                            properties:
+                              id:
+                                $ref: '#/components/schemas/UserId'
+                              role:
+                                $ref: '#/components/schemas/UserRoles'
+        401:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  Session is invalid
+                                ]
+
   /v1/auth/register/local:
     post:
 
@@ -229,12 +273,9 @@ paths:
                             email:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
         responses:
-            200:
+            201:
                 description: Success
                 content:
                   application/json:
@@ -306,10 +347,7 @@ paths:
                             email:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
         responses:
             200:
                 description: Success
@@ -374,6 +412,53 @@ paths:
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
+  /v1/auth/logout:
+    post:
+        summary: Local strategy logout  route
+        description: Logs out a currently authenticated user using local strategy.
+        tags: ["auth"]
+
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  User logged out successfully
+                                ]
+            400:
+              description: User is not logged in
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                  type: string
+                                  examples: [
+                                    User is not logged in
+                                  ]
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
   /v1/auth/update-user-password:
     patch:
       summary: Update the password of a user
@@ -390,15 +475,9 @@ paths:
                           - newPassword
                         properties:
                             currentPassword:
-                                type: string
-                                format: password
-                                example: 123456
-
+                                $ref: "#/components/schemas/UserPassword"
                             newPassword:
-                                type: string
-                                format: password
-                                description: user password
-                                example: 123456
+                                $ref: "#/components/schemas/UserPassword"
       responses:
         200:
                 description: Success
@@ -411,8 +490,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
-                                example: Password updated successfully
-             
+                                example: Password updated successfully  
         400:
               description: Password update failed - old password is incorrect
               content:
@@ -469,24 +547,183 @@ paths:
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/validate-password-reset-token:
+  /v1/auth/password-reset:
     get:
       summary: Validate the password reset token
       description: Validate the password reset token.
       tags: ["auth"]
+      parameters:
+          - name: token
+            in: query
+            description: Indicates the status of token
+            required: true
+            schema: 
+                $ref: "#/components/schemas/PasswordResetToken"
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Successfully retrieved password reset token
+        400:
+          description: Password reset token has not been provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Password reset token not provided 
+        403:
+          description: Password reset token is expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Token expired - Please request a new password reset link 
+        404:
+          description: Password reset token was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Password reset token does not exist 
+        
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/request-new-password:
     post:
       summary: Request a new password reset token
       description: Request a new password reset token for the user.
       tags: ["auth"]
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+                type: object
+                required:
+                  - email
+                properties:
+                      email:
+                        $ref: '#/components/schemas/UserEmail'
+      
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: If this email exists, a reset link will be sent
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/auth/create-new-user-password:
     patch:
-      summary: Create a new password for the user using the password reset token
+      summary: Update user password using password reset token
       tags: ["auth"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  newPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  confirmNewPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  passwordResetToken:
+                      $ref: "#/components/schemas/PasswordResetToken"
+
+
+      responses:
+        200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessTrueStatus"
+                    message:
+                      type: string
+                      example: User password updated successfully using password reset token
+        422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  Analysis could not be created due to validation errors
+                                ]
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
   /v1/user:
     get:
@@ -734,7 +971,7 @@ paths:
                           message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis/{AnalisisId}:
+  /v1/analysis/{AnalysisId}:
     get:
       summary: Retrieve one analysis
       description: Retrieve all analysis details for a given analysis.
@@ -820,8 +1057,193 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
+  /v1/billing:
+    get:
+      summary: Returns the billing data of the currently authenticated user
+      description: Retrieve billing & subscription status 
+      tags: ["billing"]
 
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Billing data retrieved successfully - cache,
+                            Billing data retrieved successfully - DB
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        billingData:
+                              type: object
+                              properties:
+                                stripe_customer_id:
+                                  $ref: '#/components/schemas/StripeCustomerId'
+                                Subscriptions:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/SubscriptionData'
 
+                  
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+    
+    post:
+      summary: Creates a stripe customer ID for the currently authenticated user
+      description: Creates a stripe customer ID for the currently authenticated user
+      tags: ["billing"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Customer created successfully
+                          ]
+                        StripeCustomerId:
+                          $ref: '#/components/schemas/StripeCustomerId'
+        400:
+          description: Customer already has a stripe customer id
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  customer already has a stripe customer id
+                                ]
+                              StripeCustomerId:
+                                $ref: '#/components/schemas/StripeCustomerId'
+        
+        
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing/checkout-session:
+    post:
+      summary: Creates a billing checkout session
+      description: Creates a billing checkout session for the currently authenticated user
+      tags: ["billing"]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - planName
+              - planBillingCycle
+              properties:
+                  planName:
+                    $ref: '#/components/schemas/BillingPlanName'
+                  planBillingCycle:
+                    $ref: '#/components/schemas/BillingPlanBillingCycle'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Billing checkout session generated successfully
+                          ]
+                        checkoutSessionUrl:
+                          $ref: '#/components/schemas/BillingCheckoutSessionUrl'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing/customer-portal:
+    post:
+      summary: Creates a billing portal
+      description: Creates a billing checkout session for the currently authenticated user
+      tags: ["billing"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            Billing checkout session generated successfully
+                          ]
+                        customerPortalUrl:
+                          $ref: '#/components/schemas/BillingCustomerPortalUrl'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
 
 components:
   schemas:
@@ -840,36 +1262,51 @@ components:
       description: The unique identifier of a user
       type: string
       format: uuid
-      example: c20432a3-7667-4b82-a653-f0af5cf47464  
+      examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
 
     AnalysisId:
         description: The unique identifier of an analysis
         type: string
         format: uuid
-        example: 0464ac85-e565-4d44-bde7-d6de0aa358ea  
+        examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
     
     EntryId:
         description: The unique identifier of an entry
         type: string
         format: uuid
-        example: d7c8843e-b500-45be-a3e6-7f2d3c33ae13
+        examples: [
+          "d7c8843e-b500-45be-a3e6-7f2d3c33ae13"
+        ]
     
     UserRoles:
       type: string
       enum: [customer, admin, participant]
       description: role assigned to user
-      example: customer
+      examples: [
+        customer,
+        admin,
+        participant
+      ]
     
     CacheTTL_seconds:
       type: string
       default: 60
       description: time in seconds for cache to expire - * Returned only if cache is used
-      example: 60
+      examples: [
+        60
+      ]
 
     CacheKey:
       type: string
       description: unique identifier for cache entry - * Returned only if cache is used
-      example: "allUsers-{\"role\":\"customer\"}-all"
+      examples: [
+        "allUsers-{\"role\":\"customer\"}-all",
+        "userId-5586eab9-e25c-48b6-a3c9-73a567218b81",
+      ]
 
     ValidationErrors:
       type: object
@@ -933,7 +1370,8 @@ components:
       type: string
       description: The Stripe customer ID associated with the user
       examples: [
-        123456
+        cus_SWWUxsoPPQnVSb,
+        cus_HvgQzGHkJLqERn,
       ]
 
     Analysis:
@@ -1096,15 +1534,87 @@ components:
         username@gmail.com
       ]
 
+    UserPassword:
+      type: string
+      format: password
+      description: user password
+      example: 123456
+
+    PasswordResetToken:
+      type: string
+      format: uuid
+      description: Token for restoring password
+      examples: [
+        9f4398c9-c049-40dd-85f7-28d04eb7b3ae
+      ]
+
+    StripeSubscriptionId:
+      type: string
+      description: The Stripe subscription ID associated with a user's subscription
+      examples: [
+        sub_1ReNIs4EThrTH3Et8fmPxMXe
+      ]
+
+    SubscriptionData:
+      type: object
+      properties:
+        subscriptionId:
+          $ref: '#/components/schemas/StripeSubscriptionId'
+
+    BillingPlanBillingCycle:
+      type: string
+      description: Indicates the renewal frequency of the billing plan
+      examples: [
+        monthly,
+        biannual,
+        annual        
+      ]
+
+    BillingPlanName:
+      type: string
+      description: Indicates the name of the billing plan
+      examples: [
+        free,
+        basic,
+        pro,
+        enterprise
+      ]
+
+    BillingPlanStatus:
+      type: string
+      enum: [active, refunded, cancelled]
+      description: Indicates the status of the billing
+      examples: [
+        active,
+        refunded,
+        cancelled
+      ]
+
+    BillingCheckoutSessionUrl:
+      type: string
+      format: url
+      description: Indicates the checkout session URL provided by the billing partner
+      examples: [
+        https://checkout.stripe.com/c/pay/cs_test_b1hyOpSnwbXh52Fd7u33UIgaiUayRJPKj2ByJWknbODW0T83p9f2RQYeyj#fid2cGd2ZndsdXFsamtQa2x0cGBrYHZ2QGtkZ2lgYSc%2FY2RpdmApJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXPHJcXDFAUW13UU02QHFhXzFQZEZoVGlHVU9fNVBMVkpdVUl%2FU0Jrb3Z3Zkl1YT1gZktmajY8f2hwU0ZhUjJAZjFMfTNSXGFrfWtoUkoxfERiS1VOT2Y1NWhHf21WUnBsJyknY3dqaFZgd3Ngdyc%2FcXdwYCknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl
+      ]
+
+    BillingCustomerPortalUrl:
+      type: string
+      format: url
+      description: Indicates the billing portal URL provided by the billing partner
+      examples: [
+        https://billing.stripe.com/p/session/test_YWNjdF8xUjl3WVk0RVRoclRIM0V0LF9TWGRGSnZnZFNVa1l2M3FZZEJwTzRrYllnWFBiZXVU01008zqe7Luk
+      ]
+
     InternalErrorMessage:
       type: string
       description: Indicates an internal error failure (status 500)
       example: Internal server error - Please contact us
   
-  securitySchemes:
-    ApiKey:
-      type: apiKey
-      in: header
-      name: X-Api-Key
-security:
-  - ApiKey: []
+#   securitySchemes: # * Not using API Key for now, but will be used later
+#     ApiKey:
+#       type: apiKey
+#       in: header
+#       name: X-Api-Key
+# security:
+#   - ApiKey: []

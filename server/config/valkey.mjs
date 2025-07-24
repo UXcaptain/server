@@ -1,5 +1,6 @@
 import {
-  TimeoutError, TimeUnit, GlideClient, Logger,
+  TimeUnit,
+  GlideClient,
 } from '@valkey/valkey-glide';
 import { logError } from './loggerFunctions.mjs';
 // When Valkey is in standalone mode,
@@ -12,31 +13,32 @@ const valkeyOptions = {
       port: process.env.VALKEY_CACHE_PORT,
     },
   ],
-  clientName: 'uxmonkeys-cache',
+  credentials: { // https://valkey.io/valkey-glide/node/BaseClient/interfaces/ServerCredentials/
+    password: process.env.VALKEY_CACHE_PASSWORD,
+  },
+  clientName: 'backend-server',
   requestTimeout: 30, //* In MS - Enough time for a cache miss or cache error
+  lazyConnect: true, // https://valkey.io/valkey-glide/node/BaseClient/interfaces/BaseClientConfiguration/#lazyconnect
 };
 
 // Check `GlideClientConfiguration/GlideClusterClientConfiguration` for additional options.
-export const valkeyClient = await GlideClient.createClient(valkeyOptions);
+export const valkeyClient = null;
+// export const valkeyClient = await GlideClient.createClient(valkeyOptions);
 
 // The empty array signifies that there are no additional
 
 export const getFromCache = async (key) => {
   try {
-    // return; //* DEBUG
-
     const result = await valkeyClient.get(key);
     return result;
   } catch (error) {
-    logError('Error getting from cache', error);
+    logError(`Error getting key: ${key} from cache`, error);
     return null;
   }
 };
 
 export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
   try {
-    // return; //* DEBUG
-
     return await valkeyClient.set(key, JSON.stringify(unstringifiedValue), {
       expiry: {
         type: TimeUnit.Seconds,
@@ -44,18 +46,27 @@ export const storeInCache = async (key, unstringifiedValue, ttlSeconds) => {
       },
     });
   } catch (error) {
-    logError('Error storing in cache', error);
+    logError(`Error storing key: ${key} in cache`, error);
     return null;
   }
 };
 
 export const getTTLfromCache = async (key) => {
   try {
-    // return; //* DEBUG
     const result = await valkeyClient.ttl(key);
     return result;
   } catch (error) {
-    logError('Error getting TTL from cache', error);
+    logError(`Error getting TTL for key ${key} from cache`, error);
+    return null;
+  }
+};
+
+export const removeFromCache = async (key) => {
+  try {
+    const result = await valkeyClient.del(key);
+    return result;
+  } catch (error) {
+    logError(`Error removing key: ${key} from cache`, error);
     return null;
   }
 };

@@ -29,7 +29,6 @@ staging.env
 
 # middlewares
 server/middlewares/permissionByRoleChecker.mjs
-server/middlewares/authenticationChecker.mjs
 server/middlewares/subscriptionChecker.mjs
 
 # prisma client
