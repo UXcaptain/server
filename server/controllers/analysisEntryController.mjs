@@ -51,7 +51,7 @@ export const getAnalysisEntryPresignedUrl = async (req, res) => {
 
   const command = new GetObjectCommand({
     Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
-    Key: `analysisEntry/${analysisEntryDetails.aws_object_key}`,
+    Key: `analysis/${analysisEntryDetails.analysis_id}/analysisEntry/${analysisEntryDetails.aws_object_key}`,
 
   });
 

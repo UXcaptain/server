@@ -10,6 +10,7 @@ export const getEntryDetailsById = async (entryId) => {
   const getEntryDetailsByIdQuery = await prisma.analysisEntries.findUnique({
     where: whereClause,
     select: {
+      analysis_id: true,
       aws_object_key: true,
       Analysis: {
         select: {
