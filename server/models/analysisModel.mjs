@@ -1,5 +1,6 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { logInfo } from '../config/loggerFunctions.mjs';
+import { posthogAnalysisCreated } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,7 @@ export const createAnalysisInDb = async (analysisData) => {
       tasks: analysisData.tasks,
       max_number_of_participants: analysisData.maxNumberOfParticipants,
       scenario: analysisData.scenario,
-      owner: {
+      User: {
         connect: {
           id: analysisData.owner_id,
         },
@@ -23,7 +24,7 @@ export const createAnalysisInDb = async (analysisData) => {
 
   logInfo(`analysis ${analysisCreationInDbResponse.id} created in db`, analysisData);
 
-  // TODO -- add posthog event
+  posthogAnalysisCreated(analysisData);
 
   return analysisCreationInDbResponse;
 };
@@ -36,19 +37,18 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
 
   const analyses = await prisma.analysis.findMany({
     where: whereClause,
-    omit: {
-      owner_id: true,
-      tasks: true,
-      scenario: true,
-      updated_at: true,
-    },
-    include: {
+    select: {
+      id: true,
+      device: true,
+      name: true,
+      url: true,
+      status: true,
+      created_at: true,
+      max_number_of_participants: true,
       _count: {
         select: {
-          entries: {
-            where: {
-              status: 'submitted',
-            },
+          AnalysisEntries: {
+            where: { status: 'submitted' },
           },
         },
       },
@@ -67,21 +67,28 @@ export const getAnalysisDataById = async (analysisId) => {
       id: true,
     },
     include: {
-      entries: {
+      AnalysisEntries: {
         where: {
           status: 'submitted',
         },
-        omit: {
-          analysis_id: true,
-          user_id: true,
-          status: true,
-          created_at: true,
+        select: {
+          id: true,
+          updated_at: true,
+          aws_object_key: true,
+          ParticipantsProfile: {
+            select: {
+              name: true,
+              last_name: true,
+              country: true,
+              age: true,
+              gender: true,
+            },
+          },
         },
       },
     },
-  });
 
-  //* No need for logs or posthog event
+  });
 
   return analysis;
 };

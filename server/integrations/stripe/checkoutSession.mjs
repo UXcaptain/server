@@ -37,6 +37,7 @@ export const createStripeCheckoutSession = async (
     metadata: {
       planName: planName,
       planBillingCycle: planBillingCycle,
+      userId: userId,
     },
     customer: stripeCustomerId,
     ui_mode: 'hosted',

@@ -18,8 +18,8 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
       PINOJS_SOURCE_TOKEN: ${PINOJS_SOURCE_TOKEN}
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@backend-db:5432/public
       PRISMA_POSTGRES_CONNECTION_DIRECT_URL: postgresql://postgres:prismaORM124!@backend-db:5432/public
+      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@backend-db:5432/public
       MONGODB_USERNAME: ${MONGODB_USERNAME}
       MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_URI: ${MONGODB_URI}
@@ -31,6 +31,8 @@ services:
       PORT: ${PORT}
       VALKEY_CACHE_HOST: ${VALKEY_CACHE_HOST}
       VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
       - 3000:3000
     develop:
