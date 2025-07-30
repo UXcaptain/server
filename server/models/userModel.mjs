@@ -155,11 +155,15 @@ export const getUserByStripeCustomerId = async (stripeCustomerId) => {
 
 export const getParticipantProfile = async (participantId) => {
   const whereClause = {
-    user_id: participantId,
+    id: participantId,
   };
 
-  const participantProfile = await prisma.participantProfile.findUnique({
+  const participantProfile = await prisma.user.findUnique({
     where: whereClause,
+    select: {
+      email: true,
+      role: true,
+    },
   });
 
   return participantProfile;
