@@ -39,12 +39,12 @@ model User {
   Subscription         Subscription[]
   PasswordResetTokens  PasswordResetTokens[]
   Analysis             Analysis[]
-  Participants_profile ParticipantsProfile[]
+  ParticipantProfile ParticipantProfile[]
   CustomerProfile      CustomerProfile[]
 }
 
-model ParticipantsProfile {
-  id              String            @id
+model ParticipantProfile {
+  id              Int            @id @default(autoincrement())
   name            String?
   last_name       String?
   age             String? // String to allow for prefer not to say option
@@ -60,11 +60,13 @@ model ParticipantsProfile {
 }
 
 model CustomerProfile {
-  id           String  @id
+  id           Int  @id @default(autoincrement())
   company_name String?
   position     String?
   User         User    @relation(fields: [user_id], references: [id])
-  user_id      String
+  user_id      String @unique
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now()) @updatedAt
 }
 
 model PasswordResetTokens {
@@ -115,8 +117,8 @@ model AnalysisEntries {
   id                  String                        @id @default(uuid())
   Analysis            Analysis                      @relation(fields: [analysis_id], references: [id])
   analysis_id         String
-  ParticipantsProfile ParticipantsProfile           @relation(fields: [user_id], references: [user_id])
-  user_id             String
+  ParticipantProfile ParticipantProfile?           @relation(fields: [user_id], references: [user_id])
+  user_id             String?
   status              AnalysisEntryCompletionStatus @default(in_progress)
   created_at          DateTime                      @default(now())
   updated_at          DateTime                      @default(now()) @updatedAt
