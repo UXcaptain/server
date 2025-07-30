@@ -4,6 +4,7 @@ import {
   createAnalysis,
   getAllAnalyses,
   getSingleAnalysisData,
+  participateInAnalysis,
 } from '../../../controllers/analysisController.mjs';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
@@ -15,6 +16,8 @@ analysisRouter.post('/', checkSchema(createAnalysisSchema), sanitizerResult, cre
 analysisRouter.get('/', getAllAnalyses);
 
 analysisRouter.get('/:id', getSingleAnalysisData);
+
+analysisRouter.get('/participate/:id', participateInAnalysis);
 
 analysisRouter.use('/*fallback', (req, res) => {
   res.status(404).send('Route not found');

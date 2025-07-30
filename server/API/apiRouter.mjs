@@ -40,7 +40,7 @@ apiRouter.use(
 );
 
 apiRouter.use(
-  '/v1/entry',
+  '/v1/analysisEntry',
   checkPermissionByRole(customerRole),
   analysisEntryRouter,
 );

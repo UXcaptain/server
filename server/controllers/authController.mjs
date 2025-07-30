@@ -2,13 +2,13 @@ import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
 import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
-
 import {
   getUserByEmail, updateUserPasswordInDB,
-  createUserInDB,
+  createCustomerInDB,
   deleteUserInDb,
   getUserPassword,
   updateUserLastLoginDate,
+  createParticipantInDB,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
@@ -213,7 +213,7 @@ export const createUser = async (req, res) => {
   const userData = {
     username: req.body.username,
     password: await bcrypt.hash(req.body.password, 10),
-    role: req.body.role, //* Hardcoded role for simplicity
+    role: req.body.role,
   };
 
   const isExistingUser = await getUserByEmail(userData.username);
@@ -225,13 +225,24 @@ export const createUser = async (req, res) => {
     });
   }
 
-  const createdUser = await createUserInDB(userData);
+  if (userData.role === 'customer') {
+    const createdUser = await createCustomerInDB(userData);
 
-  return res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    userId: createdUser.id,
-  });
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      userId: createdUser.id,
+    });
+  }
+
+  if (userData.role === 'participant') {
+    const createdUser = await createParticipantInDB(userData);
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      userId: createdUser.id,
+    });
+  }
 };
 
 export const updateUserPassword = async (req, res) => {

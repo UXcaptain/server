@@ -2,10 +2,13 @@ import {
   createAnalysisInDb,
   getAllAnalysesFromDb,
   getAnalysisDataById,
+  getAnalysisDataForParticipantsFromDb,
 }
   from '../models/analysisModel.mjs';
 
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
+import { generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
+import { createAnalysisEntry } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -125,5 +128,37 @@ export const getSingleAnalysisData = async (req, res) => {
     success: true,
     message: 'Analysis details retrieved successfully',
     analysisData: analysis,
+  });
+};
+
+export const participateInAnalysis = async (req, res) => {
+  const { id: analysisId } = req.params;
+
+  const analysisEntry = await createAnalysisEntry(analysisId);
+
+  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
+
+  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+    return res.status(403).json({
+      success: false,
+      message: 'The maximum number of participants has been reached.',
+    });
+  }
+
+  const key = `analysis/${analysisId}/analysisEntry/${analysisEntry.id}`;
+
+  const analysisEntryUploadPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
+
+  const analysisData = {
+    tasks: analysisDataForParticipants.tasks,
+    scenario: analysisDataForParticipants.scenario,
+    analysisUrl: analysisDataForParticipants.url,
+    presignedUploadUrl: analysisEntryUploadPresignedUrl,
+  };
+
+  return res.status(200).json({
+    success: true,
+    message: 'Analysis info retrieved successfully',
+    analysisData: analysisData,
   });
 };

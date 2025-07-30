@@ -75,7 +75,7 @@ export const getAnalysisDataById = async (analysisId) => {
           id: true,
           updated_at: true,
           aws_object_key: true,
-          ParticipantsProfile: {
+          ParticipantProfile: {
             select: {
               name: true,
               last_name: true,
@@ -87,8 +87,37 @@ export const getAnalysisDataById = async (analysisId) => {
         },
       },
     },
-
   });
 
   return analysis;
+};
+
+export const getAnalysisDataForParticipantsFromDb = async (analysisId) => {
+  const whereClause = {
+    id: analysisId,
+  };
+
+  const analysisDataForParticipants = await prisma.analysis.findUnique({
+    where: whereClause,
+    select: {
+      tasks: true,
+      url: true,
+      status: true,
+      scenario: true,
+      max_number_of_participants: true,
+      _count: {
+        select: {
+          AnalysisEntries: {
+            where: {
+              status: {
+                in: ['in_progress', 'submitted', 'accepted'],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return analysisDataForParticipants;
 };

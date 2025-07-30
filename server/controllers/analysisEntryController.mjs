@@ -1,20 +1,29 @@
-import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { s3client } from '../integrations/aws/s3.mjs';
-import { getEntryDetailsById } from '../models/analysisEntryModel.mjs';
+import { generateGetAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
+import { getEntryDetailsById, updateAnalysisEntryDetailsInDB } from '../models/analysisEntryModel.mjs';
 
-export const uploadAnalysisEntry = async () => {
-  // TODO -- create this function
+export const updateAnalysisEntryDetails = async (req, res) => {
+  const { id: analysisId } = req.params;
 
-//  Recommended Workflow
-// 	1.	User uploads video file directly from the browser extension to S3 using a pre-signed URL.
-// 	2.	On successful upload, the extension sends a POST request to your backend with:
-// 	•	S3 key/path of the uploaded file
-// 	•	Relevant metadata (user, analysis, etc.)
+  const { awsObjectKey } = req.body;
+
+  const updatedAnalysisEntry = await updateAnalysisEntryDetailsInDB(analysisId, awsObjectKey);
+
+  return res.status(201).json({
+    success: true,
+    message: 'Analysis entry updated successfully',
+    updatedAnalysisEntry: updatedAnalysisEntry,
+  });
 };
 
-export const getAnalysisEntryPresignedUrl = async (req, res) => {
-  // TODO - add validation
+export const getAnalysisDetailsForParticipants = async (req, res) => {
+  // Validate request data
+  if (req.sanitizedErrors && req.sanitizedErrors.length > 0) {
+    return res.status(422).json({
+      success: false,
+      message: 'Request contains validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
 
   const userId = req.user.id; // Authenticated user from middleware
   const { id } = req.params;
@@ -49,15 +58,12 @@ export const getAnalysisEntryPresignedUrl = async (req, res) => {
     });
   }
 
-  const command = new GetObjectCommand({
-    Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
-    Key: `analysis/${analysisEntryDetails.analysis_id}/analysisEntry/${analysisEntryDetails.aws_object_key}`,
+  const key = `analysis/${analysisEntryDetails.analysis_id}/analysisEntry/${analysisEntryDetails.id}`;
 
-  });
+  const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
 
-  const analysisEntryUrl = await getSignedUrl(s3client, command, { expiresIn: 3600 });
   return res.status(200).json({
     success: true,
-    analysisEntryUrl: analysisEntryUrl,
+    analysisEntryPresignedUrl: analysisEntryPresignedUrl,
   });
 };
