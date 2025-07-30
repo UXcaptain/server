@@ -167,11 +167,20 @@ export const getParticipantProfile = async (participantId) => {
 
 export const getCustomerProfile = async (customerId) => {
   const whereClause = {
-    user_id: customerId,
+    id: customerId,
   };
 
-  const customerProfile = await prisma.customerProfile.findUnique({
+  const customerProfile = await prisma.user.findUnique({
     where: whereClause,
+    select: {
+      email: true,
+      role: true,
+      // CustomerProfile: { //* No point in returning this until we set up the companies model
+      //   select: {
+      //     company_name: true,
+      //   },
+      // },
+    },
   });
 
   return customerProfile;
