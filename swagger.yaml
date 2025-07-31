@@ -1245,6 +1245,206 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
+  /v1/analysis/participate/{AnalysisId}:
+    get:
+      summary: Participate in an analysis
+      description: Allows a participant to join an analysis and get the necessary details to complete it.
+      tags: ["Analysis"]
+      parameters:
+        - name: AnalysisId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasks'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      presignedUploadUrl:
+                        type: string
+                        format: url
+                        description: Presigned URL for uploading the analysis entry
+        403:
+          description: Maximum number of participants reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: The maximum number of participants has been reached.
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis not found
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/{EntryId}:
+    get:
+      summary: Get analysis entry details for participants
+      description: Retrieve the details of an analysis entry for participants, including a presigned URL to access the entry.
+      tags: ["Analysis Entry"]
+      parameters:
+        - name: EntryId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EntryId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  analysisEntryPresignedUrl:
+                    type: string
+                    format: url
+                    description: Presigned URL to access the analysis entry
+        403:
+          description: Access denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Access denied
+        404:
+          description: Analysis entry not found or doesn't have a video URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis not found
+        422:
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Request contains validation errors
+                  errors:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ValidationErrors"
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+    patch:
+      summary: Update analysis entry details
+      description: Update the details of an analysis entry, typically used to submit the entry.
+      tags: ["Analysis Entry"]
+      parameters:
+        - name: EntryId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EntryId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                awsObjectKey:
+                  type: string
+                  description: The AWS object key for the analysis entry
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis entry updated successfully
+                  updatedAnalysisEntry:
+                    type: object
+                    description: The updated analysis entry object
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
 components:
   schemas:
     
