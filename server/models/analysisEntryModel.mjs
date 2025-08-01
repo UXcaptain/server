@@ -10,10 +10,10 @@ export const getEntryDetailsById = async (entryId) => {
   const getEntryDetailsByIdQuery = await prisma.analysisEntries.findUnique({
     where: whereClause,
     select: {
-      analysis_id: true,
-      aws_object_key: true,
+      id: true,
       Analysis: {
         select: {
+          id: true,
           owner_id: true,
         },
       },
@@ -41,7 +41,7 @@ export const createAnalysisEntry = async (analysisId) => {
   return createAnalysisEntryQuery;
 };
 
-export const updateAnalysisEntryDetailsInDB = async (analysisEntryId, awsObjectKey) => {
+export const updateAnalysisEntryDetailsInDB = async (analysisEntryId) => {
   const whereClause = {
     id: analysisEntryId,
   };
@@ -49,8 +49,10 @@ export const updateAnalysisEntryDetailsInDB = async (analysisEntryId, awsObjectK
   const analysisEntryUpdateQuery = await prisma.analysisEntries.update({
     where: whereClause,
     data: {
-      aws_object_key: awsObjectKey,
       status: 'submitted',
+    },
+    select: {
+      status: true,
     },
   });
 
@@ -67,10 +69,12 @@ export const markAnalysisEntriesAsCancelled = async () => {
     },
   };
 
-  prisma.analysisEntries.updateMany({
+  const analysisEntriesMarkedAsCancelledQuery = await prisma.analysisEntries.updateMany({
     where: whereClause,
     data: {
       status: 'cancelled',
     },
   });
+
+  console.log(analysisEntriesMarkedAsCancelledQuery);
 };
