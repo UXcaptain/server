@@ -19,15 +19,6 @@ export const createAnalysis = async (req, res) => {
     });
   }
 
-  if (!req.user.id) { //* Defensive programming - Its an error because should never happen
-    const error = new Error();
-    error.name = 'user ID does not exist';
-    error.status = 403;
-    error.message = 'User ID should have been sent in the request but has not been received';
-
-    throw error;
-  }
-
   const analysisData = {
     name: req.body.name,
     url: req.body.url,
@@ -50,15 +41,6 @@ export const createAnalysis = async (req, res) => {
 
 export const getAllAnalyses = async (req, res) => {
   const { id } = req.user;
-
-  if (!req.user.id) { //* Defensive programming - Its an error because should never happen
-    const error = new Error();
-    error.name = 'user ID does not exist';
-    error.status = 403;
-    error.message = 'User ID should have been sent in the request but has not been received';
-
-    throw error;
-  }
 
   const filters = req.query;
 
@@ -134,8 +116,6 @@ export const getSingleAnalysisData = async (req, res) => {
 export const participateInAnalysis = async (req, res) => {
   const { id: analysisId } = req.params;
 
-  const analysisEntry = await createAnalysisEntry(analysisId);
-
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 
   if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
@@ -144,6 +124,7 @@ export const participateInAnalysis = async (req, res) => {
       message: 'The maximum number of participants has been reached.',
     });
   }
+  const analysisEntry = await createAnalysisEntry(analysisId);
 
   const key = `analysis/${analysisId}/analysisEntry/${analysisEntry.id}`;
 
