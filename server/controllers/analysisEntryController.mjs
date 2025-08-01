@@ -16,26 +16,17 @@ export const updateAnalysisEntryDetails = async (req, res) => {
 };
 
 export const getAnalysisEntryDetails = async (req, res) => {
-  // Validate request data
-  if (req.sanitizedErrors && req.sanitizedErrors.length > 0) {
-    return res.status(422).json({
-      success: false,
-      message: 'Request contains validation errors',
-      errors: req.sanitizedErrors,
-    });
-  }
-
   const userId = req.user.id; // Authenticated user from middleware
-  const { id } = req.params;
+  const { id: analysisId } = req.params;
 
-  if (!id) {
-    return res.status(404).json({
+  if (!analysisId) {
+    return res.status(400).json({
       success: false,
-      message: 'Analysis ID not provided',
+      message: 'Analysis entry ID has not been provided',
     });
   }
 
-  const analysisEntryDetails = await getEntryDetailsById(id);
+  const analysisEntryDetails = await getEntryDetailsById(analysisId);
 
   if (!analysisEntryDetails) {
     return res.status(404).json({
@@ -44,10 +35,19 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
+  //* Should never happen, customers dont have access to non-completed analysis entries
+  if (analysisEntryDetails.status === 'in_progress') {
+    return res.status(403).json({
+      success: false,
+      message: 'Analysis entry has not been completed yet',
+    });
+  }
+
+  //* Should never happen, if analysis is completed but has no video url, it means there was an error while uploading the video
   if (!analysisEntryDetails.aws_object_key) {
     return res.status(404).json({
       success: false,
-      message: 'Analysis does not have a video url',
+      message: 'Analysis entry does not have a video url',
     });
   }
 
