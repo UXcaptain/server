@@ -15,7 +15,7 @@ export const updateAnalysisEntryDetails = async (req, res) => {
   });
 };
 
-export const getAnalysisDetailsForParticipants = async (req, res) => {
+export const getAnalysisEntryDetails = async (req, res) => {
   // Validate request data
   if (req.sanitizedErrors && req.sanitizedErrors.length > 0) {
     return res.status(422).json({

@@ -1,9 +1,9 @@
 import Router from 'express';
-import { getAnalysisDetailsForParticipants, updateAnalysisEntryDetails } from '../../../controllers/analysisEntryController.mjs';
+import { getAnalysisEntryDetails, updateAnalysisEntryDetails } from '../../../controllers/analysisEntryController.mjs';
 
 export const analysisEntryRouter = new Router();
 
-analysisEntryRouter.get('/:id', getAnalysisDetailsForParticipants);
+analysisEntryRouter.get('/:id', getAnalysisEntryDetails);
 
 analysisEntryRouter.patch('/:id', updateAnalysisEntryDetails);
 
