@@ -118,6 +118,13 @@ export const participateInAnalysis = async (req, res) => {
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 
+  if (analysisDataForParticipants === null) {
+    return res.status(404).json({
+      success: false,
+      message: 'Analysis not found',
+    });
+  }
+
   if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
     return res.status(403).json({
       success: false,
