@@ -48,7 +48,11 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
       _count: {
         select: {
           AnalysisEntries: {
-            where: { status: 'submitted' },
+            where: {
+              status: {
+                in: ['submitted', 'accepted'],
+              },
+            },
           },
         },
       },
@@ -69,21 +73,14 @@ export const getAnalysisDataById = async (analysisId) => {
     include: {
       AnalysisEntries: {
         where: {
-          status: 'submitted',
+          status: {
+            in: ['submitted', 'accepted'],
+          },
         },
         select: {
           id: true,
           updated_at: true,
           aws_object_key: true,
-          ParticipantProfile: {
-            select: {
-              name: true,
-              last_name: true,
-              country: true,
-              age: true,
-              gender: true,
-            },
-          },
         },
       },
     },
