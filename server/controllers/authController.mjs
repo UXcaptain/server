@@ -5,7 +5,6 @@ import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
 import {
   getUserByEmail, updateUserPasswordInDB,
   createCustomerInDB,
-  deleteUserInDb,
   getUserPassword,
   updateUserLastLoginDate,
   createParticipantInDB,
@@ -148,7 +147,6 @@ export const checkSession = async (req, res) => {
       message: 'Session is valid',
       user: {
         id: req.user.id,
-        role: req.user.role,
       },
     });
   }
@@ -160,7 +158,15 @@ export const checkSession = async (req, res) => {
 };
 
 export const loginLocal = async (req, res, next) => {
-  passport.authenticate('local', (err, user /* , info */) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'Analysis could not be created due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
+  return passport.authenticate('local', (err, user /* , info */) => {
     if (err) {
       return res.status(500).json({
         success: false,
@@ -291,31 +297,6 @@ export const updateUserPassword = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Password update failed',
-    });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  try {
-    await deleteUserInDb(req.user.id);
-
-    return res.status(200).json({
-      success: true,
-      message: 'User deleted successfully',
-    });
-  } catch (error) {
-    logError('User deletion failed', error);
-
-    if (error.code === 'P2003') {
-      return res.status(409).json({
-        success: false,
-        message: 'User deletion failed - Related DB entries exist',
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: 'User deletion failed - Please try again later',
     });
   }
 };

@@ -1,8 +1,10 @@
 import {
   getCustomerProfile,
   getParticipantProfile,
+  deleteUserInDb,
 } from '../models/userModel.mjs';
 import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
+import { logError } from '../config/loggerFunctions.mjs';
 
 export const getUserProfile = async (req, res) => {
   const { id: userId, role } = req.user;
@@ -46,4 +48,29 @@ export const getUserProfile = async (req, res) => {
   }
 
   throw new Error('User role could not be detected');
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    await deleteUserInDb(req.user.id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+    });
+  } catch (error) {
+    logError('User deletion failed', error);
+
+    if (error.code === 'P2003') {
+      return res.status(409).json({
+        success: false,
+        message: 'User deletion failed - Related DB entries exist',
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: 'User deletion failed - Please try again later',
+    });
+  }
 };
