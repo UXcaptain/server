@@ -122,7 +122,6 @@ model AnalysisEntries {
   status              AnalysisEntryCompletionStatus @default(in_progress)
   created_at          DateTime                      @default(now())
   updated_at          DateTime                      @default(now()) @updatedAt
-  aws_object_key      String?
 
   @@index([analysis_id, status])
 }

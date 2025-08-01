@@ -1,12 +1,10 @@
 import { generateGetAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
-import { getEntryDetailsById, updateAnalysisEntryDetailsInDB } from '../models/analysisEntryModel.mjs';
+import { getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryDetailsInDB } from '../models/analysisEntryModel.mjs';
 
 export const updateAnalysisEntryDetails = async (req, res) => {
-  const { id: analysisId } = req.params;
+  const { id: analysisEntryId } = req.params;
 
-  const { awsObjectKey } = req.body;
-
-  const updatedAnalysisEntry = await updateAnalysisEntryDetailsInDB(analysisId, awsObjectKey);
+  const updatedAnalysisEntry = await updateAnalysisEntryDetailsInDB(analysisEntryId);
 
   return res.status(201).json({
     success: true,
@@ -17,16 +15,16 @@ export const updateAnalysisEntryDetails = async (req, res) => {
 
 export const getAnalysisEntryDetails = async (req, res) => {
   const userId = req.user.id; // Authenticated user from middleware
-  const { id: analysisId } = req.params;
+  const { id: analysisEntryId } = req.params;
 
-  if (!analysisId) {
+  if (!analysisEntryId) {
     return res.status(400).json({
       success: false,
       message: 'Analysis entry ID has not been provided',
     });
   }
 
-  const analysisEntryDetails = await getEntryDetailsById(analysisId);
+  const analysisEntryDetails = await getAnalysisEntryDetailsById(analysisEntryId);
 
   if (!analysisEntryDetails) {
     return res.status(404).json({
@@ -40,14 +38,6 @@ export const getAnalysisEntryDetails = async (req, res) => {
     return res.status(403).json({
       success: false,
       message: 'Analysis entry has not been completed yet',
-    });
-  }
-
-  //* Should never happen, if analysis is completed but has no video url, it means there was an error while uploading the video
-  if (!analysisEntryDetails.aws_object_key) {
-    return res.status(404).json({
-      success: false,
-      message: 'Analysis entry does not have a video url',
     });
   }
 

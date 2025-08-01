@@ -279,10 +279,8 @@ paths:
                             properties:
                               id:
                                 $ref: '#/components/schemas/UserId'
-                              role:
-                                $ref: '#/components/schemas/UserRoles'
         401:
-          description: Session is invalid
+          description: Session is not valid
           content:
             application/json:
               schema:
@@ -293,7 +291,7 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  "Session is invalid"
+                                  "Session is not valid"
                                 ]
 
   /v1/auth/register/local:
@@ -807,7 +805,7 @@ paths:
                 cacheTTL_seconds: 
                   $ref: "#/components/schemas/CacheTTL_seconds"
                 user:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/CustomerProfile"
                 
        401:
          description: User not authenticated
@@ -984,20 +982,6 @@ paths:
                     ]
                   createdAnalysisId:
                     $ref: "#/components/schemas/AnalysisId"
-        403:
-          description: User ID should have been sent in the request but has not been received
-          content:
-            application/json:
-                schema:
-                    type: object
-                    properties:
-                        success:
-                            $ref: "#/components/schemas/SuccessFalseStatus"
-                        message:
-                          type: string
-                          examples: [
-                            "User ID should have been sent in the request but has not been received"
-                          ]
         422:
               description: Validation error
               content:
@@ -1335,9 +1319,7 @@ paths:
                       analysisUrl:
                         $ref: '#/components/schemas/AnalysisUrl'
                       presignedUploadUrl:
-                        type: string
-                        format: url
-                        description: Presigned URL for uploading the analysis entry
+                        $ref: '#/components/schemas/PresignedPutS3Url'
         403:
           description: Maximum number of participants reached
           content:
@@ -1400,8 +1382,8 @@ paths:
                     type: string
                     format: url
                     description: Presigned URL to access the analysis entry
-        403:
-          description: Access denied
+        400:
+          description: Analysis entry ID has not been provided
           content:
             application/json:
               schema:
@@ -1411,9 +1393,21 @@ paths:
                     $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
-                    example: Access denied
+                    example: Analysis entry ID has not been provided
+        403:
+          description: Analysis entry has not been completed yet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis entry has not been completed yet
         404:
-          description: Analysis entry not found or doesn't have a video URL
+          description: Analysis entry doesn't have a video URL yet
           content:
             application/json:
               schema:
@@ -1427,22 +1421,6 @@ paths:
                       "Analysis not found",
                       "Analysis does not have a video url"
                     ]
-        422:
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    type: string
-                    example: Request contains validation errors
-                  errors:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/ValidationErrors"
         500:
           description: Unexpected error
           content:
@@ -1465,16 +1443,6 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/EntryId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                awsObjectKey:
-                  type: string
-                  description: The AWS object key for the analysis entry
       responses:
         201:
           description: Success
@@ -1584,23 +1552,21 @@ components:
           type: string
           example: body
 
-    User:
+    CustomerProfile:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/UserId'
         email:
           $ref: "#/components/schemas/UserEmail"
         role:
           $ref: "#/components/schemas/UserRoles"
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        last_updated_at:
-            $ref: '#/components/schemas/UpdatedAt'
-        last_login_at:
-            $ref: '#/components/schemas/LastLoginAt'
-        stripe_customer_id:
-            $ref: '#/components/schemas/StripeCustomerId'
+        
+    ParticipantProfile:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/UserEmail"
+        role:
+          $ref: "#/components/schemas/UserRoles"
     
     CreatedAt:
       type: string
@@ -1652,14 +1618,29 @@ components:
     AnalysisWithCount:
       type: object
       properties:
-        Analysis:
-          $ref: '#/components/schemas/Analysis'
-        _count:
-          $ref: '#/components/schemas/AnalysisEntryCount'
+        id:
+          $ref: '#/components/schemas/AnalysisId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        max_number_of_participants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        _count: 
+          $ref: '#/components/schemas/AnalysisEntriesCount'
+        
 
     AnalysisWithEntryDetails:
       type: object
       properties:
+        owner_id:
+          $ref: '#/components/schemas/UserId'
         device:
           $ref: '#/components/schemas/AnalysisDevice'
         name:
@@ -1670,10 +1651,12 @@ components:
           $ref: '#/components/schemas/AnalysisTasksArray'
         url:
           $ref: '#/components/schemas/AnalysisUrl'
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
         status:
           $ref: '#/components/schemas/AnalysisStatus'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
         max_number_of_participants:
           $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
         AnalysisEntries:
@@ -1689,15 +1672,6 @@ components:
         'https://www.storage.com/1234'
       ]
 
-    AnalysisEntryCount:
-      type: number
-      description: The number of entries that have been submitted for a given analysis
-      examples: [
-        0,
-        5,
-        10,
-      ]
-
     AnalysisEntry:
       type: object
       description: The details of a completed entry for an analysis
@@ -1706,9 +1680,6 @@ components:
           $ref: '#/components/schemas/EntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
-        aws_object_key:
-          type: string
-          description: The AWS object key for the analysis entry
 
     AnalysisEntryWithParticipant:
       type: object
@@ -1717,23 +1688,7 @@ components:
         id: 
           $ref: '#/components/schemas/EntryId'
         updated_at:
-          $ref: '#/components/schemas/UpdatedAt'
-        aws_object_key:
-          type: string
-          description: The AWS object key for the analysis entry
-        ParticipantProfile:
-          type: object
-          properties:
-            name:
-              type: string
-            last_name:
-              type: string
-            country:
-              type: string
-            age:
-              type: integer
-            gender:
-              type: string
+          $ref: '#/components/schemas/UpdatedAt'        
 
     AnalysisName:
       type: string
@@ -1842,6 +1797,18 @@ components:
         sub_1ReNIs4EThrTH3Et8fmPxMXe
       ]
 
+    AnalysisEntriesCount: 
+      type: object
+      description: the number of analysis entries in a given analysis
+      properties: 
+        AnalysisEntries:
+          type: number
+          examples: [
+            1,
+            2,
+            3,
+          ]
+
     BillingData:
       type: object
       properties:
@@ -1874,6 +1841,14 @@ components:
         enterprise
       ]
 
+    PresignedPutS3Url:
+      type: string
+      format: url
+      description: Indicates the presigned PUT S3 URL that the client can use to upload the completed analysis entry
+      examples: [
+        https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/a95e9d43-493c-47ac-9d7d-fd0565c1944e/analysisEntry/fa5b9cd0-0d9d-4a47-a1c4-b97b3c17996c?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20250801%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250801T102005Z&X-Amz-Expires=3600&X-Amz-Signature=7cc1d692caa570954aaca1dcc4485410e791d86b25268754791089c81e9b8abe&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject"
+      ]
+
     BillingPlanStatus:
       type: string
       enum: [active, refunded, cancelled]
@@ -1882,6 +1857,13 @@ components:
         active,
         refunded,
         cancelled
+      ]
+
+    AwsObjectKey:
+      type: string
+      description: The AWS object key for the analysis entry
+      examples: [
+        analysis/04ade421-5238-4d28-ac0e-3c5f02e22c03/analysisEntry/fa5b9cd0-0d9d-4a47-a1c4-b97b3c17996c
       ]
 
     BillingCheckoutSessionUrl:

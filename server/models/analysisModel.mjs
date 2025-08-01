@@ -80,7 +80,6 @@ export const getAnalysisDataById = async (analysisId) => {
         select: {
           id: true,
           updated_at: true,
-          aws_object_key: true,
         },
       },
     },
