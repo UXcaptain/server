@@ -1,4 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
+import { logInfo } from '../config/loggerFunctions.mjs';
 
 const prisma = new PrismaClient();
 
@@ -64,7 +65,7 @@ export const markAnalysisEntriesAsCancelled = async () => {
 
   const whereClause = {
     status: 'in_progress',
-    create_at: {
+    created_at: {
       lt: sixtyMinutesAgo,
     },
   };
@@ -76,5 +77,5 @@ export const markAnalysisEntriesAsCancelled = async () => {
     },
   });
 
-  console.log(analysisEntriesMarkedAsCancelledQuery);
+  logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
 };
