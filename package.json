@@ -12,6 +12,7 @@
     "license": "Proprietary",
     "author": "Sergio Navarro Redondo",
     "scripts": {
+        "start": "node ./server/app.mjs",
         "start:local": "node --watch --env-file=.env ./server/app.mjs",
         "start:docker": "docker compose up --build --watch",
         "test:ui": "env $(cat .env | xargs) npx playwright test --ui",
@@ -36,7 +37,6 @@
         "express-slow-down": "^2.0.3",
         "express-validator": "^7.2.1",
         "helmet": "^8.0.0",
-        "i": "^0.3.7",
         "npm": "^11.4.2",
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
@@ -44,7 +44,8 @@
         "pino": "^9.6.0",
         "pino-pretty": "^13.0.0",
         "posthog-node": "^5.1.1",
-        "stripe": "^18.0.0"
+        "stripe": "^18.0.0",
+        "prisma": "^6.5.0"
     },
     "devDependencies": {
         "@playwright/test": "^1.49.1",
@@ -53,7 +54,6 @@
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-plugin-import": "^2.31.0",
         "playwright": "^1.49.1",
-        "prisma": "^6.5.0",
         "tsx": "^4.19.2",
         "typescript": "^5.7.3"
     },
