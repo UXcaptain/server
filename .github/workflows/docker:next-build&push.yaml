@@ -15,8 +15,8 @@ jobs:
             name: Login to Docker Hub
             uses: docker/login-action@v3
             with:
-                username: ${{ secrets.DOCKERHUB_USERNAME }}
-                password: ${{ secrets.DOCKERHUB_TOKEN }}
+                username: "${{ secrets.DOCKERHUB_USERNAME }}"
+                password: "${{ secrets.DOCKERHUB_TOKEN }}"
         -
             name: Set up QEMU
             uses: docker/setup-qemu-action@v3
@@ -88,32 +88,6 @@ jobs:
                 with:
                     secret-name: AWS_SECRET_ACCESS_KEY
                     secret-value: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-
-            # - 
-            #     name: Create MONGODB_USERNAME secret
-            #     uses: koyeb/action-git-deploy/secret@v1
-            #     with:
-            #         secret-name: DEV_MONGODB_USERNAME
-            #         secret-value: "${{ secrets.MONGODB_USERNAME }}"
-            # -
-            #     name: Create MONGODB_PASSWORD secret
-            #     uses: koyeb/action-git-deploy/secret@v1
-            #     with:
-            #         secret-name: DEV_MONGODB_PASSWORD
-            #         secret-value: "${{ secrets.MONGODB_PASSWORD }}"
-            # - 
-            #     name: Create MONGODB_URI secret
-            #     uses: koyeb/action-git-deploy/secret@v1
-            #     with:
-            #         secret-name: DEV_MONGODB_URI
-            #         secret-value: "${{ secrets.MONGODB_URI }}"
-            # - 
-            #     name: Create MONGODB_CONNECTION_STRING secret
-            #     uses: koyeb/action-git-deploy/secret@v1
-            #     with:
-            #         secret-name: DEV_MONGODB_CONNECTION_STRING
-            #         secret-value: "${{ secrets.MONGODB_CONNECTION_STRING }}"
-            # 
             - 
                 name: Create TELEGRAM_BOT_API_KEY secret
                 uses: koyeb/action-git-deploy/secret@v1
@@ -130,13 +104,13 @@ jobs:
                 name: Create STRIPE_WEBHOOK_SECRET secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_STRIPE_API_KEY
+                    secret-name: DEV_WEBHOOK_WEBHOOK_SECRET
                     secret-value: "${{ secrets.STRIPE_WEBHOOK_SECRET }}"
             -
                 name: Build and deploy the application to Koyeb
                 uses: koyeb/action-git-deploy@v1
                 with:
-                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@DEV_BREVO_API_KEY,MONGODB_CONNECTION_STRING=@DEV_MONGODB_CONNECTION_STRING,POSTHOG_API_KEY=@DEV_POSTHOG_API_KEY,PINOJS_SOURCE_TOKEN=@DEV_PINOJS_SOURCE_TOKEN,PRISMA_POSTGRES_DIRECT_URL=@DEV_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@DEV_PRISMA_POSTGRES_CONNECTION_STRING,MONGODB_USERNAME=@DEV_MONGODB_USERNAME,MONGODB_PASSWORD=@DEV_MONGODB_PASSWORD,MONGODB_URI=@DEV_MONGODB_URI,TELEGRAM_BOT_API_KEY=@DEV_TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@DEV_SESSION_SECRET,STRIPE_API_KEY=@DEV_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@STRIPE_WEBHOOK_SECRET,VALKEY_CACHE_HOST="${{ vars.VALKEY_CACHE_HOST }}",VALKEY_CACHE_PORT="${{ vars.VALKEY_CACHE_PORT }}, AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID}}, AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY"
+                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@DEV_BREVO_API_KEY,POSTHOG_API_KEY=@DEV_POSTHOG_API_KEY,PINOJS_SOURCE_TOKEN=@DEV_PINOJS_SOURCE_TOKEN,PRISMA_POSTGRES_DIRECT_URL=@DEV_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@DEV_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@DEV_TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@DEV_SESSION_SECRET,STRIPE_API_KEY=@DEV_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@DEV_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
 
                     app-name: "server-docker"
                     service-instance-type: "free" #https://www.koyeb.com/docs/reference/instances
