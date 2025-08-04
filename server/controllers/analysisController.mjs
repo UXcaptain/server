@@ -6,7 +6,6 @@ import {
 }
   from '../models/analysisModel.mjs';
 
-import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 import { generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
 import { createAnalysisEntry } from '../models/analysisEntryModel.mjs';
 
@@ -44,24 +43,7 @@ export const getAllAnalyses = async (req, res) => {
 
   const filters = req.query;
 
-  const cacheKey = `Analysis-${id}-${JSON.stringify(filters)}`;
-
-  const cachedAnalysis = await getFromCache(cacheKey);
-
-  if (cachedAnalysis) {
-    return res.status(200).json({
-      success: true,
-      cacheKey: cacheKey,
-      message: 'analyses retrieved successfully - cache',
-      cacheTTL_seconds: await getTTLfromCache(cacheKey),
-      analysisCount: JSON.parse(cachedAnalysis).length,
-      analyses: JSON.parse(cachedAnalysis),
-    });
-  }
-
   const analyses = await getAllAnalysesFromDb(id, filters);
-
-  await storeInCache(cacheKey, analyses, 60 * 5); //* Cache for 5 minutes
 
   return res.status(200).send({
     success: true,
@@ -73,20 +55,6 @@ export const getAllAnalyses = async (req, res) => {
 
 export const getSingleAnalysisData = async (req, res) => {
   const { id } = req.params;
-
-  const cacheKey = `analysis-${id}`; // Cache key for the specific analysis
-
-  const cachedAnalysis = await getFromCache(cacheKey);
-
-  if (cachedAnalysis) {
-    return res.status(200).json({
-      success: true,
-      cacheKey: cacheKey,
-      message: 'Analysis data successfully retrieved - cache',
-      cacheTTL_seconds: await getTTLfromCache(cacheKey),
-      analysisData: JSON.parse(cachedAnalysis),
-    });
-  }
 
   const analysis = await getAnalysisDataById(id);
 
@@ -103,8 +71,6 @@ export const getSingleAnalysisData = async (req, res) => {
       message: 'You do not have permission to access this analysis.',
     });
   }
-
-  await storeInCache(cacheKey, analysis, 120);
 
   return res.status(200).json({
     success: true,
