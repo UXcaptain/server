@@ -16,20 +16,6 @@ const transport = pino.transport({
       },
     },
     // {
-    //   target: 'pino-mongodb',
-    //   options: {
-    //     uri: process.env.MONGODB_CONNECTIONSTRING,
-    //     database: 'logs',
-    //     collection: 'log-collection',
-    //     mongoOptions: {
-    //       auth: {
-    //         username: process.env.MONGODB_USERNAME,
-    //         password: process.env.MONGODB_PASSWORD,
-    //       },
-    //     },
-    //   },
-    // },
-    // {
     //   target: '@logtail/pino',
     //   options: {
     //     sourceToken: process.env.PINOJS_SOURCE_TOKEN,
