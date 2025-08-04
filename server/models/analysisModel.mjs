@@ -1,5 +1,6 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { logInfo } from '../config/loggerFunctions.mjs';
+import { posthogAnalysisCreated } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,7 @@ export const createAnalysisInDb = async (analysisData) => {
       tasks: analysisData.tasks,
       max_number_of_participants: analysisData.maxNumberOfParticipants,
       scenario: analysisData.scenario,
-      owner: {
+      User: {
         connect: {
           id: analysisData.owner_id,
         },
@@ -23,7 +24,7 @@ export const createAnalysisInDb = async (analysisData) => {
 
   logInfo(`analysis ${analysisCreationInDbResponse.id} created in db`, analysisData);
 
-  // TODO -- add posthog event
+  posthogAnalysisCreated(analysisData);
 
   return analysisCreationInDbResponse;
 };
@@ -36,18 +37,21 @@ export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
 
   const analyses = await prisma.analysis.findMany({
     where: whereClause,
-    omit: {
-      owner_id: true,
-      tasks: true,
-      scenario: true,
-      updated_at: true,
-    },
-    include: {
+    select: {
+      id: true,
+      device: true,
+      name: true,
+      url: true,
+      status: true,
+      created_at: true,
+      max_number_of_participants: true,
       _count: {
         select: {
-          entries: {
+          AnalysisEntries: {
             where: {
-              status: 'submitted',
+              status: {
+                in: ['submitted', 'accepted'],
+              },
             },
           },
         },
@@ -67,21 +71,49 @@ export const getAnalysisDataById = async (analysisId) => {
       id: true,
     },
     include: {
-      entries: {
+      AnalysisEntries: {
         where: {
-          status: 'submitted',
+          status: {
+            in: ['submitted', 'accepted'],
+          },
         },
-        omit: {
-          analysis_id: true,
-          user_id: true,
-          status: true,
-          created_at: true,
+        select: {
+          id: true,
+          updated_at: true,
         },
       },
     },
   });
 
-  //* No need for logs or posthog event
-
   return analysis;
+};
+
+export const getAnalysisDataForParticipantsFromDb = async (analysisId) => {
+  const whereClause = {
+    id: analysisId,
+  };
+
+  const analysisDataForParticipants = await prisma.analysis.findUnique({
+    where: whereClause,
+    select: {
+      tasks: true,
+      url: true,
+      status: true,
+      scenario: true,
+      max_number_of_participants: true,
+      _count: {
+        select: {
+          AnalysisEntries: {
+            where: {
+              status: {
+                in: ['in_progress', 'submitted', 'accepted'],
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return analysisDataForParticipants;
 };

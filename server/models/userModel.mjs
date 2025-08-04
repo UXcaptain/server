@@ -6,16 +6,40 @@ import {
 
 const prisma = new PrismaClient();
 
-export const createUserInDB = async (userData) => {
+export const createCustomerInDB = async (userData) => {
   const createUserInDbQuery = await prisma.user.create({
     data: {
       email: userData.username,
       password: userData.password,
       role: userData.role,
+      CustomerProfile: {
+        create: {
+        },
+      },
     },
   });
 
-  logInfo(`User ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+
+  posthogUserSignedUp(createUserInDbQuery);
+
+  return createUserInDbQuery;
+};
+
+export const createParticipantInDB = async (userData) => {
+  const createUserInDbQuery = await prisma.user.create({
+    data: {
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
+      ParticipantProfile: {
+        create: {
+        },
+      },
+    },
+  });
+
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
   posthogUserSignedUp(createUserInDbQuery);
 
@@ -23,11 +47,12 @@ export const createUserInDB = async (userData) => {
 };
 
 export const getUserByEmail = async (userEmail) => {
+  const whereClause = {
+    email: userEmail,
+  };
+
   const getUserByEmailQuery = await prisma.user.findUnique({
-    where: { email: userEmail },
-    // omit: { //! Do not uncomment - Needed for passport auth login
-    //   password: true,
-    // },
+    where: whereClause,
   });
 
   return getUserByEmailQuery;
@@ -60,8 +85,12 @@ export const getUserPassword = async (userId) => {
 };
 
 export const getUserById = async (userId) => {
+  const whereClause = {
+    id: userId,
+  };
+
   const getUserByIdQuery = await prisma.user.findUnique({
-    where: { id: userId },
+    where: whereClause,
     omit: {
       password: true,
     },
@@ -122,4 +151,41 @@ export const getUserByStripeCustomerId = async (stripeCustomerId) => {
   });
 
   return user;
+};
+
+export const getParticipantProfile = async (participantId) => {
+  const whereClause = {
+    id: participantId,
+  };
+
+  const participantProfile = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      email: true,
+      role: true,
+    },
+  });
+
+  return participantProfile;
+};
+
+export const getCustomerProfile = async (customerId) => {
+  const whereClause = {
+    id: customerId,
+  };
+
+  const customerProfile = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      email: true,
+      role: true,
+      // CustomerProfile: { //* No point in returning this until we set up the companies model
+      //   select: {
+      //     company_name: true,
+      //   },
+      // },
+    },
+  });
+
+  return customerProfile;
 };

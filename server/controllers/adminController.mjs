@@ -3,28 +3,11 @@ import {
   getAllUsersInDb,
   getUserById,
 } from '../models/userModel.mjs';
-import { getTTLfromCache, getFromCache, storeInCache } from '../config/valkey.mjs';
 
 export const getAllUsers = async (req, res) => {
   const params = req.query;
-  const cacheKey = `allUsers-${JSON.stringify(params)}-all`;
-
-  const cachedUsers = await getFromCache(cacheKey);
-
-  if (cachedUsers) {
-    return res.status(200).json({
-      success: true,
-      cacheKey: cacheKey,
-      message: 'Users successfully retrieved - cache',
-      cacheTTL_seconds: await getTTLfromCache(cacheKey),
-      userCount: JSON.parse(cachedUsers).length,
-      users: JSON.parse(cachedUsers),
-    });
-  }
 
   const users = await getAllUsersInDb(params);
-
-  await storeInCache(cacheKey, users, 60);
 
   return res.status(200).json({
     success: true,

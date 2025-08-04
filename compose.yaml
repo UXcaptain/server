@@ -18,12 +18,8 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
       PINOJS_SOURCE_TOKEN: ${PINOJS_SOURCE_TOKEN}
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@backend-db:5432/public
-      PRISMA_POSTGRES_CONNECTION_DIRECT_URL: postgresql://postgres:prismaORM124!@backend-db:5432/public
-      MONGODB_USERNAME: ${MONGODB_USERNAME}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-      MONGODB_URI: ${MONGODB_URI}
-      MONGODB_CONNECTION_STRING: ${MONGODB_CONNECTION_STRING}
+      PRISMA_POSTGRES_DIRECT_URL: ${PRISMA_POSTGRES_DIRECT_URL}
+      PRISMA_POSTGRES_CONNECTION_STRING: ${PRISMA_POSTGRES_CONNECTION_STRING}
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
       FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
       STRIPE_API_KEY: ${STRIPE_API_KEY}
@@ -31,6 +27,8 @@ services:
       PORT: ${PORT}
       VALKEY_CACHE_HOST: ${VALKEY_CACHE_HOST}
       VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
       - 3000:3000
     develop:
@@ -39,21 +37,38 @@ services:
           action: sync+restart #* Synchronize code changes and restart the server
           target: /usr/src/app/
     depends_on: #* References the SERVICE name - NOT the container_name
-      backend-db:
+      backend-db-17:
         condition: service_started
       # uxmonkeys-cache: 
       #   condition: service_started
     networks:
       - uxmonkeys-network
 
-  backend-db:
-    image: postgres:16.8
+  # backend-db:
+  #   image: postgres:16.8
+  #   restart: on-failure
+  #   container_name: back_end_db-service
+  #   user: 
+  #     postgres
+  #   volumes:
+  #     - backend-db-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_DB=public
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=prismaORM124!
+  #   ports:
+  #     - 5432:5432
+  #   networks:
+  #     - uxmonkeys-network 
+
+  backend-db-17:
+    image: postgres:17.5
     restart: on-failure
-    container_name: back_end_db-service
+    container_name: back_end_db-service-17
     user: 
       postgres
     volumes:
-      - backend-db-data:/var/lib/postgresql/data
+      - backend-db-data-17:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=public
       - POSTGRES_USER=postgres
@@ -80,6 +95,8 @@ networks:
 
 volumes:
   backend-db-data:
+  backend-db-data-17:
+
 
  # web-app: #* UNUSED BUT LEFT HERE FOR FUTURE REFERENCE ON HOW TO SET IT UP
   #   build: 

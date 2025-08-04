@@ -3,7 +3,6 @@ import { createStripeCustomerPortalSession } from '../integrations/stripe/custom
 import { createCustomerInStripe } from '../integrations/stripe/customerId.mjs';
 import { createStripeCheckoutSession } from '../integrations/stripe/checkoutSession.mjs';
 import { getBillingDataInDb, storeBillingCustomerIdInDb } from '../models/subscriptionModel.mjs';
-import { getFromCache, storeInCache, getTTLfromCache } from '../config/valkey.mjs';
 
 export const createBillingCustomerId = async (req, res) => {
   const {
@@ -119,24 +118,8 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
 export const getBillingData = async (req, res) => {
   const { id } = req.user;
 
-  const cacheKey = `billing-${id}`;
-
   try {
-    const cachedBillingData = await getFromCache(cacheKey);
-
-    if (cachedBillingData) {
-      return res.status(200).json({
-        success: true,
-        message: 'Billing data retrieved successfully - cache',
-        cacheKey: cacheKey,
-        cacheTTL_seconds: await getTTLfromCache(cacheKey),
-        billingData: JSON.parse(cachedBillingData),
-      });
-    }
-
     const billingData = await getBillingDataInDb(id);
-
-    await storeInCache(cacheKey, billingData, 60 * 5); //* Cache for 5 minutes
 
     return res.status(200).json({
       success: true,

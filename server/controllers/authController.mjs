@@ -2,13 +2,12 @@ import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.mjs';
 import passport from '../auth/passportjs.mjs';
 import { posthogUserSuccessLoggedIn } from '../models/posthogModel.mjs';
-
 import {
   getUserByEmail, updateUserPasswordInDB,
-  createUserInDB,
-  deleteUserInDb,
+  createCustomerInDB,
   getUserPassword,
   updateUserLastLoginDate,
+  createParticipantInDB,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
@@ -148,7 +147,6 @@ export const checkSession = async (req, res) => {
       message: 'Session is valid',
       user: {
         id: req.user.id,
-        role: req.user.role,
       },
     });
   }
@@ -160,7 +158,15 @@ export const checkSession = async (req, res) => {
 };
 
 export const loginLocal = async (req, res, next) => {
-  passport.authenticate('local', (err, user /* , info */) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'Analysis could not be created due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
+  return passport.authenticate('local', (err, user /* , info */) => {
     if (err) {
       return res.status(500).json({
         success: false,
@@ -213,7 +219,7 @@ export const createUser = async (req, res) => {
   const userData = {
     username: req.body.username,
     password: await bcrypt.hash(req.body.password, 10),
-    role: 'customer', //* Hardcoded role for simplicity
+    role: req.body.role,
   };
 
   const isExistingUser = await getUserByEmail(userData.username);
@@ -225,13 +231,24 @@ export const createUser = async (req, res) => {
     });
   }
 
-  const createdUser = await createUserInDB(userData);
+  if (userData.role === 'customer') {
+    const createdUser = await createCustomerInDB(userData);
 
-  return res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    userId: createdUser.id,
-  });
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      userId: createdUser.id,
+    });
+  }
+
+  if (userData.role === 'participant') {
+    const createdUser = await createParticipantInDB(userData);
+    return res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      userId: createdUser.id,
+    });
+  }
 };
 
 export const updateUserPassword = async (req, res) => {
@@ -280,31 +297,6 @@ export const updateUserPassword = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Password update failed',
-    });
-  }
-};
-
-export const deleteUser = async (req, res) => {
-  try {
-    await deleteUserInDb(req.user.id);
-
-    return res.status(200).json({
-      success: true,
-      message: 'User deleted successfully',
-    });
-  } catch (error) {
-    logError('User deletion failed', error);
-
-    if (error.code === 'P2003') {
-      return res.status(409).json({
-        success: false,
-        message: 'User deletion failed - Related DB entries exist',
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      message: 'User deletion failed - Please try again later',
     });
   }
 };

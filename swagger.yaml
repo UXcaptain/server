@@ -8,11 +8,11 @@ servers:
   [
     {
       "url": "prod.uxmonkeys.com/api",
-      description: "Prod server for uxmonkeys"
+      "description": "Prod server for uxmonkeys"
     },
     {
       url: "dev.uxmonkeys.com/api",
-      description: "dev server uxmonkeys"
+      "description": "dev server uxmonkeys"
     }
   ]
 
@@ -56,8 +56,8 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Users successfully retrieved - DB,
-                            User successfully retrieved - cache
+                            "Users successfully retrieved - DB",
+                            "User successfully retrieved - cache"
                           ]
                         cacheKey:
                           $ref: "#/components/schemas/CacheKey"
@@ -74,6 +74,20 @@ paths:
                             items:
                                 $ref: '#/components/schemas/User'
                             
+        403:
+          description: User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User does not have the required permissions"
+                            ]
         500:
           description: Unexpected error
           content:
@@ -113,10 +127,38 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Users successfully retrieved - DB
+                            "Users successfully retrieved - DB"
                           ]
                         user:
                             $ref: "#/components/schemas/User"
+        400:
+          description: User not found
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User not found"
+                            ]
+        403:
+          description: User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User does not have the required permissions"
+                            ]
         500:
           description: Unexpected error
           content:
@@ -128,7 +170,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
-  
+    
     delete:
       summary: Deletes one user
       description: This endpoint will delete one user
@@ -154,7 +196,7 @@ paths:
                         message:
                             type: string
                             examples: [
-                              User successfully deleted
+                              "User successfully deleted"
                             ] 
         403:
           description: User deletion failed - User does not have the required permissions
@@ -168,7 +210,7 @@ paths:
                         message:
                             type: string
                             examples: [
-                              User deletion failed - User does not have the required permissions
+                              "User deletion failed - User does not have the required permissions"
                             ]
         404:
           description: User deletion failed - User does not exist
@@ -182,7 +224,7 @@ paths:
                         message:
                             type: string
                             examples: [
-                              User deletion failed - User does not exist
+                              "User deletion failed - User does not exist"
                             ] 
         409:
           description: User deletion failed - Related DB entries exist
@@ -196,7 +238,7 @@ paths:
                         message:
                             type: string
                             example: [
-                              User deletion failed - Related DB entries exist
+                              "User deletion failed - Related DB entries exist"
                             ]
         500:
           description: Unexpected error
@@ -230,17 +272,15 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Session is valid
+                            "Session is valid"
                           ]
                         user:
                             type: object
                             properties:
                               id:
                                 $ref: '#/components/schemas/UserId'
-                              role:
-                                $ref: '#/components/schemas/UserRoles'
         401:
-          description: Unexpected error
+          description: Session is not valid
           content:
             application/json:
               schema:
@@ -251,7 +291,7 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  Session is invalid
+                                  "Session is not valid"
                                 ]
 
   /v1/auth/register/local:
@@ -269,11 +309,14 @@ paths:
                         required:
                           - email
                           - password
+                          - role
                         properties:
                             email:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
                                 $ref: "#/components/schemas/UserPassword"
+                            role:
+                                $ref: "#/components/schemas/UserRoles"
         responses:
             201:
                 description: Success
@@ -287,7 +330,7 @@ paths:
                               message:
                                 type: string
                                 example: User created successfully
-                              UserId:
+                              userId:
                                 $ref: "#/components/schemas/UserId"
             409:
               description: User already exists
@@ -300,7 +343,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
-                                example: User creation failed - The email address already exists
+                                example: User creation failed - User already exists
             422:
               description: Validation error
               content:
@@ -327,7 +370,7 @@ paths:
                               success:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
-                                $ref: '#/components/schemas/InternalErrorMessage' 
+                                $ref: '#/components/schemas/InternalErrorMessage'
                 
   /v1/auth/login/local:
     post:
@@ -362,14 +405,12 @@ paths:
                                 type: string
                                 example: Login successful
                               user:
-                                type: array
-                                items:
-                                  type: object
-                                  properties:
-                                      id: 
-                                          $ref: "#/components/schemas/UserId"
-                                      role: 
-                                          $ref: "#/components/schemas/UserRoles"
+                                type: object
+                                properties:
+                                    id: 
+                                        $ref: "#/components/schemas/UserId"
+                                    role: 
+                                        $ref: "#/components/schemas/UserRoles"
             401:
               description: Incorrect email & password combination
               content:
@@ -382,7 +423,7 @@ paths:
                               message:
                                 type: string
                                 example: The combination of email and password is incorrect
-            
+             
             422:
               description: Validation error
               content:
@@ -399,7 +440,7 @@ paths:
                                 type: array
                                 items:
                                   $ref: "#/components/schemas/ValidationErrors"
-            
+             
             500:
               description: Unexpected error
               content:
@@ -431,7 +472,7 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  User logged out successfully
+                                  "User logged out successfully"
                                 ]
             400:
               description: User is not logged in
@@ -445,7 +486,7 @@ paths:
                               message:
                                   type: string
                                   examples: [
-                                    User is not logged in
+                                    "User is not logged in"
                                   ]
             500:
               description: Unexpected error
@@ -502,11 +543,11 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
-                                example: Password update failed - old password is incorrect
-            
-            
+                                example: Current password is incorrect
+             
+        
         401:
-              description: User already exists
+              description: User not found
               content:
                 application/json:
                     schema:
@@ -517,8 +558,8 @@ paths:
                               message:
                                 type: string
                                 example: User not found
-            
-            
+             
+        
         422:
                 description: Validation error
                 content:
@@ -584,7 +625,7 @@ paths:
                     $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
-                    example: Password reset token not provided 
+                    example: Token is required
         403:
           description: Password reset token is expired
           content:
@@ -596,7 +637,7 @@ paths:
                     $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
-                    example: Token expired - Please request a new password reset link 
+                    example: Token expired - Please request a new password reset link
         404:
           description: Password reset token was not found
           content:
@@ -608,8 +649,8 @@ paths:
                     $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
-                    example: Password reset token does not exist 
-        
+                    example: Password reset token does not exist
+         
         500:
           description: Unexpected error
           content:
@@ -695,6 +736,21 @@ paths:
                     message:
                       type: string
                       example: User password updated successfully using password reset token
+        400:
+            description: Token expired or passwords do not match
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessFalseStatus"
+                    message:
+                      type: string
+                      examples: [
+                        "Token expired - Please request a new password reset link",
+                        "Passwords do not match"
+                      ]
         422:
               description: Validation error
               content:
@@ -707,7 +763,7 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  Analysis could not be created due to validation errors
+                                  "Analysis could not be created due to validation errors"
                                 ]
                               errors:
                                 type: array
@@ -743,13 +799,13 @@ paths:
                   $ref: "#/components/schemas/SuccessTrueStatus"
                 message:
                   type: string
-                  example: User retrieved successfully
+                  example: user profile retrieved successfully - cache
                 cacheKey:
                   $ref: "#/components/schemas/CacheKey"
                 cacheTTL_seconds: 
                   $ref: "#/components/schemas/CacheTTL_seconds"
                 user:
-                  $ref: "#/components/schemas/User"
+                  $ref: "#/components/schemas/CustomerProfile"
                 
        401:
          description: User not authenticated
@@ -763,18 +819,6 @@ paths:
                  message:
                    type: string
                    example: Unauthorized access
-       409:
-          description: User deletion failed - Related DB entries exist
-          content:
-            application/json:
-                schema:
-                    type: object
-                    properties:
-                        success:
-                            $ref: "#/components/schemas/SuccessFalseStatus"
-                        message:
-                            type: string
-                            example: User deletion failed - Related DB entries exist
        500:
           description: Unexpected error
           content:
@@ -802,9 +846,7 @@ paths:
                   $ref: "#/components/schemas/SuccessTrueStatus"
                 message:
                   type: string
-                  example: User retrieved successfully
-                user:
-                  $ref: "#/components/schemas/User"
+                  example: User deleted successfully
         409:
           description: User deletion failed - Related DB entries exist
           content:
@@ -828,7 +870,7 @@ paths:
                                 $ref: "#/components/schemas/SuccessFalseStatus"
                             message:
                                   $ref: '#/components/schemas/InternalErrorMessage'
-    
+      
   /v1/analysis:
     get:
       summary: Retrieve all analyses
@@ -862,8 +904,8 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Analysis successfully retrieved - DB,
-                            Analysis successfully retrieved - cache
+                            "Analysis successfully retrieved - DB",
+                            "Analysis successfully retrieved - cache"
                           ]
                         cacheKey:
                           $ref: "#/components/schemas/CacheKey"
@@ -919,7 +961,7 @@ paths:
                       maxNumberOfParticipants:
                         $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
                       tasks:
-                        $ref: '#/components/schemas/AnalysisTasks'
+                        $ref: '#/components/schemas/AnalysisTasksArray'
                       device:
                         $ref: '#/components/schemas/AnalysisDevice'
 
@@ -936,7 +978,7 @@ paths:
                   message:
                     type: string
                     examples: [
-                      "Analysis created successfully"
+                      "analysis created successfully"
                     ]
                   createdAnalysisId:
                     $ref: "#/components/schemas/AnalysisId"
@@ -952,7 +994,7 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  Analysis could not be created due to validation errors
+                                  "Analysis could not be created due to validation errors"
                                 ]
                               errors:
                                 type: array
@@ -998,40 +1040,30 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Analysis successfully retrieved - DB,
-                            Analysis successfully retrieved - cache
+                            "Analysis data successfully retrieved - cache",
+                            "Analysis details retrieved successfully"
                           ]
                         cacheKey:
                           $ref: "#/components/schemas/CacheKey"
                         cacheTTL_seconds: 
                           $ref: "#/components/schemas/CacheTTL_seconds"
                         analysisData:
-                              type: object
-                              properties:
-                                device:
-                                  $ref: '#/components/schemas/AnalysisDevice'
-                                name:
-                                  $ref: '#/components/schemas/AnalysisName'
-                                scenario:
-                                  $ref: '#/components/schemas/AnalysisScenario'
-                                tasks:
-                                  type: array
-                                  items:
-                                    $ref:  '#/components/schemas/AnalysisTasks'
-                                url:
-                                  $ref: '#/components/schemas/AnalysisUrl'
-                                created_at:
-                                  $ref: '#/components/schemas/CreatedAt'
-                                status:
-                                  $ref: '#/components/schemas/AnalysisStatus'
-                                max_number_of_participants:
-                                  $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
-                                entries:
-                                  type: array
-                                  items:
-                                    $ref: '#/components/schemas/AnalysisEntry'
-
+                              $ref: '#/components/schemas/AnalysisWithEntryDetails'
                             
+        403:
+          description: User does not have permission to access this analysis
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                          type: string
+                          examples: [
+                            "You do not have permission to access this analysis."
+                          ]
         404:
           description: Analysis not found
           content:
@@ -1077,24 +1109,16 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Billing data retrieved successfully - cache,
-                            Billing data retrieved successfully - DB
+                            "Billing data retrieved successfully - cache",
+                            "Billing data retrieved successfully - DB"
                           ]
                         cacheKey:
                           $ref: "#/components/schemas/CacheKey"
                         cacheTTL_seconds: 
                           $ref: "#/components/schemas/CacheTTL_seconds"
                         billingData:
-                              type: object
-                              properties:
-                                stripe_customer_id:
-                                  $ref: '#/components/schemas/StripeCustomerId'
-                                Subscriptions:
-                                  type: array
-                                  items:
-                                    $ref: '#/components/schemas/SubscriptionData'
-
-                  
+                              $ref: '#/components/schemas/BillingData'
+                   
         500:
           description: Unexpected error
           content:
@@ -1106,7 +1130,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
-    
+     
     post:
       summary: Creates a stripe customer ID for the currently authenticated user
       description: Creates a stripe customer ID for the currently authenticated user
@@ -1126,9 +1150,9 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Customer created successfully
+                            "Customer created successfully"
                           ]
-                        StripeCustomerId:
+                        stripeCustomerId:
                           $ref: '#/components/schemas/StripeCustomerId'
         400:
           description: Customer already has a stripe customer id
@@ -1142,11 +1166,11 @@ paths:
                               message:
                                 type: string
                                 examples: [
-                                  customer already has a stripe customer id
+                                  "customer already has a stripe customer id"
                                 ]
-                              StripeCustomerId:
+                              stripeCustomerId:
                                 $ref: '#/components/schemas/StripeCustomerId'
-        
+         
         
         500:
           description: Unexpected error
@@ -1193,10 +1217,24 @@ paths:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Billing checkout session generated successfully
+                            "Billing checkout session generated successfully"
                           ]
                         checkoutSessionUrl:
                           $ref: '#/components/schemas/BillingCheckoutSessionUrl'
+        403:
+          description: Checkout Session cant be created - user already has a subscription
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                          type: string
+                          examples: [
+                            "Checkout Session cant be created - user already has a subscription"
+                          ]
         500:
           description: Unexpected error
           content:
@@ -1224,12 +1262,13 @@ paths:
                     type: object
                     properties:
                         success:
-                            $ref: "#/components/schemas/SuccessTrueStatus"
+                            type: string
+                            example: "success"
                         message:
                           description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
-                            Billing checkout session generated successfully
+                            "Customer portal URL retrieved successfully"
                           ]
                         customerPortalUrl:
                           $ref: '#/components/schemas/BillingCustomerPortalUrl'
@@ -1244,6 +1283,192 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis/participate/{AnalysisId}:
+    get:
+      summary: Participate in an analysis
+      description: Allows a participant to join an analysis and get the necessary details to complete it.
+      tags: ["Analysis"]
+      parameters:
+        - name: AnalysisId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      presignedUploadUrl:
+                        $ref: '#/components/schemas/PresignedPutS3Url'
+        403:
+          description: Maximum number of participants reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: The maximum number of participants has been reached.
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis not found
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/{EntryId}:
+    get:
+      summary: Get analysis entry details for participants
+      description: Retrieve the details of an analysis entry for participants, including a presigned URL to access the entry.
+      tags: ["Analysis Entry"]
+      parameters:
+        - name: EntryId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EntryId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  analysisEntryPresignedUrl:
+                    type: string
+                    format: url
+                    description: Presigned URL to access the analysis entry
+        400:
+          description: Analysis entry ID has not been provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis entry ID has not been provided
+        403:
+          description: Analysis entry has not been completed yet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis entry has not been completed yet
+        404:
+          description: Analysis entry doesn't have a video URL yet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    examples: [
+                      "Analysis not found",
+                      "Analysis does not have a video url"
+                    ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+    patch:
+      summary: Update analysis entry details
+      description: Update the details of an analysis entry, typically used to submit the entry.
+      tags: ["Analysis Entry"]
+      parameters:
+        - name: EntryId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/EntryId"
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis entry updated successfully
+                  updatedAnalysisEntry:
+                    $ref: '#/components/schemas/AnalysisEntry'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
 
 components:
   schemas:
@@ -1327,23 +1552,21 @@ components:
           type: string
           example: body
 
-    User:
+    CustomerProfile:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/UserId'
         email:
           $ref: "#/components/schemas/UserEmail"
         role:
           $ref: "#/components/schemas/UserRoles"
-        created_at:
-          $ref: '#/components/schemas/CreatedAt'
-        last_updated_at:
-            $ref: '#/components/schemas/UpdatedAt'
-        last_login_at:
-            $ref: '#/components/schemas/LastLoginAt'
-        stripe_customer_id:
-            $ref: '#/components/schemas/StripeCustomerId'
+        
+    ParticipantProfile:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/UserEmail"
+        role:
+          $ref: "#/components/schemas/UserRoles"
     
     CreatedAt:
       type: string
@@ -1389,26 +1612,57 @@ components:
           $ref: '#/components/schemas/AnalysisStatus'
         maxNumberOfParticipants:
           $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
-        createdAt:
+        created_at:
           $ref: '#/components/schemas/CreatedAt'
 
     AnalysisWithCount:
       type: object
       properties:
-        Analysis:
-          $ref: '#/components/schemas/Analysis'
-        _count:
-          $ref: '#/components/schemas/AnalysisEntryCount'
+        id:
+          $ref: '#/components/schemas/AnalysisId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        max_number_of_participants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        _count: 
+          $ref: '#/components/schemas/AnalysisEntriesCount'
+        
 
     AnalysisWithEntryDetails:
       type: object
       properties:
-        Analysis:
-          $ref: '#/components/schemas/Analysis'
-        entries:
+        owner_id:
+          $ref: '#/components/schemas/UserId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        scenario:
+          $ref: '#/components/schemas/AnalysisScenario'
+        tasks:
+          $ref: '#/components/schemas/AnalysisTasksArray'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        max_number_of_participants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        AnalysisEntries:
           type: array
           items:
-            $ref: '#/components/schemas/AnalysisEntry'
+            $ref: '#/components/schemas/AnalysisEntryWithParticipant'
 
     AnalysisEntryUrl:
       type: string
@@ -1416,15 +1670,6 @@ components:
       description: The URL of the completed entry
       examples: [
         'https://www.storage.com/1234'
-      ]
-
-    AnalysisEntryCount:
-      type: number
-      description: The number of entries that have been submitted for a given analysis
-      examples: [
-        0,
-        5,
-        10,
       ]
 
     AnalysisEntry:
@@ -1435,18 +1680,15 @@ components:
           $ref: '#/components/schemas/EntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
-        url:
-          $ref: '#/components/schemas/EntryStorageUrl'
 
-    EntryStorageUrl:
-      type: string
-      description: The URL where the storage is located for a submitted entry
-      format: url
-      examples: [
-        'https://www.storage.com/123',
-        'https://s3.amzon.com/1234'
-        ]
-
+    AnalysisEntryWithParticipant:
+      type: object
+      description: The details of a completed entry for an analysis with participant data
+      properties:
+        id: 
+          $ref: '#/components/schemas/EntryId'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'        
 
     AnalysisName:
       type: string
@@ -1555,11 +1797,30 @@ components:
         sub_1ReNIs4EThrTH3Et8fmPxMXe
       ]
 
-    SubscriptionData:
+    AnalysisEntriesCount: 
+      type: object
+      description: the number of analysis entries in a given analysis
+      properties: 
+        AnalysisEntries:
+          type: number
+          examples: [
+            1,
+            2,
+            3,
+          ]
+
+    BillingData:
       type: object
       properties:
-        subscriptionId:
-          $ref: '#/components/schemas/StripeSubscriptionId'
+        stripe_customer_id:
+          $ref: '#/components/schemas/StripeCustomerId'
+        Subscription:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/StripeSubscriptionId'
 
     BillingPlanBillingCycle:
       type: string
@@ -1580,6 +1841,14 @@ components:
         enterprise
       ]
 
+    PresignedPutS3Url:
+      type: string
+      format: url
+      description: Indicates the presigned PUT S3 URL that the client can use to upload the completed analysis entry
+      examples: [
+        https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/a95e9d43-493c-47ac-9d7d-fd0565c1944e/analysisEntry/fa5b9cd0-0d9d-4a47-a1c4-b97b3c17996c?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20250801%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20250801T102005Z&X-Amz-Expires=3600&X-Amz-Signature=7cc1d692caa570954aaca1dcc4485410e791d86b25268754791089c81e9b8abe&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject"
+      ]
+
     BillingPlanStatus:
       type: string
       enum: [active, refunded, cancelled]
@@ -1588,6 +1857,13 @@ components:
         active,
         refunded,
         cancelled
+      ]
+
+    AwsObjectKey:
+      type: string
+      description: The AWS object key for the analysis entry
+      examples: [
+        analysis/04ade421-5238-4d28-ac0e-3c5f02e22c03/analysisEntry/fa5b9cd0-0d9d-4a47-a1c4-b97b3c17996c
       ]
 
     BillingCheckoutSessionUrl:
@@ -1610,11 +1886,3 @@ components:
       type: string
       description: Indicates an internal error failure (status 500)
       example: Internal server error - Please contact us
-  
-#   securitySchemes: # * Not using API Key for now, but will be used later
-#     ApiKey:
-#       type: apiKey
-#       in: header
-#       name: X-Api-Key
-# security:
-#   - ApiKey: []

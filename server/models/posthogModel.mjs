@@ -1,6 +1,5 @@
 import { client } from '../config/posthog-node.mjs';
 import { logError } from '../config/loggerFunctions.mjs';
-import { getUserByStripeCustomerId } from './userModel.mjs';
 
 export const posthogUserSignedUp = async (user) => {
   try {
@@ -25,9 +24,7 @@ export const posthogUserSuccessLoggedIn = async (distinctId, loginMethod) => {
       distinctId: distinctId,
       event: 'userLoggedIn',
       properties: {
-        $set: {
-          loginMethod: loginMethod,
-        },
+        loginMethod: loginMethod,
       },
     });
   } catch (error) {
@@ -50,14 +47,14 @@ export const posthogUserLoggedOut = async (distinctId) => {
 export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
   try {
     client.capture({
-      distinctId: checkoutSessionData.metadata.userId,
+      distinctId: checkoutSessionData.userId,
       event: 'subscriptionCreated',
-      properties: {
-        $set: {
-          planName: checkoutSessionData.metadata.planName,
-          planBillingCycle: checkoutSessionData.metadata.planBillingCycle,
-        },
+      /* properties: {
+        $set: { // TODO - decide if this should be a person or event property
+        planName: checkoutSessionData.metadata.planName, // TODO - ADD THIS VALUE
+        planBillingCycle: checkoutSessionData.metadata.planBillingCycle, // TODO - ADD THIS VALUE
       },
+    }, */
     });
   } catch (error) {
     logError('error sending posthogUserSubscriptionCreated event to posthog', error, 'subscriptionCreated');
@@ -92,7 +89,7 @@ export const posthogUserDeleteAccount = async (distinctId) => {
       distinctId: distinctId,
       event: 'userDeletedAccount',
       properties: {
-        set: {
+        $set: {
           isDeleted: true,
         },
         $unset: ['email'],
@@ -103,11 +100,16 @@ export const posthogUserDeleteAccount = async (distinctId) => {
   }
 };
 
-export const posthogAnalysisCreated = async (distinctId) => {
+export const posthogAnalysisCreated = async (analysisData) => {
   try {
     client.capture({
-      distinctId,
-      event: 'userUpdatedPassword',
+      distinctId: analysisData.owner_id,
+      event: 'AnalysisCreated',
+      properties: {
+        device: analysisData.device,
+        // status: analysisData.status, //* for now, will always be created as 'published'
+        max_number_of_participants: analysisData.maxNumberOfParticipants,
+      },
     });
   } catch (error) {
     logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');

@@ -77,27 +77,6 @@ export const logUserLoggedOut = (userId) => {
   });
 };
 
-export const logFatalMongoDbConnectionError = (error) => {
-  logger.fatal({
-    message: `[DB CONNECTION] Can't connect to MongoDB - ${error.errmsg}`,
-    context: {
-      error: error.message,
-    },
-  });
-};
-
-export const logFatalMongoDBSessionInitError = (error) => {
-  logger.fatal({
-    message: 'MongoDB session store initialization failed',
-    context: {
-      name: error.name,
-      errorMessage: error.message,
-      errorStack: error.stack,
-      errorDetails: error, // I will log the entire error object for now just in case}
-    },
-  });
-};
-
 export const logRateLimited = async (req) => {
   logger.warn({
     message: 'rate limit exceeded',

@@ -1,6 +1,5 @@
 import { Router } from 'express';
-import { getUserProfile } from '../../../controllers/userController.mjs';
-import { deleteUser } from '../../../controllers/authController.mjs';
+import { getUserProfile, deleteUser } from '../../../controllers/userController.mjs';
 
 export const userRouter = Router();
 
