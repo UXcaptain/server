@@ -20,5 +20,8 @@ analysisRouter.get('/:id', getSingleAnalysisData);
 analysisRouter.get('/participate/:id', participateInAnalysis);
 
 analysisRouter.use('/*fallback', (req, res) => {
-  res.status(404).send('Route not found');
+  res.status(404).json({
+    success: false,
+    message: 'The requested route is not available or does not exist',
+  }); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });
