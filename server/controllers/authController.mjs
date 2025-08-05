@@ -181,6 +181,13 @@ export const loginLocal = async (req, res, next) => {
       });
     }
 
+    if (user.role === 'participant') {
+      return res.status(403).json({
+        success: false,
+        message: 'Participant login is disabled',
+      });
+    }
+
     // Log the user in and establish a session
     return req.login(user, (loginErr) => {
       if (loginErr) { //* Will trigger if password is incorrect
