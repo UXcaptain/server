@@ -8,6 +8,7 @@ import {
   getUserPassword,
   updateUserLastLoginDate,
   createParticipantInDB,
+  createAdminInDB,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
@@ -214,7 +215,7 @@ export const loginLocal = async (req, res, next) => {
   })(req, res, next);
 };
 
-export const createUser = async (req, res) => {
+export const createCustomerInDb = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
@@ -238,24 +239,77 @@ export const createUser = async (req, res) => {
     });
   }
 
-  if (userData.role === 'customer') {
-    const createdUser = await createCustomerInDB(userData);
+  const createdUser = await createCustomerInDB(userData);
 
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
+};
+
+export const createParticipantInDb = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'User could not be created due to validation errors',
+      errors: req.sanitizedErrors,
     });
   }
 
-  if (userData.role === 'participant') {
-    const createdUser = await createParticipantInDB(userData);
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
+  const userData = {
+    username: req.body.username,
+    password: await bcrypt.hash(req.body.password, 10),
+    role: req.body.role,
+  };
+
+  const isExistingUser = await getUserByEmail(userData.username);
+
+  if (isExistingUser !== null) {
+    return res.status(409).json({
+      success: false,
+      message: 'User creation failed - User already exists',
     });
   }
+
+  const createdUser = await createParticipantInDB(userData);
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
+};
+
+export const createAdminInDb = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'User could not be created due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
+  const userData = {
+    username: req.body.username,
+    password: await bcrypt.hash(req.body.password, 10),
+    role: req.body.role,
+  };
+
+  const isExistingUser = await getUserByEmail(userData.username);
+
+  if (isExistingUser !== null) {
+    return res.status(409).json({
+      success: false,
+      message: 'User creation failed - User already exists',
+    });
+  }
+
+  const createdUser = await createAdminInDB(userData);
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
 };
 
 export const updateUserPassword = async (req, res) => {
