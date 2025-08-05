@@ -2,7 +2,14 @@ import { Router } from 'express';
 
 export const indexRouter = Router();
 
-indexRouter.use('/*fallback', (req, res) => {
+indexRouter.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'server is healthy',
+  });
+});
+
+indexRouter.get('/*fallback', (req, res) => {
   res.status(404).json({
     success: false,
     message: 'The requested route is not available or does not exist',
