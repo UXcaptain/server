@@ -80,7 +80,7 @@ export const getSingleAnalysisData = async (req, res) => {
 };
 
 export const participateInAnalysis = async (req, res) => {
-  const { id: analysisId } = req.params;
+  const { analysisId } = req.body;
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 

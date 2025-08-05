@@ -9,6 +9,7 @@ import { analysisRouter } from './v1/routes/analysisRouter.mjs';
 import { checkAuthentication } from '../middlewares/authenticationChecker.mjs';
 import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.mjs';
 import { analysisEntryRouter } from './v1/routes/analysisEntryRouter.mjs';
+import { guestParticipantRouter } from './v1/routes/guestParticipantRouter.mjs';
 
 export const apiRouter = Router();
 
@@ -16,6 +17,8 @@ const customerRole = 'customer';
 const adminRole = 'admin';
 
 apiRouter.use('/v1/auth', authRouter);
+
+apiRouter.use('/v1/guestParticipant', guestParticipantRouter);
 
 //* Globally auth protected routes
 

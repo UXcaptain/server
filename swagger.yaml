@@ -72,7 +72,7 @@ paths:
                         users:
                             type: array
                             items:
-                                $ref: '#/components/schemas/User'
+                                $ref: '#/components/schemas/CustomerProfile'
                             
         403:
           description: User does not have the required permissions
@@ -130,7 +130,7 @@ paths:
                             "Users successfully retrieved - DB"
                           ]
                         user:
-                            $ref: "#/components/schemas/User"
+                            $ref: "#/components/schemas/CustomerProfile"
         400:
           description: User not found
           content:
@@ -1284,17 +1284,22 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis/participate/{AnalysisId}:
+  /v1/guestParticipant/participate:
     get:
       summary: Participate in an analysis
       description: Allows a participant to join an analysis and get the necessary details to complete it.
-      tags: ["Analysis"]
-      parameters:
-        - name: AnalysisId
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/AnalysisId"
+      tags: ["guestRouter"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
 
       responses:
         200:
