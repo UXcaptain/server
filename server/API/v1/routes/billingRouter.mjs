@@ -1,16 +1,16 @@
 import { Router } from 'express';
 import {
-  createBillingCustomerId,
+  createCompanyBillingId,
   getBillingCustomerPortalUrl,
   getBillingCheckoutSessionUrl,
-  getBillingData,
+  getCompanyBillingData,
 } from '../../../controllers/billingController.mjs';
 
 export const billingRouter = Router();
 
-billingRouter.get('/', getBillingData);
+billingRouter.get('/', getCompanyBillingData);
 
-billingRouter.post('/', createBillingCustomerId);
+billingRouter.post('/', createCompanyBillingId);
 
 billingRouter.post('/checkout-session', getBillingCheckoutSessionUrl);
 

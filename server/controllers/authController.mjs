@@ -12,6 +12,7 @@ import {
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
+import { createFreeTrialSubscription } from '../models/subscriptionModel.mjs';
 
 export const requestPasswordResetToken = async (req, res) => {
   try {
@@ -240,6 +241,8 @@ export const createCustomerInDb = async (req, res) => {
   }
 
   const createdUser = await createCustomerInDB(userData);
+
+  await createFreeTrialSubscription(createdUser.company_id);
 
   return res.status(201).json({
     success: true,

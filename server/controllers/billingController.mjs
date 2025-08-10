@@ -1,136 +1,98 @@
-import { logError } from '../config/loggerFunctions.mjs';
 import { createStripeCustomerPortalSession } from '../integrations/stripe/customerPortalSession.mjs';
-import { createCustomerInStripe } from '../integrations/stripe/customerId.mjs';
+import { createCompanyIdInStripe } from '../integrations/stripe/customerId.mjs';
 import { createStripeCheckoutSession } from '../integrations/stripe/checkoutSession.mjs';
-import { getBillingDataInDb, storeBillingCustomerIdInDb } from '../models/subscriptionModel.mjs';
+import { getBillingDataInDb, storeBillingCompanyIdInDb } from '../models/subscriptionModel.mjs';
 
-export const createBillingCustomerId = async (req, res) => {
+export const createCompanyBillingId = async (req, res) => {
   const {
     email,
-    id: userId,
-    stripe_customer_id: stripeCustomerId, //* Returns null if customer does not exist Stripe
+    company_id: companyId,
   } = req.user;
 
-  if (stripeCustomerId) {
+  const billingData = await getBillingDataInDb(companyId);
+
+  const { stripe_id: companyStripeId } = billingData;
+
+  if (companyStripeId) {
     return res.status(400).json({
       success: false,
-      message: 'customer already has a stripe customer id',
-      stripeCustomerId: stripeCustomerId,
+      message: 'Company billing ID already exists',
     });
   }
 
-  try {
-    const customerCreationQuery = await createCustomerInStripe(email, userId);
+  const companyBillingId = await createCompanyIdInStripe(email, companyId);
 
-    const { id: createdStripeCustomerId } = customerCreationQuery;
+  const { id: createdStripeCustomerId } = companyBillingId;
 
-    await storeBillingCustomerIdInDb(
-      userId,
-      customerCreationQuery.id,
-    );
+  await storeBillingCompanyIdInDb(
+    companyId,
+    companyBillingId.id,
+  );
 
-    return res.status(200).json({
-      success: true,
-      message: 'Customer created successfully',
-      stripeCustomerId: createdStripeCustomerId,
-    });
-  } catch (error) {
-    logError('Error creating customer in Stripe:', error);
-
-    return res.status(500).json({
-      success: false,
-      message: 'There was an error creating the billing sections in stripe in Stripe',
-    });
-  }
+  return res.status(200).json({
+    success: true,
+    message: 'Company billing ID created successfully',
+    companyBillingId: createdStripeCustomerId,
+  });
 };
 
 export const getBillingCustomerPortalUrl = async (req, res) => {
-  try {
-    const {
-      stripe_customer_id: stripeCustomerId,
-    } = req.user;
+  const {
+    company_id: companyId,
 
-    const customerPortalCreationQuery = await createStripeCustomerPortalSession(stripeCustomerId);
+  } = req.user;
 
-    const { url } = customerPortalCreationQuery;
+  const billingData = await getBillingDataInDb(companyId);
 
-    return res.status(200).json({
-      success: 'success',
-      message: 'Customer portal URL retrieved successfully',
-      customerPortalUrl: url,
-    });
-  } catch (error) {
-    logError('Error creating customer portal session:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'There was an error creating the customer portal session',
-    });
-  }
+  const { stripe_id: companyStripeId } = billingData;
+
+  const customerPortalCreationQuery = await createStripeCustomerPortalSession(companyStripeId);
+
+  const { url } = customerPortalCreationQuery;
+
+  return res.status(200).json({
+    success: 'success',
+    message: 'Customer portal URL retrieved successfully',
+    customerPortalUrl: url,
+  });
 };
 
 export const getBillingCheckoutSessionUrl = async (req, res) => {
-  try {
-    const {
-      stripe_customer_id: stripeCustomerId,
-      id: internalUserId,
-    } = req.user;
+  const {
+    company_id: companyId,
+    id: userId,
+  } = req.user;
 
-    const billingData = await getBillingDataInDb(internalUserId);
+  const billingData = await getBillingDataInDb(companyId);
 
-    const { Subscription: activeSubscription } = billingData;
+  const { stripe_id: companyStripeId } = billingData;
 
-    if (activeSubscription.length >= 1) {
-      const error = new Error('Create checkout session error');
+  const { planName, planBillingCycle } = req.body;
 
-      logError('user tried to create a checkout session with an active subscription - should be blocked in the frontend', error);
+  const checkoutSession = await createStripeCheckoutSession(
+    companyStripeId,
+    userId,
+    planName,
+    planBillingCycle,
+  );
 
-      return res.status(403).json({
-        success: false,
-        message: 'Checkout Session cant be created - user already has a subscription',
-      });
-    }
+  const { url } = checkoutSession;
 
-    const { planName, planBillingCycle } = req.body;
-
-    const checkoutSession = await createStripeCheckoutSession(
-      stripeCustomerId,
-      internalUserId,
-      planName,
-      planBillingCycle,
-    );
-
-    const { url } = checkoutSession;
-
-    return res.status(200).json({
-      success: true,
-      message: 'Billing checkout session generated successfully',
-      checkoutSessionUrl: url,
-    });
-  } catch (error) {
-    logError('Error creating Stripe`s checkout session:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'There was an error creating the checkout session',
-    });
-  }
+  return res.status(200).json({
+    success: true,
+    message: 'Billing checkout session generated successfully',
+    checkoutSessionUrl: url,
+  });
 };
 
-export const getBillingData = async (req, res) => {
-  const { id } = req.user;
+export const getCompanyBillingData = async (req, res) => {
+  const { company_id: companyId } = req.user;
 
-  try {
-    const billingData = await getBillingDataInDb(id);
+  const billingData = await getBillingDataInDb(companyId);
 
-    return res.status(200).json({
-      success: true,
-      message: 'Billing data retrieved successfully - DB',
-      billingData: billingData,
-    });
-  } catch (error) {
-    logError('Failed retrieving billing data', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed retrieving billing data',
-    });
-  }
+  return res.status(200).json({
+    success: true,
+    message: 'Billing data retrieved successfully - DB',
+    billingData: billingData,
+  });
 };

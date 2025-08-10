@@ -16,6 +16,10 @@ export const createCustomerInDB = async (userData) => {
         create: {
         },
       },
+      Company: {
+        create: {
+        },
+      },
     },
   });
 

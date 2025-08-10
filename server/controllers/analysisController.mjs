@@ -114,5 +114,6 @@ export const participateInAnalysis = async (req, res) => {
     success: true,
     message: 'Analysis info retrieved successfully',
     analysisData: analysisData,
+    analysisEntryId: analysisEntry.id,
   });
 };
