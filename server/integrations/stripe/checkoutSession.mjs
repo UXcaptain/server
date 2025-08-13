@@ -1,7 +1,8 @@
 import { stripeInstance } from '../../config/stripe.mjs';
 
 export const createStripeCheckoutSession = async (
-  stripeCustomerId,
+  companyId,
+  companyStripeId,
   userId,
   planName,
   planBillingCycle,
@@ -27,7 +28,7 @@ export const createStripeCheckoutSession = async (
     },
     mode: 'subscription',
     cancel_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=cancelled`,
-    client_reference_id: userId,
+    client_reference_id: companyId,
     adaptive_pricing: {
       enabled: true,
     },
@@ -38,8 +39,9 @@ export const createStripeCheckoutSession = async (
       planName: planName,
       planBillingCycle: planBillingCycle,
       userId: userId,
+      companyId: companyId,
     },
-    customer: stripeCustomerId,
+    customer: companyStripeId,
     ui_mode: 'hosted',
     allow_promotion_codes: true,
     billing_address_collection: 'auto', //* Disable this for non-corporate users

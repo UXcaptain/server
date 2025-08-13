@@ -70,6 +70,7 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
   const { planName, planBillingCycle } = req.body;
 
   const checkoutSession = await createStripeCheckoutSession(
+    companyId,
     companyStripeId,
     userId,
     planName,
