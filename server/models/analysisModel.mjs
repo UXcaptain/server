@@ -16,7 +16,12 @@ export const createAnalysisInDb = async (analysisData) => {
       scenario: analysisData.scenario,
       User: {
         connect: {
-          id: analysisData.owner_id,
+          id: analysisData.createdBy,
+        },
+      },
+      Company: {
+        connect: {
+          id: analysisData.ownerId,
         },
       },
     },
@@ -31,7 +36,7 @@ export const createAnalysisInDb = async (analysisData) => {
 
 export const getAllAnalysesFromDb = async (ownerId, filters = {}) => {
   const whereClause = {
-    owner_id: ownerId,
+    owner_company_id: ownerId,
     ...filters,
   };
 

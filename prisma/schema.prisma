@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 
   // DOCKER - Default
   directUrl = env("PRISMA_POSTGRES_DIRECT_URL")
@@ -23,37 +23,37 @@ datasource db {
   // NEON
   // directUrl = env("PRISMA_POSTGRES_DIRECT_URL_NEON")
   // url       = env("PRISMA_POSTGRES_CONNECTION_STRING_NEON")
-
 }
 
 model User {
-  id                 String    @id @default(uuid())
-  email              String    @unique
-  password           String
-  role               UserRoles
-  created_at         DateTime  @default(now())
-  last_updated_at    DateTime  @default(now()) @updatedAt
-  last_login_at      DateTime?
-  company_id        Int
-  Company           Company @relation(fields: [company_id], references: [id])
-  PasswordResetTokens  PasswordResetTokens[]
-  Analysis             Analysis[]
-  ParticipantProfile ParticipantProfile[]
-  CustomerProfile      CustomerProfile[]
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  password            String
+  role                UserRoles
+  created_at          DateTime              @default(now())
+  last_updated_at     DateTime              @default(now()) @updatedAt
+  last_login_at       DateTime?
+  company_id          String
+  Company             Company               @relation(fields: [company_id], references: [id])
+  PasswordResetTokens PasswordResetTokens[]
+  Analysis            Analysis[]
+  ParticipantProfile  ParticipantProfile[]
+  CustomerProfile     CustomerProfile[]
 }
 
 model Company {
-  id          Int      @id @default(autoincrement())
+  id           String         @id @default(uuid())
   name         String?
-  User       User[]
+  Analysis     Analysis[]
+  User         User[]
   Subscription Subscription[]
-  stripe_id   String? @unique
-  created_at   DateTime @default(now())
-  updated_at   DateTime @default(now()) @updatedAt
+  stripe_id    String?        @unique
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now()) @updatedAt
 }
 
 model ParticipantProfile {
-  id              Int            @id @default(autoincrement())
+  id              Int               @id @default(autoincrement())
   name            String?
   last_name       String?
   age             String? // String to allow for prefer not to say option
@@ -69,13 +69,13 @@ model ParticipantProfile {
 }
 
 model CustomerProfile {
-  id           Int  @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   company_name String?
   position     String?
-  User         User    @relation(fields: [user_id], references: [id])
-  user_id      String @unique
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @default(now()) @updatedAt
+  User         User     @relation(fields: [user_id], references: [id])
+  user_id      String   @unique
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now()) @updatedAt
 }
 
 model PasswordResetTokens {
@@ -94,22 +94,24 @@ model Session {
 }
 
 model Subscription {
-  id      String @id @unique @default(uuid())
-  company_id Int @unique
-  Company Company @relation(fields: [company_id], references: [id])
-  isTrial Boolean 
+  id         String   @id @unique @default(uuid())
+  company_id String   @unique
+  Company    Company  @relation(fields: [company_id], references: [id])
+  isTrial    Boolean
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
-
 }
 
 model Analysis {
-  id                         String            @id @default(uuid())
-  User                       User              @relation(fields: [owner_id], references: [id])
-  owner_id                   String
-  device                     AnalysisDevice
-  name                       String
-  scenario                   String
+  id               String         @id @default(uuid())
+  Company          Company        @relation(fields: [owner_company_id], references: [id])
+  owner_company_id String
+  device           AnalysisDevice
+  name             String
+  scenario         String
+  created_by       String
+  User             User           @relation(fields: [created_by], references: [id])
+
   tasks                      Json
   url                        String
   status                     AnalysisStatus    @default(draft)
@@ -118,18 +120,18 @@ model Analysis {
   max_number_of_participants Int
   AnalysisEntries            AnalysisEntries[]
 
-  @@index([owner_id]) // Not a unique field, but requires an index
+  // @@index([owner_id]) // Not a unique field, but requires an index
 }
 
 model AnalysisEntries {
-  id                  String                        @id @default(uuid())
-  Analysis            Analysis                      @relation(fields: [analysis_id], references: [id])
-  analysis_id         String
+  id                 String                        @id @default(uuid())
+  Analysis           Analysis                      @relation(fields: [analysis_id], references: [id])
+  analysis_id        String
   ParticipantProfile ParticipantProfile?           @relation(fields: [user_id], references: [user_id])
-  user_id             String?
-  status              AnalysisEntryCompletionStatus @default(in_progress)
-  created_at          DateTime                      @default(now())
-  updated_at          DateTime                      @default(now()) @updatedAt
+  user_id            String?
+  status             AnalysisEntryCompletionStatus @default(in_progress)
+  created_at         DateTime                      @default(now())
+  updated_at         DateTime                      @default(now()) @updatedAt
 
   @@index([analysis_id, status])
 }

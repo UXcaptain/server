@@ -26,7 +26,8 @@ export const createAnalysis = async (req, res) => {
     tasks: req.body.tasks,
     maxNumberOfParticipants: req.body.maxNumberOfParticipants,
     scenario: req.body.scenario || 'No scenario has been provided.',
-    owner_id: req.user.id,
+    ownerId: req.user.company_id,
+    createdBy: req.user.id,
   };
 
   const analysisCreationResponse = await createAnalysisInDb(analysisData);
@@ -39,11 +40,11 @@ export const createAnalysis = async (req, res) => {
 };
 
 export const getAllAnalyses = async (req, res) => {
-  const { id } = req.user;
+  const { company_id: companyId } = req.user;
 
   const filters = req.query;
 
-  const analyses = await getAllAnalysesFromDb(id, filters);
+  const analyses = await getAllAnalysesFromDb(companyId, filters);
 
   return res.status(200).send({
     success: true,
@@ -55,6 +56,7 @@ export const getAllAnalyses = async (req, res) => {
 
 export const getSingleAnalysisData = async (req, res) => {
   const { id } = req.params;
+  const { company_id: companyId, role } = req.user;
 
   const analysis = await getAnalysisDataById(id);
 
@@ -65,7 +67,7 @@ export const getSingleAnalysisData = async (req, res) => {
     });
   }
 
-  if (analysis.owner_id !== req.user.id && req.user.role !== 'admin') {
+  if (analysis.owner_company_id !== companyId && role !== 'admin') {
     return res.status(403).json({
       success: false,
       message: 'You do not have permission to access this analysis.',
