@@ -1,6 +1,7 @@
 import cors from 'cors';
 
 const origin = [
+  '*',
   process.env.FRONT_WEB_APP_ORIGIN_URL,
   // ADD other origins as required
 ];
