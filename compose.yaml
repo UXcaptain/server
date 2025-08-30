@@ -44,23 +44,6 @@ services:
     networks:
       - uxmonkeys-network
 
-  # backend-db:
-  #   image: postgres:16.8
-  #   restart: on-failure
-  #   container_name: back_end_db-service
-  #   user: 
-  #     postgres
-  #   volumes:
-  #     - backend-db-data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_DB=public
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=prismaORM124!
-  #   ports:
-  #     - 5432:5432
-  #   networks:
-  #     - uxmonkeys-network 
-
   backend-db-17:
     image: postgres:17.5
     restart: on-failure
