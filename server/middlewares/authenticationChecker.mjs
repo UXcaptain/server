@@ -5,7 +5,7 @@ export const checkAuthentication = () => (req, res, next) => {
     return res.status(401).json(
       {
         success: false,
-        message: 'The user is not authenticated or the route does not exist',
+        message: 'The user is not authenticated',
       },
     );
   }
