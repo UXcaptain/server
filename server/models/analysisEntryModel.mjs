@@ -15,7 +15,7 @@ export const getEntryDetailsById = async (entryId) => {
       Analysis: {
         select: {
           id: true,
-          owner_id: true,
+          owner_company_id: true,
         },
       },
     },

@@ -14,7 +14,7 @@ export const updateAnalysisEntryDetails = async (req, res) => {
 };
 
 export const getAnalysisEntryDetails = async (req, res) => {
-  const userId = req.user.id; // Authenticated user from middleware
+  const companyId = req.user.company_id; // Authenticated user from middleware
   const { id: analysisEntryId } = req.params;
 
   if (!analysisEntryId) {
@@ -41,14 +41,14 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  if (analysisEntryDetails.Analysis.owner_id !== userId) {
+  if (analysisEntryDetails.Analysis.owner_company_id !== companyId) {
     return res.status(403).json({
       success: false,
       message: 'Access denied',
     });
   }
 
-  const key = `analysis/${analysisEntryDetails.analysis_id}/analysisEntry/${analysisEntryDetails.id}`;
+  const key = `analysis/${analysisEntryDetails.Analysis.id}/analysisEntry/${analysisEntryDetails.id}`;
 
   const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
 
@@ -57,3 +57,5 @@ export const getAnalysisEntryDetails = async (req, res) => {
     analysisEntryPresignedUrl: analysisEntryPresignedUrl,
   });
 };
+
+//     "message": "\nInvalid `prisma.analysisEntries.findUnique()` invocation:\n\n{\n  where: {\n    id: \"4a197cf4-f604-41e3-b811-3d42d0f2d22d\"\n  },\n  select: {\n    id: true,\n    Analysis: {\n      select: {\n        id: true,\n        owner_id: true,\n        ~~~~~~~~\n?       owner_company_id?: true,\n?       device?: true,\n?       name?: true,\n?       scenario?: true,\n?       created_by?: true,\n?       tasks?: true,\n?       url?: true,\n?       status?: true,\n?       created_at?: true,\n?       updated_at?: true,\n?       max_number_of_participants?: true,\n?       Company?: true,\n?       User?: true,\n?       AnalysisEntries?: true,\n?       _count?: true\n      }\n    }\n  }\n}\n\nUnknown field `owner_id` for select statement on model `Analysis`. Available options are marked with ?."
