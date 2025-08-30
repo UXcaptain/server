@@ -333,6 +333,13 @@ export const updateUserPassword = async (req, res) => {
 
     const currentHashedPasswordQuery = await getUserPassword(userId);
 
+    if (!currentHashedPasswordQuery) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
     const { password: currentHashedPassword } = currentHashedPasswordQuery;
 
     // Compare current password with stored hash
