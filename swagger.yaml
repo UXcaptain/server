@@ -1,18 +1,18 @@
 openapi: '3.1.0'
 info:
   version: '1.0.0'
-  title: 'UXmonkeys API'
+  title: 'UXcaptain API'
   description: Buy or rent user tests
 
 servers:
   [
     {
-      "url": "prod.uxmonkeys.com/api",
-      "description": "Prod server for uxmonkeys"
+      "url": "server.latest.uxcaptain.com/api",
+      "description": "Prod server for uxcaptain"
     },
     {
-      url: "dev.uxmonkeys.com/api",
-      "description": "dev server uxmonkeys"
+      url: "server.next.uxcaptain.com/api",
+      "description": "dev server uxcaptain"
     }
   ]
 

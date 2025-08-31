@@ -1,5 +1,5 @@
 {
-    "name": "user-research-platform",
+    "name": "uxcaptain-research-platform",
     "engines": {
         "node": "22.x"
     },
@@ -62,6 +62,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/UXmonkeys/server"
+        "url": "git+https://github.com/uxcaptain/server"
     }
 }
