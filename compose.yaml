@@ -7,9 +7,11 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+
+name: uxcaptain
 services:
-  uxmonkeys-server:
-    container_name: back_end-service
+  server:
+    container_name: server
     build:
       context: .
     environment:
@@ -17,9 +19,10 @@ services:
       POSTHOG_API_KEY: ${POSTHOG_API_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
-      PINOJS_SOURCE_TOKEN: ${PINOJS_SOURCE_TOKEN}
-      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@backend-db-17:5432/public
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@backend-db-17:5432/public
+      BETTERSTACK_SOURCE_TOKEN: ${BETTERSTACK_SOURCE_TOKEN}
+      BETTERSTACK_INGESTING_HOST: ${BETTERSTACK_INGESTING_HOST}
+      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@database:5432/public
+      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@database:5432/public
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
       FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
       STRIPE_API_KEY: ${STRIPE_API_KEY}
@@ -37,21 +40,50 @@ services:
           action: sync+restart #* Synchronize code changes and restart the server
           target: /usr/src/app/
     depends_on: #* References the SERVICE name - NOT the container_name
-      backend-db-17:
+      database:
         condition: service_started
-      # uxmonkeys-cache: 
+      # uxcaptain-cache: 
       #   condition: service_started
     networks:
-      - uxmonkeys-network
+      - uxcaptain-network
 
-  backend-db-17:
+  webapp: 
+    container_name: webapp
+    build: 
+      context: ../web-app
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:3000
+        VITE_PUBLIC_POSTHOG_KEY: phc_rEM8kq6iDndSMMDYlYoVVb0iitdyUx1KOXaLVPIQR9q
+    # environment: # no env variables set
+    ports:
+      - 80:80
+    # restart: always # Added restart policy for front-end service
+    develop:
+      watch:
+      - path: ../web-app/
+        action: rebuild
+      - path: ../web-app/package.json
+        action: rebuild
+      - path: ../web-app/Dockerfile
+        action: rebuild
+      - path: ../web-app/src
+        action: sync+restart
+        target: /usr/src/app/
+      - path: ../web-app/public
+        action: sync+restart
+        target: /usr/src/app/
+    networks:
+      - uxcaptain-network
+  
+  database:
     image: postgres:17.5
     restart: on-failure
-    container_name: back_end_db-service-17
+    container_name: postgresDB
     user: 
       postgres
     volumes:
-      - backend-db-data-17:/var/lib/postgresql/data
+      - uxcaptain-database:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=public
       - POSTGRES_USER=postgres
@@ -59,48 +91,21 @@ services:
     ports:
       - 5432:5432
     networks:
-      - uxmonkeys-network 
+      - uxcaptain-network 
 
-  # uxmonkeys-cache: #* Disabled the cache services
+  # uxcaptain-cache: #* Disabled the cache services
   #   image: valkey/valkey:latest
   #   container_name: valkey_cache-service
   #   restart: on-failure
   #   ports:
   #     - 6379:6379
   #   networks:
-  #     - uxmonkeys-network
+  #     - uxcaptain-network
 
 networks:
-  uxmonkeys-network:
+  uxcaptain-network:
     driver: bridge
-    
-    
 
 volumes:
-  backend-db-data:
-  backend-db-data-17:
+  uxcaptain-database:
 
-
- # web-app: #* UNUSED BUT LEFT HERE FOR FUTURE REFERENCE ON HOW TO SET IT UP
-  #   build: 
-  #     context: ../web-app
-  #     dockerfile: Dockerfile.dev
-  #   environment:
-  #     VITE_API_BASE_URL: http://localhost:3000 #* Set as an ARG because the webapp is compiled on build (VITE build) and not runtime
-  #   ports:
-  #     - 3001:3000
-  #   # restart: always # Added restart policy for front-end service
-  #   develop:
-  #     watch:
-  #     - path: ../web-app/
-  #       action: rebuild
-      # - path: ../web-app/package.json
-      #   action: rebuild
-      # - path: ../web-app/Dockerfile
-      #   action: rebuild
-      # - path: ../web-app/src
-      #   action: sync+restart
-      #   target: /usr/src/app/
-      # - path: ../web-app/public
-      #   action: sync+restart
-      #   target: /usr/src/app/

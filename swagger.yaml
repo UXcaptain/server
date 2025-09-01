@@ -8,11 +8,11 @@ servers:
   [
     {
       "url": "server.latest.uxcaptain.com/api",
-      "description": "Prod server for uxcaptain"
+      "description": "latest branch server for uxcaptain"
     },
     {
       url: "server.next.uxcaptain.com/api",
-      "description": "dev server uxcaptain"
+      "description": "next branch server uxcaptain"
     }
   ]
 
