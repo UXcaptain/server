@@ -112,7 +112,7 @@ jobs:
                 with:
                     service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@BREVO_API_KEY,POSTHOG_API_KEY=@NEXT_POSTHOG_API_KEY,BETTERSTACK_SOURCE_TOKEN=@NEXT_BETTERSTACK_SOURCE_TOKEN,BETTERSTACK_INGESTING_HOST="${{ vars.BETTERSTACK_INGESTING_HOST }}",PRISMA_POSTGRES_DIRECT_URL=@NEXT_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@NEXT_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@NEXT_SESSION_SECRET,STRIPE_API_KEY=@NEXT_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@NEXT_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
 
-                    app-name: "server-next"
+                    app-name: "uxcaptain-next"
                     service-instance-type: "eco-nano" #https://www.koyeb.com/docs/reference/instances
                     service-name: "server-next"
                     service-ports: "3000:http"
