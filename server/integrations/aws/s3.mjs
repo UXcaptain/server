@@ -16,9 +16,9 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
     Key: key,
   });
 
-  const analysisEntryresignedUrl = await getSignedUrl(s3client, command, { expiresIn: 60 * 60 });
+  const analysisEntryGetPresignedUrl = await getSignedUrl(s3client, command, { expiresIn: 60 * 60 });
 
-  return analysisEntryresignedUrl;
+  return analysisEntryGetPresignedUrl;
 };
 
 export const generatePutAnalysisEntryPresignedUrl = async (key) => {
