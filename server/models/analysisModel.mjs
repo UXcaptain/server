@@ -72,9 +72,6 @@ export const getAnalysisDataById = async (analysisId) => {
     where: {
       id: analysisId,
     },
-    omit: {
-      id: true,
-    },
     include: {
       AnalysisEntries: {
         where: {
