@@ -1323,14 +1323,11 @@ paths:
                         $ref: '#/components/schemas/AnalysisScenario'
                       analysisUrl:
                         $ref: '#/components/schemas/AnalysisUrl'
-                      presignedUploadUrl:
-                        $ref: '#/components/schemas/PresignedPutS3Url'
         
-
-  /v1/analysis/participate:
+  /v1/analysis/validate-participation:
     post:
-      summary: Participate in an analysis
-      description: Retrieve the details of an analysis entry for participants
+      summary: Validate if analysis exists and is accepting new participants
+      description: Validate if analysis exists and is accepting new participants
       tags: ["Analysis"]
       requestBody:
             required: true
@@ -1356,16 +1353,7 @@ paths:
                     $ref: "#/components/schemas/SuccessTrueStatus"
                   message:
                     type: string
-                    example: Analysis info retrieved successfully
-                  analysisData:
-                    type: object
-                    properties:
-                      tasks:
-                        $ref: '#/components/schemas/AnalysisTasksArray'
-                      scenario:
-                        $ref: '#/components/schemas/AnalysisScenario'
-                      analysisUrl:
-                        $ref: '#/components/schemas/AnalysisUrl'
+                    example: This analysis is accepting participants
         403:
           description: Maximum number of participants reached
           content:
@@ -1402,17 +1390,197 @@ paths:
                   message:
                     $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis-entry/{EntryId}:
+  /v1/analysisEntry/upload-url:
+    post:
+      summary: Retrieve the presigned AWS S3 upload URL
+      description: Retrieve the presigned AWS S3 upload URL
+      tags: ["Analysis Entry"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                          - analysisEntryId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+                            analysisEntryId:
+                              $ref: '#/components/schemas/AnalysisEntryId'
+                            metadata:
+                              type: object
+                              required:
+                                - recordingDuration
+                              properties:
+                                recordingDuration:
+                                  $ref: '#/components/schemas/AnalysisEntryRecordingDuration'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: PresignedUploadUrl retrieved successfully
+                  analysisEntryPresignedUploadUrl:
+                    $ref: '#/components/schemas/AnalysisEntryPresignedUploadUrl'
+                  
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+          
+
+
+  /v1/analysis/participate:
+    post:
+      summary: Participate in an analysis
+      description: Retrieve the details of an analysis entry for participants & create participation entry
+      tags: ["Analysis"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      analysisEntryId:
+                        $ref: '#/components/schemas/AnalysisEntryId'
+        403:
+          description: Maximum number of participants reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: The maximum number of participants has been reached.
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis not found
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/:
+    patch:
+        summary: Update analysis entry details
+        description: Update the details of an analysis entry
+        tags: ["Analysis Entry"]
+        requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          type: object
+                          required:
+                            - analysisId
+                            - status
+                          properties:
+                              analysisEntryId:
+                                  $ref: "#/components/schemas/AnalysisEntryId"
+                              analysisEntryStatus:
+                                $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
+        responses:
+          201:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessTrueStatus"
+                    message:
+                      type: string
+                      example: Analysis entry updated successfully
+                    updatedAnalysisEntry:
+                      $ref: '#/components/schemas/AnalysisEntry'
+          500:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessFalseStatus"
+                    message:
+                      $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/{AnalysisEntryId}:
     get:
       summary: Get analysis entry details for participants
       description: Retrieve the details of an analysis entry for participants, including a presigned URL to access the entry.
       tags: ["Analysis Entry"]
       parameters:
-        - name: EntryId
+        - name: AnalysisEntryId
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/EntryId"
+            $ref: "#/components/schemas/AnalysisEntryId"
 
       responses:
         200:
@@ -1479,46 +1647,10 @@ paths:
                   message:
                     $ref: '#/components/schemas/InternalErrorMessage'
 
-    patch:
-      summary: Update analysis entry details
-      description: Update the details of an analysis entry, typically used to submit the entry.
-      tags: ["Analysis Entry"]
-      parameters:
-        - name: EntryId
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/EntryId"
-      responses:
-        201:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
-                  message:
-                    type: string
-                    example: Analysis entry updated successfully
-                  updatedAnalysisEntry:
-                    $ref: '#/components/schemas/AnalysisEntry'
-        500:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    $ref: '#/components/schemas/InternalErrorMessage'
+    
 
 components:
-  schemas:
-    
+  schemas:  
     SuccessTrueStatus:
       description: Success status for any API call
       type: boolean
@@ -1545,7 +1677,7 @@ components:
           "0464ac85-e565-4d44-bde7-d6de0aa358ea",
         ]
     
-    EntryId:
+    AnalysisEntryId:
         description: The unique identifier of an entry
         type: string
         format: uuid
@@ -1725,7 +1857,7 @@ components:
       description: The details of a completed entry for an analysis
       properties:
         id: 
-          $ref: '#/components/schemas/EntryId'
+          $ref: '#/components/schemas/AnalysisEntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
 
@@ -1734,7 +1866,7 @@ components:
       description: The details of a completed entry for an analysis with participant data
       properties:
         id: 
-          $ref: '#/components/schemas/EntryId'
+          $ref: '#/components/schemas/AnalysisEntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'        
 
@@ -1813,7 +1945,7 @@ components:
     
     AnalysisEntryCompletionStatus:
       type: string
-      default: in_progress
+      default: submitted
       enum: [in_progress, cancelled, submitted, accepted, rejected]
       description: The status of the analysis entry
     
@@ -1889,7 +2021,15 @@ components:
         enterprise
       ]
 
-    PresignedPutS3Url:
+    AnalysisEntryRecordingDuration:
+      type: string
+      description: Duration of the analysis Entry recording
+      examples: [
+        '15:24',
+        '07:12'
+      ]
+
+    AnalysisEntryPresignedUploadUrl:
       type: string
       format: url
       description: Indicates the presigned PUT S3 URL that the client can use to upload the completed analysis entry
