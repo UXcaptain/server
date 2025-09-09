@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
+  checkAnalysisAvailability,
   createAnalysis,
   getAllAnalyses,
   getSingleAnalysisData,
@@ -14,6 +15,8 @@ import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChec
 export const analysisRouter = Router();
 
 analysisRouter.post('/', checkAuthentication(), checkPermissionByRole('customer'), checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+
+analysisRouter.post('/validate-participation', checkAnalysisAvailability);
 
 analysisRouter.post('/participate', participateInAnalysis);
 

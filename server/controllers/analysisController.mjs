@@ -81,7 +81,7 @@ export const getSingleAnalysisData = async (req, res) => {
   });
 };
 
-export const participateInAnalysis = async (req, res) => {
+export const checkAnalysisAvailability = async (req, res) => {
   const { analysisId } = req.body;
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
@@ -99,11 +99,12 @@ export const participateInAnalysis = async (req, res) => {
       message: 'The maximum number of participants has been reached.',
     });
   }
-  const analysisEntry = await createAnalysisEntry(analysisId);
 
-  const key = `analysis/${analysisId}/analysisEntry/${analysisEntry.id}`;
-
-  const analysisEntryUploadPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
+  return res.status(200).json({
+    success: true,
+    message: 'This analysis is accepting participants',
+  });
+};
 
   const analysisData = {
     tasks: analysisDataForParticipants.tasks,
