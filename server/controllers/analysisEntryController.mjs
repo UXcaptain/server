@@ -7,6 +7,12 @@ export const updateAnalysisEntryDetails = async (req, res) => {
   const updatedAnalysisEntry = await updateAnalysisEntryDetailsInDB(analysisEntryId);
 
   return res.status(201).json({
+export const updateAnalysisEntry = async (req, res) => {
+  const { id: analysisEntryId } = req.body;
+
+  const updatedAnalysisEntry = await markAnalysisEntryAsSubmittedInDb(analysisEntryId);
+
+  return res.status(200).json({
     success: true,
     message: 'Analysis entry updated successfully',
     updatedAnalysisEntry: updatedAnalysisEntry,

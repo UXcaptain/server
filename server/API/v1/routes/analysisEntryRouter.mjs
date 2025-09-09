@@ -6,6 +6,8 @@ export const analysisEntryRouter = new Router();
 
 analysisEntryRouter.patch('/:id', updateAnalysisEntryDetails);
 
+analysisEntryRouter.patch('/', updateAnalysisEntry);
+
 analysisEntryRouter.get('/:id', checkPermissionByRole('customer'), getAnalysisEntryDetails);
 
 analysisEntryRouter.use('/*fallback', (req, res) => {
