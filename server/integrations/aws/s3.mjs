@@ -21,12 +21,11 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
   return analysisEntryGetPresignedUrl;
 };
 
-export const generatePutAnalysisEntryPresignedUrl = async (key, metadata) => {
+export const generatePutAnalysisEntryPresignedUrl = async (key, metadata) => { // eslint-disable-line no-unused-vars
   const command = new PutObjectCommand({
     Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
     ContentType: 'video/webm',
-    recordingDuration: metadata.recordingDuration,
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
