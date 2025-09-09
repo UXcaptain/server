@@ -1544,7 +1544,7 @@ paths:
                               analysisEntryStatus:
                                 $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
         responses:
-          201:
+          200:
             description: Success
             content:
               application/json:
@@ -1556,8 +1556,6 @@ paths:
                     message:
                       type: string
                       example: Analysis entry updated successfully
-                    updatedAnalysisEntry:
-                      $ref: '#/components/schemas/AnalysisEntry'
           500:
             description: Unexpected error
             content:
