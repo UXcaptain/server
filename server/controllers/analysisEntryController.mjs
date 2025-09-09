@@ -1,4 +1,4 @@
-import { generateGetAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
+import { generateGetAnalysisEntryPresignedUrl, generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -75,7 +75,7 @@ export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
 
   const key = `analysis/${analysisId}/analysisEntry/${analysisEntryId}`;
 
-  const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key, metadata);
+  const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key, metadata);
 
   return res.status(200).json({
     success: true,
