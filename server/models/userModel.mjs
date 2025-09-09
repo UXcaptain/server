@@ -121,7 +121,6 @@ export const getUserById = async (userId) => {
 
 export const updateUserPasswordInDB = async (userId, newPassword) => {
   const updatePasswordQuery = await prisma.user.update({
-
     where: { id: userId },
     data: {
       password: newPassword,

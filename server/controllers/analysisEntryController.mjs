@@ -1,5 +1,5 @@
 import { generateGetAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
-import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, markAnalysisEntryAsSubmittedInDb } from '../models/analysisEntryModel.mjs';
+import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysisEntry = async (req, res) => {
   const { analysisId } = req.body;
@@ -14,9 +14,9 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { id: analysisEntryId } = req.body;
+  const { analysisEntryId, status } = req.body;
 
-  const updatedAnalysisEntry = await markAnalysisEntryAsSubmittedInDb(analysisEntryId);
+  const updatedAnalysisEntry = await updateAnalysisEntryInDb(analysisEntryId, status);
 
   return res.status(200).json({
     success: true,

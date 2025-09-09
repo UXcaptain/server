@@ -42,7 +42,7 @@ export const createAnalysisEntryInDb = async (analysisId) => {
   return createAnalysisEntryQuery;
 };
 
-export const markAnalysisEntryAsSubmittedInDb = async (analysisEntryId) => {
+export const updateAnalysisEntryInDb = async (analysisEntryId, status) => {
   const whereClause = {
     id: analysisEntryId,
   };
@@ -50,7 +50,7 @@ export const markAnalysisEntryAsSubmittedInDb = async (analysisEntryId) => {
   const analysisEntryUpdateQuery = await prisma.analysisEntries.update({
     where: whereClause,
     data: {
-      status: 'submitted',
+      status: status,
     },
     select: {
       status: true,
