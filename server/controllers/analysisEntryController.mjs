@@ -14,9 +14,9 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, status } = req.body;
+  const { analysisEntryId, analysisEntryStatus } = req.body;
 
-  const updatedAnalysisEntry = await updateAnalysisEntryInDb(analysisEntryId, status);
+  const updatedAnalysisEntry = await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
 
   return res.status(200).json({
     success: true,
