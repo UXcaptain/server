@@ -1,11 +1,12 @@
 import Router from 'express';
 import { getAnalysisEntryDetails, updateAnalysisEntryDetails } from '../../../controllers/analysisEntryController.mjs';
+import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
 
 export const analysisEntryRouter = new Router();
 
-analysisEntryRouter.get('/:id', getAnalysisEntryDetails);
-
 analysisEntryRouter.patch('/:id', updateAnalysisEntryDetails);
+
+analysisEntryRouter.get('/:id', checkPermissionByRole('customer'), getAnalysisEntryDetails);
 
 analysisEntryRouter.use('/*fallback', (req, res) => {
   res.status(404).json({

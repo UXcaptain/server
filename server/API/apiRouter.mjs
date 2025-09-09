@@ -9,7 +9,6 @@ import { analysisRouter } from './v1/routes/analysisRouter.mjs';
 import { checkAuthentication } from '../middlewares/authenticationChecker.mjs';
 import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.mjs';
 import { analysisEntryRouter } from './v1/routes/analysisEntryRouter.mjs';
-import { guestParticipantRouter } from './v1/routes/guestParticipantRouter.mjs';
 
 export const apiRouter = Router();
 
@@ -18,38 +17,33 @@ const adminRole = 'admin';
 
 apiRouter.use('/v1/auth', authRouter);
 
-apiRouter.use('/v1/guestParticipant', guestParticipantRouter);
-
-//* Globally auth protected routes
-
-apiRouter.use(checkAuthentication());
-
 apiRouter.use(
   '/v1/billing',
+  checkAuthentication(),
   checkPermissionByRole(customerRole),
   billingRouter,
 );
 
 apiRouter.use(
   '/v1/user',
+  checkAuthentication(),
   checkPermissionByRole(customerRole),
   userRouter,
 );
 
 apiRouter.use(
   '/v1/analysis',
-  checkPermissionByRole(customerRole),
   analysisRouter,
 );
 
 apiRouter.use(
   '/v1/analysisEntry',
-  checkPermissionByRole(customerRole),
   analysisEntryRouter,
 );
 
 apiRouter.use(
   '/v1/admin',
+  checkAuthentication(),
   checkPermissionByRole(adminRole),
   adminRouter,
 );

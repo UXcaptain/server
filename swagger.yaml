@@ -1325,6 +1325,47 @@ paths:
                         $ref: '#/components/schemas/AnalysisUrl'
                       presignedUploadUrl:
                         $ref: '#/components/schemas/PresignedPutS3Url'
+        
+
+  /v1/analysis/participate:
+    post:
+      summary: Participate in an analysis
+      description: Retrieve the details of an analysis entry for participants
+      tags: ["Analysis"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
         403:
           description: Maximum number of participants reached
           content:
@@ -1662,6 +1703,8 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
+        id: 
+          $ref: '#/components/schemas/AnalysisId'
         max_number_of_participants:
           $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
         AnalysisEntries:
