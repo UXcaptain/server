@@ -1,12 +1,18 @@
 import { generateGetAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
-import { getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryDetailsInDB } from '../models/analysisEntryModel.mjs';
+import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, markAnalysisEntryAsSubmittedInDb } from '../models/analysisEntryModel.mjs';
 
-export const updateAnalysisEntryDetails = async (req, res) => {
-  const { id: analysisEntryId } = req.params;
+export const createAnalysisEntry = async (req, res) => {
+  const { analysisId } = req.body;
 
-  const updatedAnalysisEntry = await updateAnalysisEntryDetailsInDB(analysisEntryId);
+  const analysisEntry = await createAnalysisEntryInDb(analysisId);
 
   return res.status(201).json({
+    success: true,
+    message: 'Analysis entry created successfully',
+    analysisEntryid: analysisEntry.id,
+  });
+};
+
 export const updateAnalysisEntry = async (req, res) => {
   const { id: analysisEntryId } = req.body;
 
@@ -61,5 +67,19 @@ export const getAnalysisEntryDetails = async (req, res) => {
   return res.status(200).json({
     success: true,
     analysisEntryPresignedUrl: analysisEntryPresignedUrl,
+  });
+};
+
+export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
+  const { analysisEntryId, analysisId } = req.body;
+
+  const key = `analysis/${analysisId}/analysisEntry/${analysisEntryId}`;
+
+  const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
+
+  return res.status(200).json({
+    success: true,
+    message: 'PresignedUploadUrl retrieved successfully',
+    analysisEntryPresignedUploadUrl: analysisEntryPresignedUrl,
   });
 };

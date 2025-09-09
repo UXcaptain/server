@@ -24,7 +24,7 @@ export const getEntryDetailsById = async (entryId) => {
   return getEntryDetailsByIdQuery;
 };
 
-export const createAnalysisEntry = async (analysisId) => {
+export const createAnalysisEntryInDb = async (analysisId) => {
   const createAnalysisEntryQuery = await prisma.analysisEntries.create({
     data: {
       status: 'in_progress',
@@ -42,7 +42,7 @@ export const createAnalysisEntry = async (analysisId) => {
   return createAnalysisEntryQuery;
 };
 
-export const updateAnalysisEntryDetailsInDB = async (analysisEntryId) => {
+export const markAnalysisEntryAsSubmittedInDb = async (analysisEntryId) => {
   const whereClause = {
     id: analysisEntryId,
   };

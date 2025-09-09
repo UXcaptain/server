@@ -6,8 +6,7 @@ import {
 }
   from '../models/analysisModel.mjs';
 
-import { generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
-import { createAnalysisEntry } from '../models/analysisEntryModel.mjs';
+import { createAnalysisEntryInDb } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -106,11 +105,24 @@ export const checkAnalysisAvailability = async (req, res) => {
   });
 };
 
+export const participateInAnalysis = async (req, res) => {
+  const { analysisId } = req.body;
+
+  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
+
+  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+    return res.status(403).json({
+      success: false,
+      message: 'The maximum number of participants has been reached.',
+    });
+  }
+
+  const analysisEntry = await createAnalysisEntryInDb(analysisId);
+
   const analysisData = {
     tasks: analysisDataForParticipants.tasks,
     scenario: analysisDataForParticipants.scenario,
     analysisUrl: analysisDataForParticipants.url,
-    presignedUploadUrl: analysisEntryUploadPresignedUrl,
   };
 
   return res.status(200).json({

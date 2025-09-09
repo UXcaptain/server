@@ -1,10 +1,17 @@
 import Router from 'express';
-import { getAnalysisEntryDetails, updateAnalysisEntryDetails } from '../../../controllers/analysisEntryController.mjs';
+import {
+  getAnalysisEntryDetails,
+  getAnalysisEntryPresignedUploadUrl,
+  updateAnalysisEntry,
+  createAnalysisEntry,
+} from '../../../controllers/analysisEntryController.mjs';
 import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
 
 export const analysisEntryRouter = new Router();
 
-analysisEntryRouter.patch('/:id', updateAnalysisEntryDetails);
+analysisEntryRouter.post('/', createAnalysisEntry);
+
+analysisEntryRouter.post('/upload-url', getAnalysisEntryPresignedUploadUrl);
 
 analysisEntryRouter.patch('/', updateAnalysisEntry);
 
