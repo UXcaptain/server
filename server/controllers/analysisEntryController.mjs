@@ -71,11 +71,11 @@ export const getAnalysisEntryDetails = async (req, res) => {
 };
 
 export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
-  const { analysisEntryId, analysisId, metadata } = req.body;
+  const { analysisEntryId, analysisId } = req.body;
 
   const key = `analysis/${analysisId}/analysisEntry/${analysisEntryId}`;
 
-  const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key, metadata);
+  const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
 
   return res.status(200).json({
     success: true,
