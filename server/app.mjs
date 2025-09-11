@@ -49,7 +49,7 @@ server.listen(process.env.PORT, () => {
   console.log(`Server running at http://localhost:${process.env.PORT}/`);
 });
 
-startCronJobs();
+// startCronJobs(); // Disabled temporarily during dev
 
 const gracefulShutdown = () => {
   console.log('Received shutdown signal, closing server...');
