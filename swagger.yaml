@@ -293,10 +293,69 @@ paths:
                                 examples: [
                                   "Session is not valid"
                                 ]
+  /v1/waitlist:
+    post:
+        summary: Adds a new user to the launch waitlist
+        description: Adds a new user to the launch waitlist
+        tags: ["waitlist"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - email
+                          - consent
+                        properties:
+                            email:
+                                $ref: "#/components/schemas/UserEmail"
+                            consent:
+                                $ref: "#/components/schemas/Consent"
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: User was sucessfully added to launch waitlist
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
 
   /v1/auth/register/local:
     post:
-
         summary: Register a new user
         description: Registers one user
         tags: ["auth"]
@@ -2043,6 +2102,15 @@ components:
         active,
         refunded,
         cancelled
+      ]
+
+    Consent:
+      type: string
+      enum: [true, false]
+      description: Indicates the status of the given consent
+      examples: [
+        true,
+        false,
       ]
 
     AwsObjectKey:
