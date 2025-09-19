@@ -47,12 +47,6 @@ jobs:
                 with:
                     api_token: "${{ secrets.KOYEB_API_TOKEN }}"
             - 
-                name: Create POSTHOG_API_KEY secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_POSTHOG_API_KEY
-                    secret-value: "${{ secrets.POSTHOG_API_KEY }}"
-            - 
                 name: Create SESSION_SECRET secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
@@ -110,7 +104,7 @@ jobs:
                 name: Build and deploy the application to Koyeb
                 uses: koyeb/action-git-deploy@v1
                 with:
-                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@BREVO_API_KEY,POSTHOG_API_KEY=@LATEST_POSTHOG_API_KEY,BETTERSTACK_SOURCE_TOKEN=@LATEST_BETTERSTACK_SOURCE_TOKEN,BETTERSTACK_INGESTING_HOST="${{ vars.BETTERSTACK_INGESTING_HOST }}",PRISMA_POSTGRES_DIRECT_URL=@LATEST_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@LATEST_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@LATEST_SESSION_SECRET,STRIPE_API_KEY=@LATEST_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@LATEST_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
+                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@BREVO_API_KEY,POSTHOG_API_KEY="${{ vars.POSTHOG_API_KEY }}",BETTERSTACK_SOURCE_TOKEN=@LATEST_BETTERSTACK_SOURCE_TOKEN,BETTERSTACK_INGESTING_HOST="${{ vars.BETTERSTACK_INGESTING_HOST }}",PRISMA_POSTGRES_DIRECT_URL=@LATEST_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@LATEST_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@LATEST_SESSION_SECRET,STRIPE_API_KEY=@LATEST_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@LATEST_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
 
                     app-name: "server-latest"
                     service-instance-type: "eco-nano" #https://www.koyeb.com/docs/reference/instances
