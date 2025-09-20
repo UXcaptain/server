@@ -1,126 +1,210 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../config/generated/prisma/client/index.js';
+import { posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.mjs';
 import {
-  logUserCreatedInDB,
-  logError,
-  logPasswordUpdated,
+  logInfo,
 } from '../config/loggerFunctions.mjs';
-import { posthogUserSignedUp } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
-export const createUserInDB = async (user) => {
-  try {
-    const createUserInDbQuery = await prisma.user.create({
-      data: {
-        email: user.userDetails.email,
-        password: user.userDetails.password,
+export const createCustomerInDB = async (userData) => {
+  const createUserInDbQuery = await prisma.user.create({
+    data: {
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
+      CustomerProfile: {
+        create: {
+        },
       },
-    });
+      Company: {
+        create: {
+        },
+      },
+    },
+  });
 
-    logUserCreatedInDB(createUserInDbQuery.id, user);
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
-    posthogUserSignedUp(user);
+  posthogUserSignedUp(createUserInDbQuery);
 
-    return createUserInDbQuery;
-  } catch (error) {
-    logError('Error creating user in DB', error);
+  return createUserInDbQuery;
+};
 
-    throw error;
-  }
+export const createAdminInDB = async (userData) => {
+  const createUserInDbQuery = await prisma.user.create({
+    data: {
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
+    },
+  });
+
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+
+  posthogUserSignedUp(createUserInDbQuery);
+
+  return createUserInDbQuery;
+};
+
+export const createParticipantInDB = async (userData) => {
+  const createUserInDbQuery = await prisma.user.create({
+    data: {
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
+      ParticipantProfile: {
+        create: {
+        },
+      },
+    },
+  });
+
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+
+  posthogUserSignedUp(createUserInDbQuery);
+
+  return createUserInDbQuery;
 };
 
 export const getUserByEmail = async (userEmail) => {
-  try {
-    const getUserByEmailQuery = await prisma.user.findUnique({
-      where: { email: userEmail },
-    });
+  const whereClause = {
+    email: userEmail,
+  };
 
-    return getUserByEmailQuery;
-  } catch (error) {
-    logError('Error getting user by email', error);
+  const getUserByEmailQuery = await prisma.user.findUnique({
+    where: whereClause,
+  });
 
-    throw error;
-  }
+  return getUserByEmailQuery;
 };
 
 export const updateUserLastLoginDate = async (userId) => {
-  try {
-    const queryResult = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        last_login_at: new Date(),
-      },
-    });
+  const queryResult = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      last_login_at: new Date(),
+    },
+  });
 
-    return queryResult;
-  } catch (error) {
-    logError('Error updating last login date', error);
+  return queryResult;
+};
 
-    throw error;
-  }
+export const getUserPassword = async (userId) => {
+  const whereClause = {
+    id: userId,
+  };
+
+  const getUserPasswordQuery = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      password: true,
+    },
+  });
+
+  return getUserPasswordQuery;
 };
 
 export const getUserById = async (userId) => {
-  try {
-    const getUserByIdQuery = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+  const whereClause = {
+    id: userId,
+  };
 
-    return getUserByIdQuery;
-  } catch (error) {
-    logError('Error getting user by user ID', error);
-    throw error;
-  }
+  const getUserByIdQuery = await prisma.user.findUnique({
+    where: whereClause,
+    omit: {
+      password: true,
+    },
+  });
+
+  return getUserByIdQuery;
 };
 
 export const updateUserPasswordInDB = async (userId, newPassword) => {
-  try {
-    const updatePasswordQuery = await prisma.user.update({
+  const updatePasswordQuery = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      password: newPassword,
+    },
+  });
 
-      where: { id: userId },
-      data: {
-        password: newPassword,
-      },
-    });
+  logInfo(`Password updated successfully for User ${userId}`);
 
-    logPasswordUpdated(userId);
-
-    return updatePasswordQuery;
-  } catch (error) {
-    logError('Error updating user password', error, { userId: userId });
-
-    throw error;
-  }
+  return updatePasswordQuery;
 };
 
-export const getAllCustomersInDb = async () => {
-  try {
-    const getAllCustomersQuery = await prisma.user.findMany({
-      where: { role: 'customer' },
-    });
+export const getAllUsersInDb = async (filters = {}) => {
+  const getAllUsersQuery = await prisma.user.findMany({
+    where: filters,
+    omit: {
+      password: true,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  });
 
-    return getAllCustomersQuery;
-  } catch (error) {
-    logError('Error getting user by user ID', error);
-    throw error;
-  }
+  return getAllUsersQuery;
 };
 
 export const deleteUserInDb = async (userId) => {
-  try {
-    const deleteUserQuery = await prisma.user.delete({
-      where: {
-        id: userId,
-      },
-    });
+  const deleteUserQuery = await prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
 
-    return {
-      success: true,
-      message: 'User deleted',
-      user: deleteUserQuery,
-    };
-  } catch (error) {
-    logError('Error deleting user', error);
-    throw error;
-  }
+  logInfo(`User ${userId} succesfully deleted`);
+
+  posthogUserDeleteAccount(userId);
+
+  return deleteUserQuery;
+};
+
+export const getUserByStripeCustomerId = async (stripeCustomerId) => {
+  const whereClause = {
+    stripe_customer_id: stripeCustomerId,
+  };
+
+  const user = await prisma.user.findUnique({
+    where: whereClause,
+  });
+
+  return user;
+};
+
+export const getParticipantProfile = async (participantId) => {
+  const whereClause = {
+    id: participantId,
+  };
+
+  const participantProfile = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      email: true,
+      role: true,
+    },
+  });
+
+  return participantProfile;
+};
+
+export const getCustomerProfile = async (customerId) => {
+  const whereClause = {
+    id: customerId,
+  };
+
+  const customerProfile = await prisma.user.findUnique({
+    where: whereClause,
+    select: {
+      email: true,
+      role: true,
+      // CustomerProfile: { //* No point in returning this until we set up the companies model
+      //   select: {
+      //     company_name: true,
+      //   },
+      // },
+    },
+  });
+
+  return customerProfile;
 };

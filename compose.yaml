@@ -7,8 +7,11 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+
+name: uxcaptain
 services:
   server:
+    container_name: server
     build:
       context: .
     environment:
@@ -16,18 +19,19 @@ services:
       POSTHOG_API_KEY: ${POSTHOG_API_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
-      PINOJS_SOURCE_TOKEN: ${PINOJS_SOURCE_TOKEN}
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@uxmonkeys-db:5432/public
-      PRISMA_POSTGRES_CONNECTION_DIRECT_URL: postgresql://postgres:prismaORM124!@uxmonkeys-db:5432/public
-      MONGODB_USERNAME: ${MONGODB_USERNAME}
-      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-      MONGODB_URI: ${MONGODB_URI}
-      MONGODB_CONNECTIONSTRING: ${MONGODB_CONNECTIONSTRING}
+      BETTERSTACK_SOURCE_TOKEN: ${BETTERSTACK_SOURCE_TOKEN}
+      BETTERSTACK_INGESTING_HOST: ${BETTERSTACK_INGESTING_HOST}
+      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@database:5432/public
+      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@database:5432/public
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
-      TELEGRAM_BOT_FLIGHTDEALS_CHAT_ID: ${TELEGRAM_BOT_FLIGHTDEALS_CHAT_ID}
-      TELEGRAM_BOT_LOGS_CHAT_ID: ${TELEGRAM_BOT_LOGS_CHAT_ID}
       FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
       PORT: ${PORT}
+      VALKEY_CACHE_HOST: ${VALKEY_CACHE_HOST}
+      VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
       - 3000:3000
     develop:
@@ -35,45 +39,73 @@ services:
         - path: .
           action: sync+restart #* Synchronize code changes and restart the server
           target: /usr/src/app/
-    depends_on:
-      uxmonkeys-db:
+    depends_on: #* References the SERVICE name - NOT the container_name
+      database:
         condition: service_started
+      # uxcaptain-cache: 
+      #   condition: service_started
+    networks:
+      - uxcaptain-network
 
-  web-app:
-    build: 
-      context: ../web-app
-    ports:
-      - 80:80
-    restart: always # Added restart policy for front-end service
-    develop:
-      watch:
-      - path: ../web-app/src
-        action: sync+restart
-        target: /usr/src/app/
-      - path: ../web-app/public
-        action: sync+restart
-        target: /usr/src/app/
-      - path: ../web-app/package.json
-        action: rebuild
-      - path: ../web-app/Dockerfile
-        action: rebuild
-  uxmonkeys-db:
-    image: postgres:16.8
+  # webapp: 
+  #   container_name: webapp
+  #   build: 
+  #     context: ../web-app
+  #     dockerfile: Dockerfile
+  #     args:
+  #       VITE_API_BASE_URL: http://localhost:3000
+  #       VITE_PUBLIC_POSTHOG_KEY: phc_rEM8kq6iDndSMMDYlYoVVb0iitdyUx1KOXaLVPIQR9q
+  #   # environment: # no env variables set
+  #   ports:
+  #     - 80:80
+  #   # restart: always # Added restart policy for front-end service
+  #   develop:
+  #     watch:
+  #     - path: ../web-app/
+  #       action: rebuild
+  #     - path: ../web-app/package.json
+  #       action: rebuild
+  #     - path: ../web-app/Dockerfile
+  #       action: rebuild
+  #     - path: ../web-app/src
+  #       action: sync+restart
+  #       target: /usr/src/app/
+  #     - path: ../web-app/public
+  #       action: sync+restart
+  #       target: /usr/src/app/
+  #   networks:
+  #     - uxcaptain-network
+  
+  database:
+    image: postgres:17.5
     restart: on-failure
-    # profiles: ["development"]
+    container_name: postgresDB
     user: 
       postgres
     volumes:
-      - uxmonkeys-db-data:/var/lib/postgresql/data
+      - uxcaptain-database:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=public
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prismaORM124!
-      # - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 5432:5432
-    
+    networks:
+      - uxcaptain-network 
+
+  # uxcaptain-cache: #* Disabled the cache services
+  #   image: valkey/valkey:latest
+  #   container_name: valkey_cache-service
+  #   restart: on-failure
+  #   ports:
+  #     - 6379:6379
+  #   networks:
+  #     - uxcaptain-network
+
+networks:
+  uxcaptain-network:
+    driver: bridge
 
 volumes:
-  uxmonkeys-db-data:
+  uxcaptain-database:
 

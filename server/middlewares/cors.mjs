@@ -1,17 +1,14 @@
 import cors from 'cors';
 
-const origin = [
-  true,
-  'http://localhost:80',
-  'http://localhost:5173',
-  'http://localhost:5374',
-  'http://localhost:3000',
-  'http://localhost:3001',
-  process.env.FRONT_WEB_APP_ORIGIN_URL];
+const origins = [
+  process.env.FRONT_WEB_APP_ORIGIN_URL,
+  'http://localhost:5173', // Vite dev server (from logs)
+  'http://localhost:3000', // Common React dev server
+  'http://localhost:8080', // Common dev ports
+];
 
 const corsOptions = {
-  origin: origin,
-  // origin: true, // "true" will allow any origin //* For Debugging
+  origin: origins,
   optionsSuccessStatus: 200,
   credentials: true,
 };

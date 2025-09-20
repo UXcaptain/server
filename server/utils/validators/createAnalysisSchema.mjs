@@ -1,5 +1,5 @@
 export const createAnalysisSchema = {
-  analysisName: {
+  name: {
     notEmpty: {
       errorMessage: 'Analysis name is required',
     },
@@ -7,7 +7,15 @@ export const createAnalysisSchema = {
     trim: true,
     escape: true,
   },
-  analysisUrl: {
+  device: {
+    notEmpty: {
+      errorMessage: 'Device information is required',
+    },
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  url: {
     notEmpty: {
       errorMessage: 'Analysis URL is required',
     },
@@ -17,7 +25,7 @@ export const createAnalysisSchema = {
     trim: true,
     // escape: true,
   },
-  analysisTasks: {
+  tasks: {
     notEmpty: {
       errorMessage: 'Analysis tasks are required',
     },
@@ -48,5 +56,9 @@ export const createAnalysisSchema = {
         return true;
       },
     },
+  },
+  scenario: {
+    trim: true,
+    escape: true,
   },
 };

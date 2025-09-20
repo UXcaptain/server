@@ -1,24 +1,15 @@
 import { Router } from 'express';
-import { authenticationChecker } from '../../../middlewares/authenticationChecker.mjs';
-import { getProfile, deleteUser } from '../../../controllers/userController.mjs';
-import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.mjs';
+import { getUserProfile, deleteUser } from '../../../controllers/userController.mjs';
 
 export const userRouter = Router();
 
-userRouter.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Route does not exist in /user/',
-  });
-});
+userRouter.get('/', getUserProfile);
 
-userRouter.use(authenticationChecker);
-
-userRouter.use(checkPermissionByRole('customer'));
-
-userRouter.get('/profile', getProfile);
-
-userRouter.delete('/delete', deleteUser);
+userRouter.delete('/', deleteUser);
 
 userRouter.use('/*fallback', (req, res) => {
-  res.status(404).send('requested route does not exist in /user/');
+  res.status(404).json({
+    success: false,
+    message: 'The requested route is not available or does not exist',
+  }); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });

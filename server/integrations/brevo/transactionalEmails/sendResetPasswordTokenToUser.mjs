@@ -1,46 +1,26 @@
-import brevo, { TransactionalEmailsApi } from '@getbrevo/brevo';
+import { apiInstance, emailInstance } from './brevo.mjs';
 import { logError } from '../../../config/loggerFunctions.mjs';
 
-const apiInstance = new TransactionalEmailsApi();
-
-const { apiKey } = apiInstance.authentications;
-apiKey.apiKey = process.env.BREVO_API_KEY;
-
-export const sendResetPasswordTokenToUser = async (email, token) => {
+export const sendResetPasswordTokenToUser = async (userEmail, passwordResetToken) => {
   try {
-    const sendSmtpEmail = new brevo.SendSmtpEmail();
-
-    sendSmtpEmail.sender = {
+    emailInstance.sender = {
       // name: "XXX", //* Managed in the template
       email: 'no-reply@yourdomain.com',
     };
 
-    sendSmtpEmail.to = [{
-      email: email,
+    emailInstance.to = [{
+      email: userEmail,
     }];
 
-    // sendSmtpEmail.bcc = [{ //* Cant be managed in the template
-    //   email: 'xxx',
-    // }];
+    emailInstance.templateId = 2; //* Direct link to the template --> https://my.brevo.com/camp/template/2/setup
 
-    sendSmtpEmail.templateId = 2; //* Direct link to the template --> https://my.brevo.com/camp/template/2/setup
-    // sendSmtpEmail.subject = subject; //* Managed in the template
-    // sendSmtpEmail.replyTo = {  //* Managed in the template
-    //     email: "xxxx",
-    //     name: "xxxx"
-    // };
-    sendSmtpEmail.headers = {
-      'api-key': process.env.BREVO_API_KEY,
-      'content-type': 'application/json',
-      accept: 'application/json',
-    };
-    sendSmtpEmail.params = {
-      token: token,
-
+    emailInstance.params = {
+      passwordResetToken: passwordResetToken,
     };
 
-    await apiInstance.sendTransacEmail(sendSmtpEmail);
+    return await apiInstance.sendTransacEmail(emailInstance);
   } catch (error) {
-    logError('error sending sendResetPasswordTokenToUser', error);
+    return logError('error sending sendResetPasswordTokenToUser', error); //* NOT throwing an error since req-res
+    //*  flow should not be interrupted with this email send operation
   }
 };

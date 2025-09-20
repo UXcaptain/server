@@ -2,7 +2,7 @@
 set -e
 
 
-# npx prisma migrate deploy
+npx prisma db push --accept-data-loss --skip-generate
 
 echo "Starting application"
 exec npm run start

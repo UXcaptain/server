@@ -1,82 +1,134 @@
-import { createAnalysisInDb, getAllAnalysesFromDb, getAnalysisDetailsById } from '../models/analysisModel.mjs';
+import {
+  createAnalysisInDb,
+  getAllAnalysesFromDb,
+  getAnalysisDataById,
+  getAnalysisDataForParticipantsFromDb,
+}
+  from '../models/analysisModel.mjs';
 
-import { logError } from '../config/loggerFunctions.mjs';
-import { Analysis } from '../utils/classes/Analysis.mjs';
+import { createAnalysisEntryInDb } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
-      message: 'Validation error on createAnalysis',
+      message: 'Analysis could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
 
-  try {
-    const analysisOwner = '1843131e-e454-4603-a508-f8641c49aff2';
-    // const analysisOwner = req.user.id;
+  const analysisData = {
+    name: req.body.name,
+    url: req.body.url,
+    device: req.body.device,
+    status: 'published', //* Default until we allow for drafts
+    tasks: req.body.tasks,
+    maxNumberOfParticipants: req.body.maxNumberOfParticipants,
+    scenario: req.body.scenario || 'No scenario has been provided.',
+    ownerId: req.user.company_id,
+    createdBy: req.user.id,
+  };
 
-    const analysis = new Analysis(req.body, analysisOwner);
+  const analysisCreationResponse = await createAnalysisInDb(analysisData);
 
-    const analysisCreationResponse = await createAnalysisInDb(analysis);
-
-    return res.status(201).json({
-      success: true,
-      message: 'analysis created successfully',
-      createdAnalysis: analysisCreationResponse,
-    });
-  } catch (error) {
-    logError('Error in createAnalysis endpoint', error);
-    return res.status(500).json({
-      success: false,
-      message: 'analysis could not be created',
-    });
-  }
+  return res.status(201).json({
+    success: true,
+    message: 'analysis created successfully',
+    createdAnalysisId: analysisCreationResponse.id,
+  });
 };
 
 export const getAllAnalyses = async (req, res) => {
-  try {
-    const ownerId = '1843131e-e454-4603-a508-f8641c49aff2';
-    // const analysisOwner = req.user.id;
+  const { company_id: companyId } = req.user;
 
-    const analyses = await getAllAnalysesFromDb(ownerId);
+  const filters = req.query;
 
-    return res.status(200).send({
-      success: true,
-      message: 'analyses retrieved successfully',
-      analysisCount: analyses.length,
-      analyses: analyses,
-    });
-  } catch (error) {
-    logError('Error in get all analyses endpoint', error);
-    return res.status(500).send({
-      success: false,
-      message: 'analyses could not be retrieved',
-    });
-  }
+  const analyses = await getAllAnalysesFromDb(companyId, filters);
+
+  return res.status(200).send({
+    success: true,
+    message: 'analyses retrieved successfully - DB',
+    analysisCount: analyses.length,
+    analyses: analyses,
+  });
 };
 
-export const getSinglesAnalysisDetails = async (req, res) => {
-  try {
-    const analysis = await getAnalysisDetailsById(req.params.id);
+export const getSingleAnalysisData = async (req, res) => {
+  const { id } = req.params;
+  const { company_id: companyId, role } = req.user;
 
-    if (!analysis) {
-      return res.status(404).json({
-        success: false,
-        message: 'Analysis not found',
-      });
-    }
+  const analysis = await getAnalysisDataById(id);
 
-    return res.status(200).json({
-      success: true,
-      message: 'Analysis details retrieved successfully',
-      analysisDetails: analysis,
-    });
-  } catch (error) {
-    logError('Error in analysis details endpoint', error);
-    return res.status(500).json({
+  if (!analysis) {
+    return res.status(404).json({
       success: false,
-      message: 'Failed to retrieve analysis details',
+      message: 'Analysis not found',
     });
   }
+
+  if (analysis.owner_company_id !== companyId && role !== 'admin') {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to access this analysis.',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'Analysis details retrieved successfully',
+    analysisData: analysis,
+  });
+};
+
+export const checkAnalysisAvailability = async (req, res) => {
+  const { analysisId } = req.body;
+
+  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
+
+  if (analysisDataForParticipants === null) {
+    return res.status(404).json({
+      success: false,
+      message: 'Analysis not found',
+    });
+  }
+
+  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+    return res.status(403).json({
+      success: false,
+      message: 'The maximum number of participants has been reached.',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'This analysis is accepting participants',
+  });
+};
+
+export const participateInAnalysis = async (req, res) => {
+  const { analysisId } = req.body;
+
+  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
+
+  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+    return res.status(403).json({
+      success: false,
+      message: 'The maximum number of participants has been reached.',
+    });
+  }
+
+  const analysisEntry = await createAnalysisEntryInDb(analysisId);
+
+  const analysisData = {
+    tasks: analysisDataForParticipants.tasks,
+    scenario: analysisDataForParticipants.scenario,
+    analysisUrl: analysisDataForParticipants.url,
+  };
+
+  return res.status(200).json({
+    success: true,
+    message: 'Analysis info retrieved successfully',
+    analysisData: analysisData,
+    analysisEntryId: analysisEntry.id,
+  });
 };

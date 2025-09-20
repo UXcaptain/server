@@ -1,76 +1,52 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
-import { createUser, updateRecoveredUserPassword, updateUserPassword } from '../../../controllers/userController.mjs';
+import {
+  createCustomerInDb,
+  updateUserPassword,
+  checkSession,
+  requestPasswordResetToken,
+  loginLocal,
+  checkPasswordResetTokenValidity,
+  updateRecoveredUserPassword,
+  logoutUser,
+  createAdminInDb,
+  createParticipantInDb,
+} from '../../../controllers/authController.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
+import { userLoginValidationSchema } from '../../../utils/validators/userLoginValidationSchema.mjs';
+
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
-import passport from '../../../auth/passportjs.mjs';
-import { logError } from '../../../config/loggerFunctions.mjs';
-import { checkSession, forgotPasswordRequest } from '../../../controllers/authController.mjs';
+import { recoverPasswordSchema } from '../../../utils/validators/recoverPasswordSchema.mjs';
+import { checkAuthentication } from '../../../middlewares/authenticationChecker.mjs';
 
 export const authRouter = Router();
 
-authRouter.post('/login/local', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'An error occurred during login',
-      });
-    }
+authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-    if (!user) { //* Will trigger if user does not exist
-      return res.status(401).json({
-        success: false,
-        message: 'The combination of email and password is incorrect',
-      });
-    }
+authRouter.post('/register/local/participant', checkSchema(createUserValidationSchema), sanitizerResult, createParticipantInDb);
 
-    // Log the user in and establish a session
-    req.login(user, (loginErr) => {
-      if (loginErr) { //* Will trigger if password is incorrect
-        return res.status(401).json({
-          success: false,
-          message: 'The combination of email and password is incorrect',
-        });
-      }
+authRouter.post('/register/local/customer', checkSchema(createUserValidationSchema), sanitizerResult, createCustomerInDb);
 
-      // Successful login
-      return res.status(200).json({
-        success: true,
-        message: 'Login successful',
-        user: {
-          id: user.id,
-          role: req.user.role,
-        },
-      });
-    });
-  })(req, res, next);
-});
+// authRouter.post('/register/local/admin', checkSchema(createUserValidationSchema), sanitizerResult, createAdminInDb); //* Admin registration is not publicly available
 
-authRouter.post('/logout', (req, res, next) => {
-  req.logout((err) => {
-    if (err) {
-      logError('logoutError', err);
-      return next(err);
-    }
-    return res.status(200).json({
-      success: true,
-      message: 'Logout successful',
-    });
-  });
-});
+authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
-authRouter.post('/register/local', checkSchema(createUserValidationSchema), sanitizerResult, createUser);
+authRouter.post('/password-reset', requestPasswordResetToken);
 
-authRouter.patch('/updateUserPassword', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
+authRouter.patch('/password-reset', checkSchema(recoverPasswordSchema), sanitizerResult, updateRecoveredUserPassword);
 
-authRouter.post('/recoverPassword', forgotPasswordRequest);
+authRouter.use(checkAuthentication());
 
-authRouter.patch('/createNewPassword', checkSchema(updatePasswordSchema), sanitizerResult, updateRecoveredUserPassword);
+authRouter.post('/logout', logoutUser);
 
-authRouter.get('/check-session', checkSession);
+authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
 
-authRouter.get('/*fallback', (req, res) => {
-  res.status(404).send('requested API Route does not exist in the userRouter');
+authRouter.get('/session', checkSession);
+
+authRouter.use('/*fallback', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'The requested route is not available or does not exist',
+  }); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });

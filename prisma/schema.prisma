@@ -1,30 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
+  output   = "../server/config/generated/prisma/client"
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
+
+  // DOCKER - Default
+  directUrl = env("PRISMA_POSTGRES_DIRECT_URL")
   url       = env("PRISMA_POSTGRES_CONNECTION_STRING")
-  directUrl = env("PRISMA_POSTGRES_CONNECTION_DIRECT_URL")
+
+  // KOYEB
+  // directUrl = env("PRISMA_POSTGRES_DIRECT_URL_KOYEB")
+  // url       = env("PRISMA_POSTGRES_CONNECTION_STRING_KOYEB")
+
+  // NEON
+  // directUrl = env("PRISMA_POSTGRES_DIRECT_URL_NEON")
+  // url       = env("PRISMA_POSTGRES_CONNECTION_STRING_NEON")
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  password      String
-  role          userRoles @default(customer)
-  created_at    DateTime  @default(now())
-  updated_at    DateTime  @updatedAt
-  last_login_at DateTime?
-
-  Analysis         Analysis[]
-  analysisRequests AnalysisRequests[]
-
-  @@index([id, email])
+  id                  String                @id @default(uuid())
+  email               String                @unique
+  password            String
+  role                UserRoles
+  created_at          DateTime              @default(now())
+  last_updated_at     DateTime              @default(now()) @updatedAt
+  last_login_at       DateTime?
+  company_id          String
+  Company             Company               @relation(fields: [company_id], references: [id])
+  PasswordResetTokens PasswordResetTokens[]
+  Analysis            Analysis[]
+  ParticipantProfile  ParticipantProfile[]
+  CustomerProfile     CustomerProfile[]
 }
 
-model Password_reset_tokens {
+model Company {
+  id           String         @id @default(uuid())
+  name         String?
+  Analysis     Analysis[]
+  User         User[]
+  Subscription Subscription[]
+  stripe_id    String?        @unique
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now()) @updatedAt
+}
+
+model ParticipantProfile {
+  id              Int               @id @default(autoincrement())
+  name            String?
+  last_name       String?
+  age             String? // String to allow for prefer not to say option
+  gender          Genders?
+  invited_by      String?
+  country         String?
+  devices         String[]          @default([])
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @default(now()) @updatedAt
+  User            User              @relation(fields: [user_id], references: [id])
+  user_id         String            @unique
+  AnalysisEntries AnalysisEntries[]
+}
+
+model CustomerProfile {
+  id           Int      @id @default(autoincrement())
+  company_name String?
+  position     String?
+  User         User     @relation(fields: [user_id], references: [id])
+  user_id      String   @unique
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now()) @updatedAt
+}
+
+model PasswordResetTokens {
   id            String   @id @unique @default(uuid())
+  User          User     @relation(fields: [user_id], references: [id])
   user_id       String
   token_expires DateTime
   created_at    DateTime @default(now())
@@ -37,48 +93,75 @@ model Session {
   expiresAt DateTime
 }
 
-enum userRoles {
-  customer
-  admin
+model Subscription {
+  id         String   @id @unique @default(uuid())
+  company_id String   @unique
+  Company    Company  @relation(fields: [company_id], references: [id])
+  isTrial    Boolean
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now()) @updatedAt
 }
 
 model Analysis {
-  id                         String             @id @default(uuid())
-  owner                      User               @relation(fields: [owner_id], references: [id])
-  owner_id                   String
-  analysis_name              String
-  analysis_tasks             Json
-  analysis_url               String
-  analysis_status            analysisStatus     @default(draft)
-  created_at                 DateTime           @default(now())
-  updated_at                 DateTime           @updatedAt
-  current_participants_count Int                @default(0)
-  max_number_of_participants Int
-  analysis_requests          AnalysisRequests[]
+  id               String         @id @default(uuid())
+  Company          Company        @relation(fields: [owner_company_id], references: [id])
+  owner_company_id String
+  device           AnalysisDevice
+  name             String
+  scenario         String
+  created_by       String
+  User             User           @relation(fields: [created_by], references: [id])
 
-  @@index([owner_id])
+  tasks                      Json
+  url                        String
+  status                     AnalysisStatus    @default(draft)
+  created_at                 DateTime          @default(now())
+  updated_at                 DateTime          @default(now()) @updatedAt
+  max_number_of_participants Int
+  AnalysisEntries            AnalysisEntries[]
+
+  // @@index([owner_id]) // Not a unique field, but requires an index
 }
 
-enum analysisStatus {
+model AnalysisEntries {
+  id                 String                        @id @default(uuid())
+  Analysis           Analysis                      @relation(fields: [analysis_id], references: [id])
+  analysis_id        String
+  ParticipantProfile ParticipantProfile?           @relation(fields: [user_id], references: [user_id])
+  user_id            String?
+  status             AnalysisEntryCompletionStatus @default(in_progress)
+  created_at         DateTime                      @default(now())
+  updated_at         DateTime                      @default(now()) @updatedAt
+
+  @@index([analysis_id, status])
+}
+
+enum Genders {
+  male
+  female
+  prefer_not_to_say
+}
+
+enum UserRoles {
+  customer
+  admin
+  participant
+}
+
+enum AnalysisDevice {
+  computer
+  mobile
+  tablet
+  other
+}
+
+enum AnalysisStatus {
   draft // analysis has been created but not yet published
   published // analysis has been published and participants can join the analysis
   completed // analysis has been completed and no more participants are accepted
 }
 
-model AnalysisRequests {
-  id          Int                             @id @default(autoincrement())
-  analysis    Analysis                        @relation(fields: [analysis_id], references: [id])
-  analysis_id String
-  user        User                            @relation(fields: [user_id], references: [id])
-  user_id     String
-  status      analysisRequestCompletionStatus @default(in_progress)
-  created_at  DateTime                        @default(now())
-  updated_at  DateTime                        @updatedAt
-
-  @@index([created_at, status])
-}
-
-enum analysisRequestCompletionStatus {
+enum AnalysisEntryCompletionStatus {
   in_progress // participant has started the analysis
   cancelled // analysis has been started by the participant but not submitted in time - Serves to prevent the participant from participating AGAIN in the analysis
   submitted // participant has submitted the analysis by the user
