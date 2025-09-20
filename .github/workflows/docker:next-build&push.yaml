@@ -1,7 +1,14 @@
 name: Push to Docker Hub, build and deploy :next tag image to Koyeb
+description: "This Github Action will do the following:
+    - Build a the Docker image for the NEXT branch
+    - Upload the build image to Docker Hub
+    - Create or update the secrets in Koyeb using Github Secrets
+    - Run & deploy the Docker image in Koyeb's Infrastructure
+        " 
+ 
 
 on:
-    pull_request:
+    push:
         branches: [ "next" ]
 
 jobs:
