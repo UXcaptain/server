@@ -1,4 +1,10 @@
-name: Push to Docker Hub, build and deploy :next tag image to Koyeb
+name: Push to Docker Hub, build and deploy :latest tag image to Koyeb
+description: "This Github Action will do the following:
+    - Build a the Docker image for the LATEST branch
+    - Upload the build image to Docker Hub
+    - Create or update the secrets in Koyeb using Github Secrets
+    - Run & deploy the Docker image in Koyeb's Infrastructure
+        " 
 
 on:
     push:
@@ -30,7 +36,7 @@ jobs:
                 context: .
                 platforms: linux/amd64,linux/arm64
                 push: true
-                tags: sergion14/uxcaptain:server-next
+                tags: sergion14/uxcaptain:server-latest
     
     
     koyeb-deploy:
