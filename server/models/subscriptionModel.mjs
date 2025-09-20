@@ -4,64 +4,76 @@ import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubs
 const prisma = new PrismaClient();
 
 export const storeSubscriptionInDb = async (checkoutSessionData) => {
-  await prisma.subscription.create({
-    data: {
-      user: {
-        connect: {
-          id: checkoutSessionData.userId,
-        },
-      },
-      id: checkoutSessionData.subscriptionId,
-    },
-  });
-
-  posthogUserSubscriptionCreated(checkoutSessionData);
-};
-
-export const storeBillingCustomerIdInDb = async (userId, stripeCustomerId) => {
   const whereClause = {
-    id: userId,
+    company_id: checkoutSessionData.companyId,
   };
 
-  const user = await prisma.user.update({
+  await prisma.subscription.update({
     where: whereClause,
     data: {
-      stripe_customer_id: stripeCustomerId,
+      id: checkoutSessionData.subscriptionId,
+      isTrial: false,
     },
   });
 
-  posthogCreateBillingId(userId);
+  // posthogUserSubscriptionCreated(checkoutSessionData);// TODO -- fix the associated of the event
+};
+
+export const storeBillingCompanyIdInDb = async (companyId, stripeCustomerId) => {
+  const whereClause = {
+    id: companyId,
+  };
+
+  const user = await prisma.company.update({
+    where: whereClause,
+    data: {
+      stripe_id: stripeCustomerId,
+    },
+  });
+
+  // posthogCreateBillingId(companyId); // TODO -- fix the associated of the event
 
   return user;
 };
 
 export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
   const whereClause = {
-    stripe_subscription_id: subscriptionDeletionData.subscriptionId,
+    id: subscriptionDeletionData.subscriptionId,
   };
 
   await prisma.subscription.delete({
     where: whereClause,
   });
 
-  posthogUserSubscriptionEnded(subscriptionDeletionData);
+  // posthogUserSubscriptionEnded(subscriptionDeletionData);
 };
 
-export const getBillingDataInDb = async (userId) => {
+export const getBillingDataInDb = async (companyId) => {
   const whereClause = {
-    id: userId,
+    id: companyId,
   };
 
-  const billingData = await prisma.user.findUnique({
+  const billingData = await prisma.company.findUnique({
     where: whereClause,
     select: {
-      stripe_customer_id: true,
+      stripe_id: true,
       Subscription: {
         select: {
           id: true,
         },
       },
     },
+
   });
   return billingData;
+};
+
+export const createFreeTrialSubscription = async (companyId) => {
+  const createCustomerSubscriptionQuery = await prisma.subscription.create({
+    data: {
+      company_id: companyId,
+      isTrial: true,
+    },
+  });
+  return createCustomerSubscriptionQuery;
 };

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
-  createUser,
+  createCustomerInDb,
   updateUserPassword,
   checkSession,
   requestPasswordResetToken,
@@ -9,6 +9,8 @@ import {
   checkPasswordResetTokenValidity,
   updateRecoveredUserPassword,
   logoutUser,
+  createAdminInDb,
+  createParticipantInDb,
 } from '../../../controllers/authController.mjs';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.mjs';
 import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.mjs';
@@ -22,7 +24,11 @@ export const authRouter = Router();
 
 authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-authRouter.post('/register/local', checkSchema(createUserValidationSchema), sanitizerResult, createUser);
+authRouter.post('/register/local/participant', checkSchema(createUserValidationSchema), sanitizerResult, createParticipantInDb);
+
+authRouter.post('/register/local/customer', checkSchema(createUserValidationSchema), sanitizerResult, createCustomerInDb);
+
+// authRouter.post('/register/local/admin', checkSchema(createUserValidationSchema), sanitizerResult, createAdminInDb); //* Admin registration is not publicly available
 
 authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
@@ -38,6 +44,9 @@ authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), san
 
 authRouter.get('/session', checkSession);
 
-authRouter.get('/*fallback', (req, res) => {
-  res.status(404).send('requested API Route does not exist in the userRouter');
+authRouter.use('/*fallback', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'The requested route is not available or does not exist',
+  }); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });

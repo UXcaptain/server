@@ -1,10 +1,10 @@
 import { stripeInstance } from '../../config/stripe.mjs';
 
-export const createCustomerInStripe = async (email, userId) => {
+export const createCompanyIdInStripe = async (email, companyId) => {
   const customerCreationQuery = await stripeInstance.customers.create({
     email: email,
     metadata: {
-      userId: userId,
+      companyId: companyId,
     },
   });
 

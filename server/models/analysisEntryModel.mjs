@@ -15,7 +15,7 @@ export const getEntryDetailsById = async (entryId) => {
       Analysis: {
         select: {
           id: true,
-          owner_id: true,
+          owner_company_id: true,
         },
       },
     },
@@ -24,7 +24,7 @@ export const getEntryDetailsById = async (entryId) => {
   return getEntryDetailsByIdQuery;
 };
 
-export const createAnalysisEntry = async (analysisId) => {
+export const createAnalysisEntryInDb = async (analysisId) => {
   const createAnalysisEntryQuery = await prisma.analysisEntries.create({
     data: {
       status: 'in_progress',
@@ -42,7 +42,7 @@ export const createAnalysisEntry = async (analysisId) => {
   return createAnalysisEntryQuery;
 };
 
-export const updateAnalysisEntryDetailsInDB = async (analysisEntryId) => {
+export const updateAnalysisEntryInDb = async (analysisEntryId, status) => {
   const whereClause = {
     id: analysisEntryId,
   };
@@ -50,7 +50,7 @@ export const updateAnalysisEntryDetailsInDB = async (analysisEntryId) => {
   const analysisEntryUpdateQuery = await prisma.analysisEntries.update({
     where: whereClause,
     data: {
-      status: 'submitted',
+      status: status,
     },
     select: {
       status: true,

@@ -16,6 +16,26 @@ export const createCustomerInDB = async (userData) => {
         create: {
         },
       },
+      Company: {
+        create: {
+        },
+      },
+    },
+  });
+
+  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+
+  posthogUserSignedUp(createUserInDbQuery);
+
+  return createUserInDbQuery;
+};
+
+export const createAdminInDB = async (userData) => {
+  const createUserInDbQuery = await prisma.user.create({
+    data: {
+      email: userData.username,
+      password: userData.password,
+      role: userData.role,
     },
   });
 
@@ -101,7 +121,6 @@ export const getUserById = async (userId) => {
 
 export const updateUserPasswordInDB = async (userId, newPassword) => {
   const updatePasswordQuery = await prisma.user.update({
-
     where: { id: userId },
     data: {
       password: newPassword,

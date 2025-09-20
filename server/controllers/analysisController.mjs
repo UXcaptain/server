@@ -6,8 +6,7 @@ import {
 }
   from '../models/analysisModel.mjs';
 
-import { generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.mjs';
-import { createAnalysisEntry } from '../models/analysisEntryModel.mjs';
+import { createAnalysisEntryInDb } from '../models/analysisEntryModel.mjs';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -26,7 +25,8 @@ export const createAnalysis = async (req, res) => {
     tasks: req.body.tasks,
     maxNumberOfParticipants: req.body.maxNumberOfParticipants,
     scenario: req.body.scenario || 'No scenario has been provided.',
-    owner_id: req.user.id,
+    ownerId: req.user.company_id,
+    createdBy: req.user.id,
   };
 
   const analysisCreationResponse = await createAnalysisInDb(analysisData);
@@ -39,11 +39,11 @@ export const createAnalysis = async (req, res) => {
 };
 
 export const getAllAnalyses = async (req, res) => {
-  const { id } = req.user;
+  const { company_id: companyId } = req.user;
 
   const filters = req.query;
 
-  const analyses = await getAllAnalysesFromDb(id, filters);
+  const analyses = await getAllAnalysesFromDb(companyId, filters);
 
   return res.status(200).send({
     success: true,
@@ -55,6 +55,7 @@ export const getAllAnalyses = async (req, res) => {
 
 export const getSingleAnalysisData = async (req, res) => {
   const { id } = req.params;
+  const { company_id: companyId, role } = req.user;
 
   const analysis = await getAnalysisDataById(id);
 
@@ -65,7 +66,7 @@ export const getSingleAnalysisData = async (req, res) => {
     });
   }
 
-  if (analysis.owner_id !== req.user.id && req.user.role !== 'admin') {
+  if (analysis.owner_company_id !== companyId && role !== 'admin') {
     return res.status(403).json({
       success: false,
       message: 'You do not have permission to access this analysis.',
@@ -79,8 +80,8 @@ export const getSingleAnalysisData = async (req, res) => {
   });
 };
 
-export const participateInAnalysis = async (req, res) => {
-  const { id: analysisId } = req.params;
+export const checkAnalysisAvailability = async (req, res) => {
+  const { analysisId } = req.body;
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 
@@ -97,22 +98,37 @@ export const participateInAnalysis = async (req, res) => {
       message: 'The maximum number of participants has been reached.',
     });
   }
-  const analysisEntry = await createAnalysisEntry(analysisId);
 
-  const key = `analysis/${analysisId}/analysisEntry/${analysisEntry.id}`;
+  return res.status(200).json({
+    success: true,
+    message: 'This analysis is accepting participants',
+  });
+};
 
-  const analysisEntryUploadPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
+export const participateInAnalysis = async (req, res) => {
+  const { analysisId } = req.body;
+
+  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
+
+  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+    return res.status(403).json({
+      success: false,
+      message: 'The maximum number of participants has been reached.',
+    });
+  }
+
+  const analysisEntry = await createAnalysisEntryInDb(analysisId);
 
   const analysisData = {
     tasks: analysisDataForParticipants.tasks,
     scenario: analysisDataForParticipants.scenario,
     analysisUrl: analysisDataForParticipants.url,
-    presignedUploadUrl: analysisEntryUploadPresignedUrl,
   };
 
   return res.status(200).json({
     success: true,
     message: 'Analysis info retrieved successfully',
     analysisData: analysisData,
+    analysisEntryId: analysisEntry.id,
   });
 };

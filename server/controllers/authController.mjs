@@ -8,9 +8,11 @@ import {
   getUserPassword,
   updateUserLastLoginDate,
   createParticipantInDB,
+  createAdminInDB,
 } from '../models/userModel.mjs';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
+import { createFreeTrialSubscription } from '../models/subscriptionModel.mjs';
 
 export const requestPasswordResetToken = async (req, res) => {
   try {
@@ -181,6 +183,13 @@ export const loginLocal = async (req, res, next) => {
       });
     }
 
+    if (user.role === 'participant') {
+      return res.status(403).json({
+        success: false,
+        message: 'Participant login is disabled',
+      });
+    }
+
     // Log the user in and establish a session
     return req.login(user, (loginErr) => {
       if (loginErr) { //* Will trigger if password is incorrect
@@ -207,7 +216,7 @@ export const loginLocal = async (req, res, next) => {
   })(req, res, next);
 };
 
-export const createUser = async (req, res) => {
+export const createCustomerInDb = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
@@ -231,24 +240,79 @@ export const createUser = async (req, res) => {
     });
   }
 
-  if (userData.role === 'customer') {
-    const createdUser = await createCustomerInDB(userData);
+  const createdUser = await createCustomerInDB(userData);
 
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
+  await createFreeTrialSubscription(createdUser.company_id);
+
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
+};
+
+export const createParticipantInDb = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'User could not be created due to validation errors',
+      errors: req.sanitizedErrors,
     });
   }
 
-  if (userData.role === 'participant') {
-    const createdUser = await createParticipantInDB(userData);
-    return res.status(201).json({
-      success: true,
-      message: 'User created successfully',
-      userId: createdUser.id,
+  const userData = {
+    username: req.body.username,
+    password: await bcrypt.hash(req.body.password, 10),
+    role: req.body.role,
+  };
+
+  const isExistingUser = await getUserByEmail(userData.username);
+
+  if (isExistingUser !== null) {
+    return res.status(409).json({
+      success: false,
+      message: 'User creation failed - User already exists',
     });
   }
+
+  const createdUser = await createParticipantInDB(userData);
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
+};
+
+export const createAdminInDb = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'User could not be created due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
+  const userData = {
+    username: req.body.username,
+    password: await bcrypt.hash(req.body.password, 10),
+    role: req.body.role,
+  };
+
+  const isExistingUser = await getUserByEmail(userData.username);
+
+  if (isExistingUser !== null) {
+    return res.status(409).json({
+      success: false,
+      message: 'User creation failed - User already exists',
+    });
+  }
+
+  const createdUser = await createAdminInDB(userData);
+  return res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    userId: createdUser.id,
+  });
 };
 
 export const updateUserPassword = async (req, res) => {
@@ -268,6 +332,13 @@ export const updateUserPassword = async (req, res) => {
     const { id: userId } = req.user;
 
     const currentHashedPasswordQuery = await getUserPassword(userId);
+
+    if (!currentHashedPasswordQuery) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
 
     const { password: currentHashedPassword } = currentHashedPasswordQuery;
 

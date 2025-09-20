@@ -30,12 +30,12 @@ jobs:
                 context: .
                 platforms: linux/amd64,linux/arm64
                 push: true
-                tags: sergion14/uxmonkeys:server-next
+                tags: sergion14/uxcaptain:server-next
     
     
     koyeb-deploy:
         runs-on: ubuntu-latest
-        environment: dev
+        environment: next
         needs: docker-build-and-push
         concurrency: 
             group: "${{ github.ref_name }}"
@@ -47,40 +47,34 @@ jobs:
                 with:
                     api_token: "${{ secrets.KOYEB_API_TOKEN }}"
             - 
-                name: Create POSTHOG_API_KEY secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: DEV_POSTHOG_API_KEY
-                    secret-value: "${{ secrets.POSTHOG_API_KEY }}"
-            - 
                 name: Create SESSION_SECRET secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_SESSION_SECRET
+                    secret-name: NEXT_SESSION_SECRET
                     secret-value: "${{ secrets.SESSION_SECRET }}"
             - 
                 name: Create Brevo API key secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_BREVO_API_KEY
+                    secret-name: BREVO_API_KEY
                     secret-value: "${{ secrets.BREVO_API_KEY }}"
             - 
-                name: Create PINOJS_SOURCE_TOKEN secret
+                name: Create BETTERSTACK_SOURCE_TOKEN secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_PINOJS_SOURCE_TOKEN
-                    secret-value: "${{ secrets.PINOJS_SOURCE_TOKEN }}"
+                    secret-name: NEXT_BETTERSTACK_SOURCE_TOKEN
+                    secret-value: "${{ secrets.BETTERSTACK_SOURCE_TOKEN }}"
             - 
                 name: Create PRISMA_POSTGRES_DIRECT_URL secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_PRISMA_POSTGRES_DIRECT_URL
+                    secret-name: NEXT_PRISMA_POSTGRES_DIRECT_URL
                     secret-value: "${{ secrets.PRISMA_POSTGRES_DIRECT_URL }}"
             - 
                 name: Create PRISMA_POSTGRES_CONNECTION_STRING secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_PRISMA_POSTGRES_CONNECTION_STRING
+                    secret-name: NEXT_PRISMA_POSTGRES_CONNECTION_STRING
                     secret-value: "${{ secrets.PRISMA_POSTGRES_CONNECTION_STRING }}"
             - 
                 name: Create PRISMA_POSTGRES_CONNECTION_STRING secret
@@ -98,27 +92,27 @@ jobs:
                 name: Create STRIPE_API_KEY secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_STRIPE_API_KEY
+                    secret-name: NEXT_STRIPE_API_KEY
                     secret-value: "${{ secrets.STRIPE_API_KEY }}"
             - 
                 name: Create STRIPE_WEBHOOK_SECRET secret
                 uses: koyeb/action-git-deploy/secret@v1
                 with:
-                    secret-name: DEV_STRIPE_WEBHOOK_SECRET
+                    secret-name: NEXT_STRIPE_WEBHOOK_SECRET
                     secret-value: "${{ secrets.STRIPE_WEBHOOK_SECRET }}"
             -
                 name: Build and deploy the application to Koyeb
                 uses: koyeb/action-git-deploy@v1
                 with:
-                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@DEV_BREVO_API_KEY,POSTHOG_API_KEY=@DEV_POSTHOG_API_KEY,PINOJS_SOURCE_TOKEN=@DEV_PINOJS_SOURCE_TOKEN,PRISMA_POSTGRES_DIRECT_URL=@DEV_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@DEV_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@DEV_SESSION_SECRET,STRIPE_API_KEY=@DEV_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@DEV_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
+                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@BREVO_API_KEY,POSTHOG_API_KEY="${{ vars.POSTHOG_API_KEY }}",BETTERSTACK_SOURCE_TOKEN=@NEXT_BETTERSTACK_SOURCE_TOKEN,BETTERSTACK_INGESTING_HOST="${{ vars.BETTERSTACK_INGESTING_HOST }}",PRISMA_POSTGRES_DIRECT_URL=@NEXT_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@NEXT_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@NEXT_SESSION_SECRET,STRIPE_API_KEY=@NEXT_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@NEXT_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
 
-                    app-name: "server-docker"
-                    service-instance-type: "free" #https://www.koyeb.com/docs/reference/instances
-                    service-name: "server-docker-next"
+                    app-name: "server-next"
+                    service-instance-type: "eco-nano" #https://www.koyeb.com/docs/reference/instances
+                    service-name: "server-next"
                     service-ports: "3000:http"
                     service-routes: "/:3000"
                     service-regions: "fra" # https://www.koyeb.com/docs/reference/regions
-                    docker: "sergion14/uxmonkeys:server-next"
+                    docker: "sergion14/uxcaptain:server-next"
                     docker-private-registry-secret: "SNR" # MANAGED in https://app.koyeb.com/settings/registry-configuration
                     docker-command: "./startLocal.sh"
                     

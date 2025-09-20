@@ -50,7 +50,7 @@ export const posthogUserSubscriptionCreated = async (checkoutSessionData) => {
       distinctId: checkoutSessionData.userId,
       event: 'subscriptionCreated',
       /* properties: {
-        $set: { // TODO - decide if this should be a person or event property
+        $set: { // TODO - decide if this should be a person or event property & probably should be a company ID
         planName: checkoutSessionData.metadata.planName, // TODO - ADD THIS VALUE
         planBillingCycle: checkoutSessionData.metadata.planBillingCycle, // TODO - ADD THIS VALUE
       },

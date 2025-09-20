@@ -15,13 +15,13 @@ const transport = pino.transport({
         colorize: true,
       },
     },
-    // {
-    //   target: '@logtail/pino',
-    //   options: {
-    //     sourceToken: process.env.PINOJS_SOURCE_TOKEN,
-    //     options: { endpoint: 'https://s1198477.eu-nbg-2.betterstackdata.com' },
-    //   },
-    // },
+    {
+      target: '@logtail/pino',
+      options: {
+        sourceToken: process.env.BETTERSTACK_SOURCE_TOKEN,
+        options: { endpoint: process.env.BETTERSTACK_INGESTING_HOST },
+      },
+    },
   ],
 });
 

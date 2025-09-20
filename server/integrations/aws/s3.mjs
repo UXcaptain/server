@@ -16,21 +16,21 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
     Key: key,
   });
 
-  const analysisEntryresignedUrl = await getSignedUrl(s3client, command, { expiresIn: 60 * 60 });
+  const analysisEntryGetPresignedUrl = await getSignedUrl(s3client, command, { expiresIn: 60 * 60 });
 
-  return analysisEntryresignedUrl;
+  return analysisEntryGetPresignedUrl;
 };
 
-export const generatePutAnalysisEntryPresignedUrl = async (key) => {
+export const generatePutAnalysisEntryPresignedUrl = async (key) => { // eslint-disable-line no-unused-vars
   const command = new PutObjectCommand({
     Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
+    ContentType: 'video/mp4',
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
-    expiresIn: 60
-    * 60,
-  }); // 1 hour expiration
+    expiresIn: 60 * 15, // 15 minute expiration
+  });
 
   return analysisEntryPutPresignedUrl;
 };

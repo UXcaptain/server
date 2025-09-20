@@ -26,7 +26,8 @@ export const stripeEventHandler = async (req, res) => {
         // Create the subscription in DB
 
         checkoutSessionData = {
-          userId: event.data.object.client_reference_id,
+          companyId: parseInt(event.data.object.client_reference_id, 10),
+          userId: event.data.object.metadata.userId,
           subscriptionId: event.data.object.subscription,
         };
 
@@ -34,34 +35,6 @@ export const stripeEventHandler = async (req, res) => {
 
         // TODO -- send an email to the user about the subscription update
         break;
-
-        /* case 'checkout.session.expired': //* Will not be used - Users cant just create a new session
-      Sent when a checkout session expires. - 24 hours after creation
-      This indicates that the customer did not complete the payment in time.
-      Useful for notifying users about the expired session.
-        break; */
-
-        /* case 'customer.subscription.created': //* Unused
-        // Sent when a subscription is created.
-
-        stripeCustomerId = event.data.object.customer;
-        planName = event.data.object.items.data[0].plan.metadata.planName;
-        planBillingCycle = event.data.object.items.data[0].plan.metadata.planBillingCycle;
-
-        await storeSubscriptionInDb(stripeCustomerId, planName, planBillingCycle);
-
-        posthogUserSubscriptionCreated(stripeCustomerId, planName, planBillingCycle);
-
-        break; */
-
-        /* case 'customer.subscription.updated':
-        // Sent when a subscription is updated - eg: cancelled/duration modified.
-
-          default:
-            break;
-        }
-
-        break; */
 
       case 'customer.subscription.deleted':
         // Sent when a subscription ends.
@@ -76,42 +49,10 @@ export const stripeEventHandler = async (req, res) => {
         // TODO -- send an email to the user about the subscription end
         break;
 
-        /* case 'invoice.upcoming':
-          Sent a few days before the subscription renewal date.
-          Indicates that an invoice is about to be generated for the next billing cycle.
-          Useful for notifying users about the upcoming charge
-
-          TODO -- send an email to the user reminding of subscription renewal
-          break; */
-
-        /* case 'invoice.paid':
-          Sent when an invoice payment attempt succeeds.
-          This indicates that the customer's payment was successful.
-          Useful for notifying users about successful payments.
-          TODO -- send an email to the user about the successful payment
-          TODO -- update the user subscription status in the database
-          break; */
-
-        /* case 'invoice.payment_failed':
-          Sent when an invoice payment attempt fails.
-          This can happen for various reasons, such as insufficient funds or an expired card.
-          notify users about the failed payment and
-        prompting them to update their payment method.
-          TODO -- send an email to the user about the failed payment
-          break; */
-
-        /* case 'charge.refunded':
-        Sent when a charge is refunded.
-        This indicates that the customer's payment was reversed.
-        Useful for notifying users about the refund.
-        TODO -- send an email to the user about the refund
-        TODO -- update the user subscription status in the database
-        break; */
-
       // ... handle other event types
       default:
-      // console.log('Unhandled event type:', event.type);
-        // logError('Unhandled event type in Stripe webhook paymentCompleted.', event.type);
+      // console.log('Unhandled event type:', event.type); //* Activate for debugging
+        // logError('Unhandled event type in Stripe webhook paymentCompleted.', event.type); //* Activate for debugging
     }
 
     res.status(200).send();

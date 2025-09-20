@@ -26,7 +26,7 @@ export const sendInfoLogsToTelegram = async (message) => {
   const chatId = process.NODE_ENV === 'production' ? chatIds.production_info : chatIds.dev_info;
 
   const telegramMessage = `
-  🚨 <b>New event logged at ${new Date()}</b> 🚨
+  ✅ <b>New event logged at ${new Date()}</b> ✅
   \n<b>event Name</b>: ${message}
   
   \n Access full logs here --> https://telemetry.betterstack.com/team/111402/tail?s=1198475,1198477

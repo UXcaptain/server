@@ -1,18 +1,18 @@
 openapi: '3.1.0'
 info:
   version: '1.0.0'
-  title: 'UXmonkeys API'
+  title: 'UXcaptain API'
   description: Buy or rent user tests
 
 servers:
   [
     {
-      "url": "prod.uxmonkeys.com/api",
-      "description": "Prod server for uxmonkeys"
+      "url": "server.latest.uxcaptain.com/api",
+      "description": "latest branch server for uxcaptain"
     },
     {
-      url: "dev.uxmonkeys.com/api",
-      "description": "dev server uxmonkeys"
+      url: "server.next.uxcaptain.com/api",
+      "description": "next branch server uxcaptain"
     }
   ]
 
@@ -72,7 +72,7 @@ paths:
                         users:
                             type: array
                             items:
-                                $ref: '#/components/schemas/User'
+                                $ref: '#/components/schemas/CustomerProfile'
                             
         403:
           description: User does not have the required permissions
@@ -130,7 +130,7 @@ paths:
                             "Users successfully retrieved - DB"
                           ]
                         user:
-                            $ref: "#/components/schemas/User"
+                            $ref: "#/components/schemas/CustomerProfile"
         400:
           description: User not found
           content:
@@ -293,10 +293,69 @@ paths:
                                 examples: [
                                   "Session is not valid"
                                 ]
+  /v1/waitlist:
+    post:
+        summary: Adds a new user to the launch waitlist
+        description: Adds a new user to the launch waitlist
+        tags: ["waitlist"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - email
+                          - consent
+                        properties:
+                            email:
+                                $ref: "#/components/schemas/UserEmail"
+                            consent:
+                                $ref: "#/components/schemas/Consent"
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: User was sucessfully added to launch waitlist
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
 
   /v1/auth/register/local:
     post:
-
         summary: Register a new user
         description: Registers one user
         tags: ["auth"]
@@ -546,7 +605,7 @@ paths:
                                 example: Current password is incorrect
              
         
-        401:
+        404:
               description: User not found
               content:
                 application/json:
@@ -1117,7 +1176,7 @@ paths:
                         cacheTTL_seconds: 
                           $ref: "#/components/schemas/CacheTTL_seconds"
                         billingData:
-                              $ref: '#/components/schemas/BillingData'
+                              $ref: '#/components/schemas/CompanyBillingData'
                    
         500:
           description: Unexpected error
@@ -1152,8 +1211,8 @@ paths:
                           examples: [
                             "Customer created successfully"
                           ]
-                        stripeCustomerId:
-                          $ref: '#/components/schemas/StripeCustomerId'
+                        StripeId:
+                          $ref: '#/components/schemas/StripeId'
         400:
           description: Customer already has a stripe customer id
           content:
@@ -1168,8 +1227,8 @@ paths:
                                 examples: [
                                   "customer already has a stripe customer id"
                                 ]
-                              stripeCustomerId:
-                                $ref: '#/components/schemas/StripeCustomerId'
+                              StripeId:
+                                $ref: '#/components/schemas/StripeId'
          
         
         500:
@@ -1284,17 +1343,22 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis/participate/{AnalysisId}:
+  /v1/guestParticipant/participate:
     get:
       summary: Participate in an analysis
       description: Allows a participant to join an analysis and get the necessary details to complete it.
-      tags: ["Analysis"]
-      parameters:
-        - name: AnalysisId
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/AnalysisId"
+      tags: ["guestRouter"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
 
       responses:
         200:
@@ -1318,8 +1382,37 @@ paths:
                         $ref: '#/components/schemas/AnalysisScenario'
                       analysisUrl:
                         $ref: '#/components/schemas/AnalysisUrl'
-                      presignedUploadUrl:
-                        $ref: '#/components/schemas/PresignedPutS3Url'
+        
+  /v1/analysis/validate-participation:
+    post:
+      summary: Validate if analysis exists and is accepting new participants
+      description: Validate if analysis exists and is accepting new participants
+      tags: ["Analysis"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: This analysis is accepting participants
         403:
           description: Maximum number of participants reached
           content:
@@ -1356,17 +1449,195 @@ paths:
                   message:
                     $ref: '#/components/schemas/InternalErrorMessage'
 
-  /v1/analysis-entry/{EntryId}:
+  /v1/analysisEntry/upload-url:
+    post:
+      summary: Retrieve the presigned AWS S3 upload URL
+      description: Retrieve the presigned AWS S3 upload URL
+      tags: ["Analysis Entry"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                          - analysisEntryId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+                            analysisEntryId:
+                              $ref: '#/components/schemas/AnalysisEntryId'
+                            metadata:
+                              type: object
+                              required:
+                                - recordingDuration
+                              properties:
+                                recordingDuration:
+                                  $ref: '#/components/schemas/AnalysisEntryRecordingDuration'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: PresignedUploadUrl retrieved successfully
+                  analysisEntryPresignedUploadUrl:
+                    $ref: '#/components/schemas/AnalysisEntryPresignedUploadUrl'
+                  
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+          
+
+
+  /v1/analysis/participate:
+    post:
+      summary: Participate in an analysis
+      description: Retrieve the details of an analysis entry for participants & create participation entry
+      tags: ["Analysis"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      analysisEntryId:
+                        $ref: '#/components/schemas/AnalysisEntryId'
+        403:
+          description: Maximum number of participants reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: The maximum number of participants has been reached.
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis not found
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/:
+    patch:
+        summary: Update analysis entry details
+        description: Update the details of an analysis entry
+        tags: ["Analysis Entry"]
+        requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          type: object
+                          required:
+                            - analysisId
+                            - status
+                          properties:
+                              analysisEntryId:
+                                  $ref: "#/components/schemas/AnalysisEntryId"
+                              analysisEntryStatus:
+                                $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessTrueStatus"
+                    message:
+                      type: string
+                      example: Analysis entry updated successfully
+          500:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessFalseStatus"
+                    message:
+                      $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/{AnalysisEntryId}:
     get:
       summary: Get analysis entry details for participants
       description: Retrieve the details of an analysis entry for participants, including a presigned URL to access the entry.
       tags: ["Analysis Entry"]
       parameters:
-        - name: EntryId
+        - name: AnalysisEntryId
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/EntryId"
+            $ref: "#/components/schemas/AnalysisEntryId"
 
       responses:
         200:
@@ -1433,46 +1704,10 @@ paths:
                   message:
                     $ref: '#/components/schemas/InternalErrorMessage'
 
-    patch:
-      summary: Update analysis entry details
-      description: Update the details of an analysis entry, typically used to submit the entry.
-      tags: ["Analysis Entry"]
-      parameters:
-        - name: EntryId
-          in: path
-          required: true
-          schema:
-            $ref: "#/components/schemas/EntryId"
-      responses:
-        201:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
-                  message:
-                    type: string
-                    example: Analysis entry updated successfully
-                  updatedAnalysisEntry:
-                    $ref: '#/components/schemas/AnalysisEntry'
-        500:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    $ref: '#/components/schemas/InternalErrorMessage'
+    
 
 components:
-  schemas:
-    
+  schemas:  
     SuccessTrueStatus:
       description: Success status for any API call
       type: boolean
@@ -1499,7 +1734,7 @@ components:
           "0464ac85-e565-4d44-bde7-d6de0aa358ea",
         ]
     
-    EntryId:
+    AnalysisEntryId:
         description: The unique identifier of an entry
         type: string
         format: uuid
@@ -1589,9 +1824,9 @@ components:
         2025-05-15T14:23:21.303Z
       ]
 
-    StripeCustomerId:
+    StripeId:
       type: string
-      description: The Stripe customer ID associated with the user
+      description: The Stripe customer ID associated with the company
       examples: [
         cus_SWWUxsoPPQnVSb,
         cus_HvgQzGHkJLqERn,
@@ -1657,6 +1892,8 @@ components:
           $ref: '#/components/schemas/CreatedAt'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
+        id: 
+          $ref: '#/components/schemas/AnalysisId'
         max_number_of_participants:
           $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
         AnalysisEntries:
@@ -1677,7 +1914,7 @@ components:
       description: The details of a completed entry for an analysis
       properties:
         id: 
-          $ref: '#/components/schemas/EntryId'
+          $ref: '#/components/schemas/AnalysisEntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'
 
@@ -1686,7 +1923,7 @@ components:
       description: The details of a completed entry for an analysis with participant data
       properties:
         id: 
-          $ref: '#/components/schemas/EntryId'
+          $ref: '#/components/schemas/AnalysisEntryId'
         updated_at:
           $ref: '#/components/schemas/UpdatedAt'        
 
@@ -1765,7 +2002,7 @@ components:
     
     AnalysisEntryCompletionStatus:
       type: string
-      default: in_progress
+      default: submitted
       enum: [in_progress, cancelled, submitted, accepted, rejected]
       description: The status of the analysis entry
     
@@ -1809,11 +2046,11 @@ components:
             3,
           ]
 
-    BillingData:
+    CompanyBillingData:
       type: object
       properties:
-        stripe_customer_id:
-          $ref: '#/components/schemas/StripeCustomerId'
+        stripe_id:
+          $ref: '#/components/schemas/StripeId'
         Subscription:
           type: array
           items:
@@ -1841,7 +2078,15 @@ components:
         enterprise
       ]
 
-    PresignedPutS3Url:
+    AnalysisEntryRecordingDuration:
+      type: string
+      description: Duration of the analysis Entry recording
+      examples: [
+        '15:24',
+        '07:12'
+      ]
+
+    AnalysisEntryPresignedUploadUrl:
       type: string
       format: url
       description: Indicates the presigned PUT S3 URL that the client can use to upload the completed analysis entry
@@ -1857,6 +2102,15 @@ components:
         active,
         refunded,
         cancelled
+      ]
+
+    Consent:
+      type: string
+      enum: [true, false]
+      description: Indicates the status of the given consent
+      examples: [
+        true,
+        false,
       ]
 
     AwsObjectKey:
