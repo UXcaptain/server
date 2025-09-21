@@ -1,4 +1,6 @@
 import { CreateContact, ContactsApi } from '@getbrevo/brevo';
+import { logError } from '../../../config/loggerFunctions.mjs';
+import { sendInfoLogsToTelegram } from '../../telegram/sendLogsToTelegram.mjs';
 
 export const createContactInBrevo = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -22,6 +24,13 @@ export const createContactInBrevo = async (req, res) => {
   contact.listIds = [5]; // Launch waitlist list
 
   await contactAPI.createContact(contact);
+
+  try {
+    sendInfoLogsToTelegram('user signed up to waitlist')
+  } catch (error) {
+    logError('error sending waitlist contact to telegram', error)
+  }
+
 
   return res.status(200).json({
     sucess: true,
