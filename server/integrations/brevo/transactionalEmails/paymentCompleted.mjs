@@ -1,11 +1,11 @@
-import { apiInstance, emailInstance } from './brevo.mjs';
+import { apiInstance, companyEmails, emailInstance } from './brevo.mjs';
 import { logError } from '../../../config/loggerFunctions.mjs';
 
 export const sendPaymentCompletedTransactionalEmail = async (email, param) => {
   try {
     emailInstance.sender = {
       // name: "XXX", //* Managed in the template
-      email: 'no-reply@yourdomain.com',
+      email: companyEmails.billing,
     };
 
     emailInstance.to = [{
