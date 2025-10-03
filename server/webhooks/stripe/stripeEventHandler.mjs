@@ -24,14 +24,17 @@ export const stripeEventHandler = async (req, res) => {
       case 'checkout.session.completed':
         // Sent when a customer completes a checkout session
         // Create the subscription in DB
+        if (event.data.object.payment_status === 'paid') {
 
-        checkoutSessionData = {
-          companyId: parseInt(event.data.object.client_reference_id, 10),
-          userId: event.data.object.metadata.userId,
-          subscriptionId: event.data.object.subscription,
-        };
-
-        storeSubscriptionInDb(checkoutSessionData);
+          checkoutSessionData = {
+            companyId: parseInt(event.data.object.client_reference_id, 10),
+            userId: event.data.object.metadata.userId,
+            subscriptionId: event.data.object.subscription,
+          };
+  
+          storeSubscriptionInDb(checkoutSessionData);
+        }
+        return;
 
         // TODO -- send an email to the user about the subscription update
         break;
