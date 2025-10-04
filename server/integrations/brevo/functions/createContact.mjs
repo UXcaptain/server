@@ -26,11 +26,10 @@ export const createContactInBrevo = async (req, res) => {
   await contactAPI.createContact(contact);
 
   try {
-    sendInfoLogsToTelegram('user signed up to waitlist')
+    sendInfoLogsToTelegram(`user signed up to waitlist, ${email}`);
   } catch (error) {
-    logError('error sending waitlist contact to telegram', error)
+    logError('error sending waitlist contact to telegram', error);
   }
-
 
   return res.status(200).json({
     sucess: true,
