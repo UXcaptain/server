@@ -20,8 +20,8 @@ const server = createServer(app);
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
 app.use(cookieParserMiddleware);
-// if (process.env.NODE_ENV === 'production') app.use(slowLimiter);
-// if (process.env.NODE_ENV === 'production') app.use(limiter);
+if (process.env.NODE_ENV === 'production') app.use(slowLimiter);
+if (process.env.NODE_ENV === 'production') app.use(limiter);
 
 //* Webhooks router
 app.use('/webhooks', webhookRouter);
