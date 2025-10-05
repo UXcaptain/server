@@ -42,39 +42,8 @@ services:
     depends_on: #* References the SERVICE name - NOT the container_name
       database:
         condition: service_started
-      # uxcaptain-cache: 
-      #   condition: service_started
     networks:
       - uxcaptain-network
-
-  # webapp: 
-  #   container_name: webapp
-  #   build: 
-  #     context: ../web-app
-  #     dockerfile: Dockerfile
-  #     args:
-  #       VITE_API_BASE_URL: http://localhost:3000
-  #       VITE_PUBLIC_POSTHOG_KEY: phc_rEM8kq6iDndSMMDYlYoVVb0iitdyUx1KOXaLVPIQR9q
-  #   # environment: # no env variables set
-  #   ports:
-  #     - 80:80
-  #   # restart: always # Added restart policy for front-end service
-  #   develop:
-  #     watch:
-  #     - path: ../web-app/
-  #       action: rebuild
-  #     - path: ../web-app/package.json
-  #       action: rebuild
-  #     - path: ../web-app/Dockerfile
-  #       action: rebuild
-  #     - path: ../web-app/src
-  #       action: sync+restart
-  #       target: /usr/src/app/
-  #     - path: ../web-app/public
-  #       action: sync+restart
-  #       target: /usr/src/app/
-  #   networks:
-  #     - uxcaptain-network
   
   database:
     image: postgres:17.5
@@ -93,17 +62,9 @@ services:
     networks:
       - uxcaptain-network 
 
-  # uxcaptain-cache: #* Disabled the cache services
-  #   image: valkey/valkey:latest
-  #   container_name: valkey_cache-service
-  #   restart: on-failure
-  #   ports:
-  #     - 6379:6379
-  #   networks:
-  #     - uxcaptain-network
-
 networks:
   uxcaptain-network:
+    name: uxcaptain-network
     driver: bridge
 
 volumes:

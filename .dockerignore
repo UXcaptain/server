@@ -2,7 +2,7 @@
 
 
 # Filesystem
-**/.DS_store
+**/.DS_Store
 
 
 # Build and Dependency Artifacts (highest priority)
@@ -24,7 +24,7 @@
 **/Dockerfile*
 
 # Github files
-**/.Github
+**/.github
 **/.gitattributes
 
 # ESLint files
