@@ -15,7 +15,7 @@ WORKDIR /usr/src/app
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci --omit-dev
+    npm ci --omit-dev 
 
 # Copy Prisma schema files into the container
 COPY prisma ./prisma/
@@ -25,10 +25,6 @@ RUN --mount=type=cache,target=/root/.npm npx prisma generate
 
 # Copy all remaining source files into the container
 COPY . .
-
-# Copy and make executable the local startup script
-COPY startLocal.sh .
-RUN chmod +x startLocal.sh
 
 # Copy and make executable the production startup script
 COPY start.sh .
@@ -41,4 +37,4 @@ USER node
 EXPOSE 3000
 
 # Set the default command to run the local startup script
-CMD ["./startLocal.sh"] 
+CMD ["./start.sh"] 
