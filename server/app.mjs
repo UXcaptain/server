@@ -20,8 +20,8 @@ const server = createServer(app);
 app.use(helmetMiddleware);
 app.use(corsMiddleware);
 app.use(cookieParserMiddleware);
-if (process.env.NODE_ENV === 'production') app.use(slowLimiter);
-if (process.env.NODE_ENV === 'production') app.use(limiter);
+if (process.env.NODE_ENV !== 'localhost') app.use(slowLimiter);
+if (process.env.NODE_ENV !== 'localhost') app.use(limiter);
 
 //* Webhooks router
 app.use('/webhooks', webhookRouter);
@@ -49,7 +49,7 @@ server.listen(process.env.PORT, () => {
   console.log(`Server running at http://localhost:${process.env.PORT}/`);
 });
 
-// startCronJobs(); // Disabled temporarily during dev
+startCronJobs();
 
 const gracefulShutdown = () => {
   console.log('Received shutdown signal, closing server...');

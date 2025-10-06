@@ -1,11 +1,11 @@
-import { apiInstance, emailInstance } from './brevo.mjs';
+import { apiInstance, emailInstance, companyEmails } from './brevo.mjs';
 import { logError } from '../../../config/loggerFunctions.mjs';
 
 export const sendResetPasswordTokenToUser = async (userEmail, passwordResetToken) => {
   try {
     emailInstance.sender = {
       // name: "XXX", //* Managed in the template
-      email: 'no-reply@yourdomain.com',
+      email: companyEmails.support,
     };
 
     emailInstance.to = [{

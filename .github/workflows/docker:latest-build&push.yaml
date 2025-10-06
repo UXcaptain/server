@@ -2,8 +2,6 @@ name: Push to Docker Hub, build and deploy :latest tag image to Koyeb
 description: "This Github Action will do the following:
     - Build a the Docker image for the LATEST branch
     - Upload the build image to Docker Hub
-    - Create or update the secrets in Koyeb using Github Secrets
-    - Run & deploy the Docker image in Koyeb's Infrastructure
         " 
 
 on:
@@ -34,91 +32,6 @@ jobs:
             uses: docker/build-push-action@v6
             with:
                 context: .
-                platforms: linux/amd64,linux/arm64
+                platforms: linux/amd64
                 push: true
                 tags: sergion14/uxcaptain:server-latest
-    
-    
-    koyeb-deploy:
-        runs-on: ubuntu-latest
-        environment: latest
-        needs: docker-build-and-push
-        concurrency: 
-            group: "${{ github.ref_name }}"
-            cancel-in-progress: true
-        steps:
-            - 
-                name: Install and configure the Koyeb CLI
-                uses: koyeb-community/koyeb-actions@v2
-                with:
-                    api_token: "${{ secrets.KOYEB_API_TOKEN }}"
-            - 
-                name: Create SESSION_SECRET secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_SESSION_SECRET
-                    secret-value: "${{ secrets.SESSION_SECRET }}"
-            - 
-                name: Create Brevo API key secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: BREVO_API_KEY
-                    secret-value: "${{ secrets.BREVO_API_KEY }}"
-            - 
-                name: Create BETTERSTACK_SOURCE_TOKEN secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_BETTERSTACK_SOURCE_TOKEN
-                    secret-value: "${{ secrets.BETTERSTACK_SOURCE_TOKEN }}"
-            - 
-                name: Create PRISMA_POSTGRES_DIRECT_URL secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_PRISMA_POSTGRES_DIRECT_URL
-                    secret-value: "${{ secrets.PRISMA_POSTGRES_DIRECT_URL }}"
-            - 
-                name: Create PRISMA_POSTGRES_CONNECTION_STRING secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_PRISMA_POSTGRES_CONNECTION_STRING
-                    secret-value: "${{ secrets.PRISMA_POSTGRES_CONNECTION_STRING }}"
-            - 
-                name: Create PRISMA_POSTGRES_CONNECTION_STRING secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: AWS_SECRET_ACCESS_KEY
-                    secret-value: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            - 
-                name: Create TELEGRAM_BOT_API_KEY secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: TELEGRAM_BOT_API_KEY
-                    secret-value: "${{ secrets.TELEGRAM_BOT_API_KEY }}"
-            - 
-                name: Create STRIPE_API_KEY secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_STRIPE_API_KEY
-                    secret-value: "${{ secrets.STRIPE_API_KEY }}"
-            - 
-                name: Create STRIPE_WEBHOOK_SECRET secret
-                uses: koyeb/action-git-deploy/secret@v1
-                with:
-                    secret-name: LATEST_STRIPE_WEBHOOK_SECRET
-                    secret-value: "${{ secrets.STRIPE_WEBHOOK_SECRET }}"
-            -
-                name: Build and deploy the application to Koyeb
-                uses: koyeb/action-git-deploy@v1
-                with:
-                    service-env: PORT=3000,NODE_ENV=development,BREVO_API_KEY=@BREVO_API_KEY,POSTHOG_API_KEY="${{ vars.POSTHOG_API_KEY }}",BETTERSTACK_SOURCE_TOKEN=@LATEST_BETTERSTACK_SOURCE_TOKEN,BETTERSTACK_INGESTING_HOST="${{ vars.BETTERSTACK_INGESTING_HOST }}",PRISMA_POSTGRES_DIRECT_URL=@LATEST_PRISMA_POSTGRES_DIRECT_URL,PRISMA_POSTGRES_CONNECTION_STRING=@LATEST_PRISMA_POSTGRES_CONNECTION_STRING,TELEGRAM_BOT_API_KEY=@TELEGRAM_BOT_API_KEY,FRONT_WEB_APP_ORIGIN_URL="${{ vars.FRONT_WEB_APP_ORIGIN_URL }}",SESSION_SECRET=@LATEST_SESSION_SECRET,STRIPE_API_KEY=@LATEST_STRIPE_API_KEY,STRIPE_WEBHOOK_SECRET=@LATEST_STRIPE_WEBHOOK_SECRET,AWS_ACCESS_KEY_ID="${{ vars.AWS_ACCESS_KEY_ID }}",AWS_SECRET_ACCESS_KEY=@AWS_SECRET_ACCESS_KEY
-
-                    app-name: "server-latest"
-                    service-instance-type: "eco-nano" #https://www.koyeb.com/docs/reference/instances
-                    service-name: "server-latest"
-                    service-ports: "3000:http"
-                    service-routes: "/:3000"
-                    service-regions: "fra" # https://www.koyeb.com/docs/reference/regions
-                    docker: "sergion14/uxcaptain:server-latest"
-                    docker-private-registry-secret: "SNR" # MANAGED in https://app.koyeb.com/settings/registry-configuration
-                    docker-command: "./start.sh"
-                    

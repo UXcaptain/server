@@ -1,8 +1,8 @@
 import { sendTelegramMessage } from '../../config/telegramBotConfig.mjs';
 
 const chatIds = {
-  production_info: 'production_info',
-  production_errors: '',
+  production_info: '-4899630710',
+  production_errors: '-4965450056',
   dev_info: '-1002613952187',
   dev_errors: '-1002730767538',
 };

@@ -12,17 +12,8 @@ generator client {
 datasource db {
   provider = "postgresql"
 
-  // DOCKER - Default
   directUrl = env("PRISMA_POSTGRES_DIRECT_URL")
   url       = env("PRISMA_POSTGRES_CONNECTION_STRING")
-
-  // KOYEB
-  // directUrl = env("PRISMA_POSTGRES_DIRECT_URL_KOYEB")
-  // url       = env("PRISMA_POSTGRES_CONNECTION_STRING_KOYEB")
-
-  // NEON
-  // directUrl = env("PRISMA_POSTGRES_DIRECT_URL_NEON")
-  // url       = env("PRISMA_POSTGRES_CONNECTION_STRING_NEON")
 }
 
 model User {

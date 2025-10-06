@@ -8,8 +8,6 @@ import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChec
 
 export const adminRouter = Router();
 
-// TODO - fix authentication in tests
-
 adminRouter.use(checkPermissionByRole('admin'));
 
 adminRouter.get('/', getAllUsers);
