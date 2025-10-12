@@ -15,6 +15,14 @@ import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactiona
 import { createFreeTrialSubscription } from '../models/subscriptionModel.mjs';
 
 export const requestPasswordResetToken = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'New password could not be requested due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
   try {
     const { email } = req.body;
 
