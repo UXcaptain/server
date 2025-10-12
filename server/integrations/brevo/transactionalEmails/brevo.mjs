@@ -7,8 +7,8 @@ apiKey.apiKey = process.env.BREVO_API_KEY;
 export const companyEmails = {
   support: 'suport@uxcaptain.com',
   billing: 'billing@uxcaptain.com',
-  hello: 'hello@uxcaptain.com'
-}
+  hello: 'hello@uxcaptain.com',
+};
 
 export const emailInstance = new brevo.SendSmtpEmail();
 
