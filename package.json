@@ -32,7 +32,7 @@
         "express": "^5.1.0",
         "express-rate-limit": "^8.0.1",
         "express-session": "^1.18.0",
-        "express-slow-down": "^2.0.3",
+        "express-slow-down": "^3.0.0",
         "express-validator": "^7.2.1",
         "helmet": "^8.0.0",
         "npm": "^11.4.2",
