@@ -77,5 +77,7 @@ export const markAnalysisEntriesAsCancelled = async () => {
     },
   });
 
-  logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
+  if (analysisEntriesMarkedAsCancelledQuery.count > 0) {
+    logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
+  }
 };
