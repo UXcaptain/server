@@ -8,7 +8,7 @@ const chatIds = {
 };
 
 export const sendErrorLogsToTelegram = async (errorMessage, error) => {
-  const chatId = process.NODE_ENV === 'production' ? chatIds.latest_errors : chatIds.next_errors;
+  const chatId = process.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_errors : chatIds.next_errors;
   const telegramMessage = `
   🚨 <b>New error logged at ${new Date()}</b> 🚨
   \n<b>Error Name</b>: ${error.name}
@@ -23,7 +23,7 @@ export const sendErrorLogsToTelegram = async (errorMessage, error) => {
 };
 
 export const sendInfoLogsToTelegram = async (message) => {
-  const chatId = process.NODE_ENV === 'production' ? chatIds.latest_info : chatIds.next_info;
+  const chatId = process.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_info : chatIds.next_info;
 
   const telegramMessage = `
   ✅ <b>New event logged at ${new Date()}</b> ✅

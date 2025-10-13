@@ -18,7 +18,7 @@ export const createStripeCheckoutSession = async (
     success_url: `${process.env.FRONT_WEB_APP_ORIGIN_URL}/user/billing?status=paid`,
     line_items: [
       {
-        price: process.NODE_ENV === 'production' ? priceIds[`prod_${planName}_${planBillingCycle}`] : priceIds[`dev_${planName}_${planBillingCycle}`],
+        price: process.DEPLOY_ENVIRONMENT === 'latest' ? priceIds[`prod_${planName}_${planBillingCycle}`] : priceIds[`dev_${planName}_${planBillingCycle}`],
         quantity: 1,
       },
     ],
