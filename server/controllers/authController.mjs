@@ -394,9 +394,20 @@ export const logoutUser = (req, res, next) => {
       return next(err);
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'User logged out successfully',
+    // Destroy session explicitly
+    req.session.destroy((error) => {
+      if (error) {
+        logError('Session destruction failed', error);
+        return next(error);
+      }
+
+      // Clear cookie on client side - adjust cookie name as needed
+      res.clearCookie('connect.sid');
+
+      return res.status(200).json({
+        success: true,
+        message: 'User logged out successfully',
+      });
     });
   });
 };
