@@ -3,7 +3,7 @@ import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubs
 
 const prisma = new PrismaClient();
 
-export const storeSubscriptionInDb = async (checkoutSessionData) => {
+export const updateSubscriptionInDb = async (checkoutSessionData) => {
   const whereClause = {
     company_id: checkoutSessionData.companyId,
   };
