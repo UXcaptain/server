@@ -1,5 +1,5 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
+// import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -60,6 +60,7 @@ export const getBillingDataInDb = async (companyId) => {
       Subscription: {
         select: {
           id: true,
+          expires_at: true,
         },
       },
     },
@@ -72,7 +73,7 @@ export const createFreeTrialSubscription = async (companyId) => {
   const createCustomerSubscriptionQuery = await prisma.subscription.create({
     data: {
       company_id: companyId,
-      isTrial: true,
+      expires_at: new Date(Date.now() + 604800000),
     },
   });
   return createCustomerSubscriptionQuery;
