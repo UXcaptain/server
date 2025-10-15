@@ -13,6 +13,7 @@ import {
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
 import { createFreeTrialSubscription } from '../models/subscriptionModel.mjs';
+import { createCompanyBillingId } from './billingController.mjs';
 
 export const requestPasswordResetToken = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -250,7 +251,17 @@ export const createCustomerInDb = async (req, res) => {
 
   const createdUser = await createCustomerInDB(userData);
 
-  await createFreeTrialSubscription(createdUser.company_id);
+  try {
+    await createFreeTrialSubscription(createdUser.company_id);
+  } catch (error) {
+    logError('Error creating free trial subscription', error);
+  }
+
+  try {
+    await createCompanyBillingId(createdUser);
+  } catch (error) {
+    logError('Error creating stripe billing Id', error);
+  }
 
   return res.status(201).json({
     success: true,

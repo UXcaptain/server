@@ -1,50 +1,38 @@
 import { createStripeCustomerPortalSession } from '../integrations/stripe/customerPortalSession.mjs';
 import { createCompanyIdInStripe } from '../integrations/stripe/customerId.mjs';
 import { createStripeCheckoutSession } from '../integrations/stripe/checkoutSession.mjs';
-import { getBillingDataInDb, storeBillingCompanyIdInDb } from '../models/subscriptionModel.mjs';
+import { getSubscriptionDataInDb, storeBillingCompanyIdInDb } from '../models/subscriptionModel.mjs';
 
-export const createCompanyBillingId = async (req, res) => {
+export const createCompanyBillingId = async (createdUser) => {
   const {
     email,
     company_id: companyId,
-  } = req.user;
+  } = createdUser;
 
-  const billingData = await getBillingDataInDb(companyId);
+  const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = billingData;
+  const { stripe_id: companyStripeId } = subcriptionData;
 
   if (companyStripeId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Company billing ID already exists',
-    });
+    throw new Error(`Company ${companyId} already has a billing Id`);
   }
 
   const companyBillingId = await createCompanyIdInStripe(email, companyId);
-
-  const { id: createdStripeCustomerId } = companyBillingId;
 
   await storeBillingCompanyIdInDb(
     companyId,
     companyBillingId.id,
   );
-
-  return res.status(200).json({
-    success: true,
-    message: 'Company billing ID created successfully',
-    companyBillingId: createdStripeCustomerId,
-  });
 };
 
 export const getBillingCustomerPortalUrl = async (req, res) => {
   const {
     company_id: companyId,
-
   } = req.user;
 
-  const billingData = await getBillingDataInDb(companyId);
+  const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = billingData;
+  const { stripe_id: companyStripeId } = subcriptionData;
 
   const customerPortalCreationQuery = await createStripeCustomerPortalSession(companyStripeId);
 
@@ -63,9 +51,9 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
     id: userId,
   } = req.user;
 
-  const billingData = await getBillingDataInDb(companyId);
+  const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = billingData;
+  const { stripe_id: companyStripeId } = subcriptionData;
 
   const { planName, planBillingCycle } = req.body;
 
@@ -86,14 +74,14 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
   });
 };
 
-export const getCompanyBillingData = async (req, res) => {
+export const getCompanySubscriptionData = async (req, res) => {
   const { company_id: companyId } = req.user;
 
-  const billingData = await getBillingDataInDb(companyId);
+  const subcriptionData = await getSubscriptionDataInDb(companyId);
 
   return res.status(200).json({
     success: true,
     message: 'Billing data retrieved successfully - DB',
-    billingData: billingData,
+    subcriptionData: subcriptionData,
   });
 };

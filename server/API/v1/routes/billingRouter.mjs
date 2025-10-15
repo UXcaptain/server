@@ -3,12 +3,12 @@ import {
   createCompanyBillingId,
   getBillingCustomerPortalUrl,
   getBillingCheckoutSessionUrl,
-  getCompanyBillingData,
+  getCompanySubscriptionData,
 } from '../../../controllers/billingController.mjs';
 
 export const billingRouter = Router();
 
-billingRouter.get('/', getCompanyBillingData);
+billingRouter.get('/', getCompanySubscriptionData);
 
 billingRouter.post('/', createCompanyBillingId);
 
