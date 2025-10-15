@@ -251,7 +251,7 @@ export const createCustomerInDb = async (req, res) => {
 
   const createdUser = await createCustomerInDB(userData);
 
-  try {
+  try { // ? Unsure if this error should interrupt registration flow - I think its not a good idea since we rather have the user register and then fix the issue manually that the other way around
     await createFreeTrialSubscription(createdUser.company_id);
   } catch (error) {
     logError('Error creating free trial subscription', error);

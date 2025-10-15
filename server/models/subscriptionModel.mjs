@@ -73,7 +73,9 @@ export const createFreeTrialSubscription = async (companyId) => {
   const createCustomerSubscriptionQuery = await prisma.subscription.create({
     data: {
       company_id: companyId,
-      expires_at: new Date(Date.now() + 604800000),
+      // expires_at: new Date(Date.now() + 604800000), // TODO - ENABLE after open beta finishes
+      expires_at: new Date('3000-01-01T23:59:59.999Z'), // TODO - REMOVE after open beta finishes
+
     },
   });
   return createCustomerSubscriptionQuery;
