@@ -59,12 +59,6 @@ export const getSubscriptionDataInDb = async (companyId) => {
       id: true,
       expires_at: true,
     },
-          id: true,
-          expires_at: true,
-        },
-      },
-    },
-
   });
 
   return subscriptionData;
