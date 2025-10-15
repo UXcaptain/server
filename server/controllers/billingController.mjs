@@ -82,6 +82,6 @@ export const getCompanySubscriptionData = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: 'Billing data retrieved successfully - DB',
-    subcriptionData: subcriptionData,
+    subscriptionData: subcriptionData,
   });
 };
