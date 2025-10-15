@@ -48,17 +48,17 @@ export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
   // posthogUserSubscriptionEnded(subscriptionDeletionData);
 };
 
-export const getBillingDataInDb = async (companyId) => {
+export const getSubscriptionDataInDb = async (companyId) => {
   const whereClause = {
-    id: companyId,
+    company_id: companyId,
   };
 
-  const billingData = await prisma.company.findUnique({
+  const subscriptionData = await prisma.subscription.findUnique({
     where: whereClause,
     select: {
-      stripe_id: true,
-      Subscription: {
-        select: {
+      id: true,
+      expires_at: true,
+    },
           id: true,
           expires_at: true,
         },
@@ -66,7 +66,8 @@ export const getBillingDataInDb = async (companyId) => {
     },
 
   });
-  return billingData;
+
+  return subscriptionData;
 };
 
 export const createFreeTrialSubscription = async (companyId) => {
