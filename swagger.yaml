@@ -1177,60 +1177,7 @@ paths:
                           $ref: "#/components/schemas/CacheTTL_seconds"
                         billingData:
                               $ref: '#/components/schemas/CompanyBillingData'
-                   
-        500:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                          type: object
-                          properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
-                              message:
-                                $ref: '#/components/schemas/InternalErrorMessage'
-     
-    post:
-      summary: Creates a stripe customer ID for the currently authenticated user
-      description: Creates a stripe customer ID for the currently authenticated user
-      tags: ["billing"]
-
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-                schema:
-                    type: object
-                    properties:
-                        success:
-                            $ref: "#/components/schemas/SuccessTrueStatus"
-                        message:
-                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
-                          type: string
-                          examples: [
-                            "Customer created successfully"
-                          ]
-                        StripeId:
-                          $ref: '#/components/schemas/StripeId'
-        400:
-          description: Customer already has a stripe customer id
-          content:
-            application/json:
-              schema:
-                          type: object
-                          properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
-                              message:
-                                type: string
-                                examples: [
-                                  "customer already has a stripe customer id"
-                                ]
-                              StripeId:
-                                $ref: '#/components/schemas/StripeId'
-         
-        
+    
         500:
           description: Unexpected error
           content:
@@ -1468,13 +1415,6 @@ paths:
                                 $ref: "#/components/schemas/AnalysisId"
                             analysisEntryId:
                               $ref: '#/components/schemas/AnalysisEntryId'
-                            metadata:
-                              type: object
-                              required:
-                                - recordingDuration
-                              properties:
-                                recordingDuration:
-                                  $ref: '#/components/schemas/AnalysisEntryRecordingDuration'
 
       responses:
         200:
@@ -2049,8 +1989,6 @@ components:
     CompanyBillingData:
       type: object
       properties:
-        stripe_id:
-          $ref: '#/components/schemas/StripeId'
         Subscription:
           type: array
           items:
@@ -2058,6 +1996,8 @@ components:
             properties:
               id:
                 $ref: '#/components/schemas/StripeSubscriptionId'
+              expires_at:
+                $ref: '#/components/schemas/ExpirationDate'
 
     BillingPlanBillingCycle:
       type: string
@@ -2078,12 +2018,12 @@ components:
         enterprise
       ]
 
-    AnalysisEntryRecordingDuration:
+
+    ExpirationDate:
       type: string
-      description: Duration of the analysis Entry recording
+      description: date of the expiration
       examples: [
-        '15:24',
-        '07:12'
+        '2025-10-22 09:46:56.655',
       ]
 
     AnalysisEntryPresignedUploadUrl:
