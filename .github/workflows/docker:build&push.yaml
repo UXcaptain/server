@@ -1,16 +1,13 @@
-name: Push to Docker Hub, build and deploy :latest tag image to Docker Hub
-description: "This Github Action will do the following:
-    - Build a the Docker image for the LATEST branch
-    - Upload the build image to Docker Hub
-        " 
+name: Build Webapp Docker image and push to Docker Hub
 
 on:
     push:
-        branches: [ "latest" ]
+        branches: [ "latest", "next" ]
 
 jobs:
     docker-build-and-push:
         runs-on: ubuntu-latest
+        environment: ${{ github.ref_name }}
         steps:
         -
             name: Checkout
@@ -32,6 +29,6 @@ jobs:
             uses: docker/build-push-action@v6
             with:
                 context: .
-                platforms: linux/amd64
+                platforms: linux/amd64 #,linux/arm64 - Not building for ARM, since ubuntu server is just amd64
                 push: true
-                tags: sergion14/uxcaptain:server-latest
+                tags: sergion14/uxcaptain:server--${{ github.ref_name }}
