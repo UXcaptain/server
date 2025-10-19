@@ -1,5 +1,5 @@
 import { logError } from '../../config/loggerFunctions.mjs';
-import { deleteSubscriptionInDb, storeSubscriptionInDb } from '../../models/subscriptionModel.mjs';
+import { deleteSubscriptionInDb, updateSubscriptionInDb } from '../../models/subscriptionModel.mjs';
 import { stripeInstance } from '../../config/stripe.mjs';
 
 export const stripeEventHandler = async (req, res) => {
@@ -25,14 +25,13 @@ export const stripeEventHandler = async (req, res) => {
         // Sent when a customer completes a checkout session
         // Create the subscription in DB
         if (event.data.object.payment_status === 'paid') {
-
           checkoutSessionData = {
             companyId: parseInt(event.data.object.client_reference_id, 10),
             userId: event.data.object.metadata.userId,
             subscriptionId: event.data.object.subscription,
           };
-  
-          storeSubscriptionInDb(checkoutSessionData);
+
+          updateSubscriptionInDb(checkoutSessionData);
         }
         return;
 

@@ -12,7 +12,7 @@ export const s3client = new S3Client({
 
 export const generateGetAnalysisEntryPresignedUrl = async (key) => {
   const command = new GetObjectCommand({
-    Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+    Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
   });
 
@@ -23,7 +23,7 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
 
 export const generatePutAnalysisEntryPresignedUrl = async (key) => { // eslint-disable-line no-unused-vars
   const command = new PutObjectCommand({
-    Bucket: process.env.NODE_ENV === 'production' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+    Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
     ContentType: 'video/mp4',
   });

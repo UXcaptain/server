@@ -13,8 +13,17 @@ import {
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.mjs';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.mjs';
 import { createFreeTrialSubscription } from '../models/subscriptionModel.mjs';
+import { createCompanyBillingId } from './billingController.mjs';
 
 export const requestPasswordResetToken = async (req, res) => {
+  if (req.sanitizedErrors) {
+    return res.status(422).json({
+      success: false,
+      message: 'New password could not be requested due to validation errors',
+      errors: req.sanitizedErrors,
+    });
+  }
+
   try {
     const { email } = req.body;
 
@@ -242,7 +251,17 @@ export const createCustomerInDb = async (req, res) => {
 
   const createdUser = await createCustomerInDB(userData);
 
-  await createFreeTrialSubscription(createdUser.company_id);
+  try { // ? Unsure if this error should interrupt registration flow - I think its not a good idea since we rather have the user register and then fix the issue manually that the other way around
+    await createFreeTrialSubscription(createdUser.company_id);
+  } catch (error) {
+    logError('Error creating free trial subscription', error);
+  }
+
+  try {
+    await createCompanyBillingId(createdUser);
+  } catch (error) {
+    logError('Error creating stripe billing Id', error);
+  }
 
   return res.status(201).json({
     success: true,
@@ -386,9 +405,20 @@ export const logoutUser = (req, res, next) => {
       return next(err);
     }
 
-    return res.status(200).json({
-      success: true,
-      message: 'User logged out successfully',
+    // Destroy session explicitly
+    req.session.destroy((error) => {
+      if (error) {
+        logError('Session destruction failed', error);
+        return next(error);
+      }
+
+      // Clear cookie on client side - adjust cookie name as needed
+      res.clearCookie('connect.sid');
+
+      return res.status(200).json({
+        success: true,
+        message: 'User logged out successfully',
+      });
     });
   });
 };

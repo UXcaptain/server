@@ -88,9 +88,9 @@ model Subscription {
   id         String   @id @unique @default(uuid())
   company_id String   @unique
   Company    Company  @relation(fields: [company_id], references: [id])
-  isTrial    Boolean
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
+  expires_at DateTime?
 }
 
 model Analysis {

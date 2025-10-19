@@ -17,7 +17,8 @@ export const storeSessions = session({
   saveUninitialized: false, // https://www.npmjs.com/package/express-session#saveuninitialized - Set to false because we'll only save sessions with req.session data (eg: logins, storing relevant info that we want to keep)
   cookie: {
     maxAge: 86400000, // 24 hours
-    secure: process.env.NODE_ENV === 'production', // Secure in production
+    // secure: process.env.DEPLOY_ENVIRONMENT === 'localhost', // Secure in production
+    secure: 'auto',
     httpOnly: true,
     SameSite: 'None',
   },

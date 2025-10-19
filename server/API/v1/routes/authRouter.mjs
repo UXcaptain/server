@@ -19,6 +19,7 @@ import { userLoginValidationSchema } from '../../../utils/validators/userLoginVa
 import { updatePasswordSchema } from '../../../utils/validators/updatePasswordSchema.mjs';
 import { recoverPasswordSchema } from '../../../utils/validators/recoverPasswordSchema.mjs';
 import { checkAuthentication } from '../../../middlewares/authenticationChecker.mjs';
+import { requestNewPasswordSchema } from '../../../utils/validators/requestNewPasswordSchema.mjs';
 
 export const authRouter = Router();
 
@@ -32,7 +33,7 @@ authRouter.post('/register/local/customer', checkSchema(createUserValidationSche
 
 authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
-authRouter.post('/password-reset', requestPasswordResetToken);
+authRouter.post('/password-reset', checkSchema(requestNewPasswordSchema), sanitizerResult, requestPasswordResetToken);
 
 authRouter.patch('/password-reset', checkSchema(recoverPasswordSchema), sanitizerResult, updateRecoveredUserPassword);
 

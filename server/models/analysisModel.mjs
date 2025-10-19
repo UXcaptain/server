@@ -1,6 +1,6 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { logInfo } from '../config/loggerFunctions.mjs';
-import { posthogAnalysisCreated } from './posthogModel.mjs';
+// import { posthogAnalysisCreated } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
@@ -29,7 +29,7 @@ export const createAnalysisInDb = async (analysisData) => {
 
   logInfo(`analysis ${analysisCreationInDbResponse.id} created in db`, analysisData);
 
-  posthogAnalysisCreated(analysisData);
+  // posthogAnalysisCreated(analysisData); // TODO -- think how to set the events in posthog
 
   return analysisCreationInDbResponse;
 };

@@ -1,9 +1,9 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
+// import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
-export const storeSubscriptionInDb = async (checkoutSessionData) => {
+export const updateSubscriptionInDb = async (checkoutSessionData) => {
   const whereClause = {
     company_id: checkoutSessionData.companyId,
   };
@@ -48,31 +48,29 @@ export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
   // posthogUserSubscriptionEnded(subscriptionDeletionData);
 };
 
-export const getBillingDataInDb = async (companyId) => {
+export const getSubscriptionDataInDb = async (companyId) => {
   const whereClause = {
-    id: companyId,
+    company_id: companyId,
   };
 
-  const billingData = await prisma.company.findUnique({
+  const subscriptionData = await prisma.subscription.findUnique({
     where: whereClause,
     select: {
-      stripe_id: true,
-      Subscription: {
-        select: {
-          id: true,
-        },
-      },
+      id: true,
+      expires_at: true,
     },
-
   });
-  return billingData;
+
+  return subscriptionData;
 };
 
 export const createFreeTrialSubscription = async (companyId) => {
   const createCustomerSubscriptionQuery = await prisma.subscription.create({
     data: {
       company_id: companyId,
-      isTrial: true,
+      // expires_at: new Date(Date.now() + 604800000), // TODO - ENABLE after open beta finishes
+      expires_at: new Date('3000-01-01T23:59:59.999Z'), // TODO - REMOVE after open beta finishes
+
     },
   });
   return createCustomerSubscriptionQuery;

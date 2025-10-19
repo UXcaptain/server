@@ -10,12 +10,16 @@ FROM node:${NODE_VERSION}-alpine
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Copy and make executable the production startup script
+COPY start.sh .
+RUN chmod +x start.sh
+
 # Install dependencies using package.json and package-lock.json
 # Uses bind mounts for the files and a cache mount for npm
 RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
-    npm ci --omit-dev 
+    npm ci --omit-dev --force
 
 # Copy Prisma schema files into the container
 COPY prisma ./prisma/
@@ -25,10 +29,6 @@ RUN --mount=type=cache,target=/root/.npm npx prisma generate
 
 # Copy all remaining source files into the container
 COPY . .
-
-# Copy and make executable the production startup script
-COPY start.sh .
-RUN chmod +x start.sh
 
 # Switch to non-root user for better security
 USER node
