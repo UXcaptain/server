@@ -72,17 +72,6 @@ export const posthogUserSubscriptionEnded = async (subscriptionDeletionData) => 
   }
 };
 
-export const posthogCreateBillingId = (distinctId) => {
-  try {
-    client.capture({
-      distinctId: distinctId,
-      event: 'createBillingId',
-    });
-  } catch (error) {
-    logError('error sending event to posthog', error, 'subscriptionCanceled');
-  }
-};
-
 export const posthogUserDeleteAccount = async (distinctId) => {
   try {
     client.capture({
