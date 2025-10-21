@@ -8,49 +8,49 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 
-name: uxcaptain-local
+name: uxcaptain
 services:
   server:
     container_name: server
-    image: sergion14/uxcaptain:server-local
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     environment:
-      NODE_ENV: development
-      DEPLOY_ENVIRONMENT: production
-      POSTHOG_API_KEY: phc_i35r1ELHgAh76WDXckKUf1A2A8DHHZNQNPv3AiaREmR
-      SESSION_SECRET: 9c2ab4f1e3d8b7a5c6e9d2f4b7a8c5e3d6f9b2a5c8e3d6f9b2a5c8e3d6f9b2a5
-      BREVO_API_KEY: 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
-      BETTERSTACK_SOURCE_TOKEN: JhNP8CNrRGKTTxYPs2qqL5NM
-      BETTERSTACK_INGESTING_HOST: https://s1499424.eu-nbg-2.betterstackdata.com
-      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@database:5433/public
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@database:5433/public
-      TELEGRAM_BOT_API_KEY: 7983550336:AAFsGjXkqDNboE5-98REjaDDiuJx7u2eHVU
-      FRONT_WEB_APP_ORIGIN_URL: https://next.uxcaptain.com
-      STRIPE_API_KEY: rk_test_51S94zoKNsGqZfOkoxTPbXpF5LaDZ9HB0tho5yaEC6ugey49ME0gVoDHYbO41yUNqjIQaWoZoEiri8PZqunYfUGdp00YhGhjlI3
-      STRIPE_WEBHOOK_SECRET: whsec_8a3b92ac9f885cb3c3b108df2ba567723ef39de30f0311edf1e5acfd45784f2d
-      PORT: 3000
-      AWS_ACCESS_KEY_ID: AKIAQTEOOHOGGDJ5YJFY
-      AWS_SECRET_ACCESS_KEY: 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
+      NODE_ENV: ${NODE_ENV}
+      DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}
+      POSTHOG_API_KEY: ${POSTHOG_API_KEY}
+      SESSION_SECRET: ${SESSION_SECRET}
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      BETTERSTACK_SOURCE_TOKEN: ${BETTERSTACK_SOURCE_TOKEN}
+      BETTERSTACK_INGESTING_HOST: ${BETTERSTACK_INGESTING_HOST}
+      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@database:5432/public
+      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@database:5432/public
+      TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
+      FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
+      STRIPE_API_KEY: ${STRIPE_API_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      PORT: ${PORT}
+      VALKEY_CACHE_HOST: ${VALKEY_CACHE_HOST}
+      VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ports:
-      - 3001:3000
+      - 3000:3000
+    develop:
+      watch:
+        - path: .
+          action: sync+restart #* Synchronize code changes and restart the server
+          target: /usr/src/app/
     depends_on: #* References the SERVICE name - NOT the container_name
       database:
         condition: service_started
     networks:
       - uxcaptain-network
   
-  webapp:
-    container_name: webapp-next
-    image: sergion14/uxcaptain:webapp-local
-    restart: unless-stopped
-    ports:
-      - 8500:80
-    networks:
-      - nginxproxymanager
-
   database:
     image: postgres:17.5
     restart: on-failure
-    container_name: core-database-local
+    container_name: postgresDB
     user: 
       postgres
     volumes:
@@ -60,7 +60,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=prismaORM124!
     ports:
-      - 5433:5432
+      - 5432:5432
     networks:
       - uxcaptain-network 
 
@@ -71,6 +71,4 @@ networks:
 
 volumes:
   uxcaptain-database:
-    name:
-      uxcaptain-database-volume
 
