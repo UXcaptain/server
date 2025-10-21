@@ -92,12 +92,11 @@ export const posthogUserDeleteAccount = async (distinctId) => {
 export const posthogAnalysisCreated = async (analysisData) => {
   try {
     client.capture({
-      distinctId: analysisData.owner_id,
+      distinctId: analysisData.created_by, // * Will need to revisit this in the future when doing multi user teams
       event: 'AnalysisCreated',
       properties: {
-        device: analysisData.device,
-        // status: analysisData.status, //* for now, will always be created as 'published'
-        max_number_of_participants: analysisData.maxNumberOfParticipants,
+        company_id: analysisData.owner_company_id,
+        creator_user_id: analysisData.created_by,
       },
     });
   } catch (error) {
