@@ -1,20 +1,32 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-// import { posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
+// import { posthogCreateBillingId, posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.mjs';
 
 const prisma = new PrismaClient();
 
 export const updateSubscriptionInDb = async (checkoutSessionData) => {
   const whereClause = {
-    company_id: checkoutSessionData.companyId,
+    stripe_id: checkoutSessionData.stripe_customer_id,
   };
 
-  await prisma.subscription.update({
+  await prisma.company.update({
     where: whereClause,
     data: {
-      id: checkoutSessionData.subscriptionId,
-      isTrial: false,
+      Subscription: {
+        expires_at: null,
+      },
+
+
+      asdasdasd
     },
   });
+
+  // await prisma.subscription.update({
+  //   where: whereClause,
+  //   data: {
+  //     id: checkoutSessionData.subscriptionId,
+  //     // expires_at: ,
+  //   },
+  // });
 
   // posthogUserSubscriptionCreated(checkoutSessionData);// TODO -- fix the associated of the event
 };
@@ -30,6 +42,8 @@ export const storeBillingCompanyIdInDb = async (companyId, stripeCustomerId) => 
       stripe_id: stripeCustomerId,
     },
   });
+
+  // posthogCreateBillingId(companyId); // TODO -- fix the associated of the event
 
   return user;
 };
