@@ -25,7 +25,7 @@ module.exports = {
       },
     },
     {
-      files: ['*Scheduler.mjs'],
+      files: ['*Scheduler.js'],
       rules: {
         'no-await-in-loop': 'off', // Disable the rule for await inside loops in Scheduler files
         'no-restricted-syntax': 'off',
