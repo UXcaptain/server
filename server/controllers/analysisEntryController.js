@@ -59,7 +59,7 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  const key = `analysis/${analysisEntryDetails.Analysis.id}/analysisEntry/${analysisEntryDetails.id}`;
+  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}/${analysisEntryDetails.id}`;
 
   const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
 
@@ -72,7 +72,7 @@ export const getAnalysisEntryDetails = async (req, res) => {
 export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
   const { analysisEntryId, analysisId } = req.body;
 
-  const key = `analysis/${analysisId}/analysisEntry/${analysisEntryId}`;
+  const key = `analysis/${analysisId}/${analysisEntryId}/${analysisEntryId}`;
 
   const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
 
