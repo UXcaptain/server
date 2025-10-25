@@ -29,7 +29,7 @@ export const generatePutAnalysisEntryPresignedUrl = async (key) => { // eslint-d
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
-    expiresIn: 60 * 15, // 15 minute expiration
+    expiresIn: 60 * 60, // 15 minute expiration
   });
 
   return analysisEntryPutPresignedUrl;
