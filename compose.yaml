@@ -24,6 +24,7 @@ services:
       VALKEY_CACHE_PORT: ${VALKEY_CACHE_PORT}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
     ports:
       - 3000:3000
     develop:
