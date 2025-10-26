@@ -1537,11 +1537,14 @@ paths:
                           required:
                             - analysisId
                             - status
+                            - analysisEntryId
                           properties:
                               analysisEntryId:
                                   $ref: "#/components/schemas/AnalysisEntryId"
                               analysisEntryStatus:
                                 $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
+                              analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
         responses:
           200:
             description: Success
@@ -1590,9 +1593,7 @@ paths:
                   success:
                     $ref: "#/components/schemas/SuccessTrueStatus"
                   analysisEntryPresignedUrl:
-                    type: string
-                    format: url
-                    description: Presigned URL to access the analysis entry
+                    $ref: "#/components/schemas/AnalysisEntryPresignedGetUrl"
         400:
           description: Analysis entry ID has not been provided
           content:
