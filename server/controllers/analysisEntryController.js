@@ -1,4 +1,6 @@
+import { logError } from '../config/loggerFunctions.js';
 import { generateGetAnalysisEntryPresignedUrl, generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.js';
+import { requestAnalysisTranscription } from '../integrations/aws/transcriptionJob.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -14,9 +16,15 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, analysisEntryStatus } = req.body;
+  const { analysisEntryId, analysisEntryStatus, analysisId } = req.body;
 
   await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
+
+  try {
+    await requestAnalysisTranscription(analysisEntryId, analysisId);
+  } catch (error) {
+    logError(`Error starting AWS transcription job for analysisEntry ${analysisEntryId}`, error);
+  }
 
   return res.status(200).json({
     success: true,
