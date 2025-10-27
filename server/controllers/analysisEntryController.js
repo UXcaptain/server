@@ -52,14 +52,6 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  //* Should never happen, customers dont have access to non-completed analysis entries
-  if (analysisEntryDetails.status === 'in_progress') {
-    return res.status(403).json({
-      success: false,
-      message: 'Analysis entry has not been completed yet',
-    });
-  }
-
   if (analysisEntryDetails.Analysis.owner_company_id !== companyId) {
     return res.status(403).json({
       success: false,
