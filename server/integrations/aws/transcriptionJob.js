@@ -7,7 +7,7 @@ export const requestAnalysisTranscription = async (analysisEntryId, analysisId) 
 
   const input = {
     transcriptionJobName: `analysisEntryTranscription-${analysisEntryId}`,
-    mediaFileUri: `s3://${bucket}/analysis/${analysisId}/${analysisEntryId}/${analysisEntryId}`,
+    mediaFileUri: `s3://${bucket}/analysis/${analysisId}/${analysisEntryId}/recording.mp4`,
     outputBucket: `${bucket}`,
     languageCode: 'es-ES',
     outputKey: `analysis/${analysisId}/${analysisEntryId}/transcription.json`,
