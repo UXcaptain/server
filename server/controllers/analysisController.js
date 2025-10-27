@@ -24,7 +24,7 @@ export const createAnalysis = async (req, res) => {
     status: 'published', //* Default until we allow for drafts
     tasks: req.body.tasks,
     maxNumberOfParticipants: req.body.maxNumberOfParticipants,
-    scenario: req.body.scenario || 'No scenario has been provided.',
+    scenario: req.body.scenario || 'No debes adoptar ningún rol específico.', // ! Patched for a fast fix - Should be a null value in the DB
     ownerId: req.user.company_id,
     createdBy: req.user.id,
   };
