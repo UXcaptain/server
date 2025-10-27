@@ -1590,8 +1590,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: recording & transcription links retrieved successfully
                   analysisEntryGetRecordingPresignedUrl:
                     $ref: "#/components/schemas/AnalysisEntryGetRecordingPresignedUrl"
                   analysisEntryGetTranscriptPresignedUrl:
