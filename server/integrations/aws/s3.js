@@ -10,7 +10,7 @@ export const s3client = new S3Client({
   },
 });
 
-export const generateGetAnalysisEntryPresignedUrl = async (key) => {
+export const generateGetS3PresignedUrl = async (key) => {
   const command = new GetObjectCommand({
     Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
@@ -21,7 +21,7 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
   return analysisEntryGetPresignedUrl;
 };
 
-export const generatePutAnalysisEntryPresignedUrl = async (key) => {
+export const generatePutS3PresignedUrl = async (key) => {
   const command = new PutObjectCommand({
     Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
@@ -29,7 +29,7 @@ export const generatePutAnalysisEntryPresignedUrl = async (key) => {
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
-    expiresIn: 60 * 60, // 15 minute expiration
+    expiresIn: 60 * 60, // 60 minute expiration
   });
 
   return analysisEntryPutPresignedUrl;

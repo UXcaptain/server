@@ -1,5 +1,5 @@
 import { logError } from '../config/loggerFunctions.js';
-import { generateGetAnalysisEntryPresignedUrl, generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.js';
+import { generateGetS3PresignedUrl, generatePutS3PresignedUrl } from '../integrations/aws/s3.js';
 import { requestAnalysisTranscription } from '../integrations/aws/transcriptionJob.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
@@ -59,13 +59,16 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}/recording.mp4`;
+  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}`;
 
-  const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
+  const analysisEntryRecordingPresignedUrl = await generateGetS3PresignedUrl(`${key}/recording.mp4`);
+
+  const analysisEntryTranscriptPresignedUrl = await generateGetS3PresignedUrl(`${key}/transcription.json`);
 
   return res.status(200).json({
     success: true,
-    analysisEntryPresignedUrl: analysisEntryPresignedUrl,
+    analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
+    analysisEntryGetTranscriptPresignedUrl: analysisEntryTranscriptPresignedUrl,
   });
 };
 
@@ -74,7 +77,7 @@ export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
 
   const key = `analysis/${analysisId}/${analysisEntryId}/recording.mp4`;
 
-  const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
+  const analysisEntryPresignedUrl = await generatePutS3PresignedUrl(key);
 
   return res.status(200).json({
     success: true,
