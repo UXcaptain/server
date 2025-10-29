@@ -1537,11 +1537,14 @@ paths:
                           required:
                             - analysisId
                             - status
+                            - analysisEntryId
                           properties:
                               analysisEntryId:
                                   $ref: "#/components/schemas/AnalysisEntryId"
                               analysisEntryStatus:
                                 $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
+                              analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
         responses:
           200:
             description: Success
@@ -1587,12 +1590,13 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
-                  analysisEntryPresignedUrl:
+                  message:
                     type: string
-                    format: url
-                    description: Presigned URL to access the analysis entry
+                    example: recording & transcription links retrieved successfully
+                  analysisEntryGetRecordingPresignedUrl:
+                    $ref: "#/components/schemas/AnalysisEntryGetRecordingPresignedUrl"
+                  analysisEntryGetTranscriptPresignedUrl:
+                    $ref: "#/components/schemas/AnalysisEntryGetTranscriptPresignedUrl"
         400:
           description: Analysis entry ID has not been provided
           content:
@@ -2034,7 +2038,15 @@ components:
           https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/e1e0c675-179b-453e-9d4f-226eb0ddcd6b/068b2e8b-025a-4eb5-8fe0-4197e48e733d/068b2e8b-025a-4eb5-8fe0-4197e48e733d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20251025%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20251025T151537Z&X-Amz-Expires=900&X-Amz-Signature=9d6f48b6a913b424ef4ba59bf050e865110592f5a9708070a54c399783208502&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject
       ]
 
-    AnalysisEntryPresignedGetUrl:
+    AnalysisEntryGetRecordingPresignedUrl:
+      type: string
+      format: url
+      description: Indicates the presigned GET S3 URL that the client can use to view the completed analysis entry
+      examples: [
+          https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/e1e0c675-179b-453e-9d4f-226eb0ddcd6b/068b2e8b-025a-4eb5-8fe0-4197e48e733d/068b2e8b-025a-4eb5-8fe0-4197e48e733d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20251025%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20251025T151958Z&X-Amz-Expires=3600&X-Amz-Signature=4f408ef37c4a513e943c63f398327c475b5e03461d4a6831eddf0a5ac7244ae4&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+      ]
+
+    AnalysisEntryGetTranscriptPresignedUrl:
       type: string
       format: url
       description: Indicates the presigned GET S3 URL that the client can use to view the completed analysis entry

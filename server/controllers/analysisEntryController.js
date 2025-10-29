@@ -1,4 +1,6 @@
-import { generateGetAnalysisEntryPresignedUrl, generatePutAnalysisEntryPresignedUrl } from '../integrations/aws/s3.js';
+import { logError } from '../config/loggerFunctions.js';
+import { generateGetS3PresignedUrl, generatePutS3PresignedUrl } from '../integrations/aws/s3.js';
+import { requestAnalysisTranscription } from '../integrations/aws/transcriptionJob.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -14,9 +16,15 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, analysisEntryStatus } = req.body;
+  const { analysisEntryId, analysisEntryStatus, analysisId } = req.body;
 
   await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
+
+  try {
+    await requestAnalysisTranscription(analysisEntryId, analysisId);
+  } catch (error) {
+    logError(`Error starting AWS transcription job for analysisEntry ${analysisEntryId}`, error);
+  }
 
   return res.status(200).json({
     success: true,
@@ -44,14 +52,6 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  //* Should never happen, customers dont have access to non-completed analysis entries
-  if (analysisEntryDetails.status === 'in_progress') {
-    return res.status(403).json({
-      success: false,
-      message: 'Analysis entry has not been completed yet',
-    });
-  }
-
   if (analysisEntryDetails.Analysis.owner_company_id !== companyId) {
     return res.status(403).json({
       success: false,
@@ -59,22 +59,25 @@ export const getAnalysisEntryDetails = async (req, res) => {
     });
   }
 
-  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}/${analysisEntryDetails.id}`;
+  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}`;
 
-  const analysisEntryPresignedUrl = await generateGetAnalysisEntryPresignedUrl(key);
+  const analysisEntryRecordingPresignedUrl = await generateGetS3PresignedUrl(`${key}/recording.mp4`);
+
+  const analysisEntryTranscriptPresignedUrl = await generateGetS3PresignedUrl(`${key}/transcription.json`);
 
   return res.status(200).json({
-    success: true,
-    analysisEntryPresignedUrl: analysisEntryPresignedUrl,
+    message: 'recording & transcription links retrieved successfully',
+    analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
+    analysisEntryGetTranscriptPresignedUrl: analysisEntryTranscriptPresignedUrl,
   });
 };
 
 export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
   const { analysisEntryId, analysisId } = req.body;
 
-  const key = `analysis/${analysisId}/${analysisEntryId}/${analysisEntryId}`;
+  const key = `analysis/${analysisId}/${analysisEntryId}/recording.mp4`;
 
-  const analysisEntryPresignedUrl = await generatePutAnalysisEntryPresignedUrl(key);
+  const analysisEntryPresignedUrl = await generatePutS3PresignedUrl(key);
 
   return res.status(200).json({
     success: true,
