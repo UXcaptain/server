@@ -14,7 +14,7 @@ export const requestAnalysisTranscription = async (analysisEntryId, analysisId) 
   };
 
   const command = new StartExecutionCommand({
-    stateMachineArn: 'arn:aws:states:eu-west-3:041100917644:stateMachine:Transcription-job',
+    stateMachineArn: process.env.AWS_TRANSCRIPTIONJOB_MACHINE_ARN,
     input: JSON.stringify(input),
     name: `analysisEntry-${analysisEntryId}-${Date.now()}`,
   });
