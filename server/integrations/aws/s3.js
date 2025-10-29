@@ -3,14 +3,14 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/modules/credentials.html
 export const s3client = new S3Client({
-  region: 'eu-west-3',
+  region: process.env.AWS_REGION,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
-export const generateGetAnalysisEntryPresignedUrl = async (key) => {
+export const generateGetS3PresignedUrl = async (key) => {
   const command = new GetObjectCommand({
     Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
@@ -21,7 +21,7 @@ export const generateGetAnalysisEntryPresignedUrl = async (key) => {
   return analysisEntryGetPresignedUrl;
 };
 
-export const generatePutAnalysisEntryPresignedUrl = async (key) => { // eslint-disable-line no-unused-vars
+export const generatePutS3PresignedUrl = async (key) => {
   const command = new PutObjectCommand({
     Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
     Key: key,
@@ -29,7 +29,7 @@ export const generatePutAnalysisEntryPresignedUrl = async (key) => { // eslint-d
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
-    expiresIn: 60 * 15, // 15 minute expiration
+    expiresIn: 60 * 60, // 60 minute expiration
   });
 
   return analysisEntryPutPresignedUrl;
