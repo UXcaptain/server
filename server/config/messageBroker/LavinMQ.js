@@ -4,7 +4,7 @@ import { handleTranscriptionCompletedQueue } from './transcriptionQueue.js';
 
 let connection;
 let channel;
-let transcriptionRequestQueue;
+let transcriptionRequestedQueue;
 let transcriptionCompletedQueue;
 
 let insightsCompletedQueue;
@@ -51,7 +51,7 @@ export const connectToMessageBroker = async () => {
 
     // 3.1 Declare exchanges
 
-    const analysisExchange = await channel.exchangeDeclare('analysis_exchange', 'topic', { // Name , type
+    const analysisExchange = await channel.exchangeDeclare('analysis_exchange', 'topic', {
       durable: true,
       passive: false,
       autoDelete: false,
@@ -59,21 +59,21 @@ export const connectToMessageBroker = async () => {
     });
 
     // 3.2  Declare queues
-    transcriptionRequestQueue = await channel.queue('transcription_requested_queue', { // queue name
+    transcriptionRequestedQueue = await channel.queue('transcription_requested_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
       exclusive: false,
     });
 
-    transcriptionCompletedQueue = await channel.queue('transcription_requested_queue', { // queue name
+    transcriptionCompletedQueue = await channel.queue('transcription_requested_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
       exclusive: false,
     });
 
-    insightsCompletedQueue = await channel.queue('insights_completed_queue', { // queue name
+    insightsCompletedQueue = await channel.queue('insights_completed_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
@@ -82,10 +82,10 @@ export const connectToMessageBroker = async () => {
 
     // 3.3  Bind queues to exchange with routing keys
 
-    await transcriptionRequestQueue.bind('analysis_exchange', 'analysis.analysisEntry.transcription.requested', { // queue name, exchange name, routing key
+    await transcriptionRequestedQueue.bind('analysis_exchange', 'analysis.analysisEntry.transcription.requested', {
     });
 
-    await insightsCompletedQueue.bind('analysis_exchange', 'analysis.analysisEntry.insights.completed', { // queue name, exchange name, routing key
+    await insightsCompletedQueue.bind('analysis_exchange', 'analysis.analysisEntry.insights.completed', {
     });
 
     // Start consumers after successful connection
@@ -93,7 +93,7 @@ export const connectToMessageBroker = async () => {
     logInfo('monolith successfully connected to LavinMQ message broker');
 
     return {
-      connection: connection, channel: channel, analysisExchange, transcriptionQueue: transcriptionRequestQueue,
+      connection: connection, channel: channel, analysisExchange, transcriptionQueue: transcriptionRequestedQueue,
     };
   } catch (e) {
     logError('error connecting to message broker', e);
@@ -106,7 +106,7 @@ export const connectToMessageBroker = async () => {
 
 export const publishToTranscriptionRequestQueue = async (message) => {
   try {
-    await transcriptionRequestQueue.publish(message);
+    await transcriptionRequestedQueue.publish(message);
   } catch (err) {
     logError('error publishing transcription request', err);
   }
