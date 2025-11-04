@@ -1,4 +1,5 @@
 import { logError } from '../config/loggerFunctions.js';
+import { publishToTranscriptionRequestQueue } from '../config/messageBroker/LavinMQ.js';
 import { generateGetS3PresignedUrl, generatePutS3PresignedUrl } from '../integrations/aws/s3.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
@@ -21,6 +22,16 @@ export const updateAnalysisEntry = async (req, res) => {
 
   try {
     const message = {
+      analysisEntryId: analysisEntryId,
+      analysisId: analysisId,
+      timestamp: new Date().toISOString(),
+      mediaType: 'video',
+      languageCode: 'es-ES',
+    };
+
+    const stringifiedMessage = JSON.stringify(message);
+
+    publishToTranscriptionRequestQueue(stringifiedMessage);
   } catch (error) {
     logError(`Error starting AWS transcription job for analysisEntry ${analysisEntryId}`, error);
   }

@@ -1,0 +1,113 @@
+import { AMQPClient } from '@cloudamqp/amqp-client';
+import { logError, logInfo } from '../loggerFunctions.js';
+import { handleTranscriptionCompletedQueue } from './transcriptionQueue.js';
+
+let connection;
+let channel;
+let transcriptionRequestQueue;
+let transcriptionCompletedQueue;
+
+let insightsCompletedQueue;
+
+const startConsumers = async () => {
+  try {
+    const transcriptionCompletedConsumer = await transcriptionCompletedQueue.subscribe({ noAck: false }, async (msg) => {
+      try {
+        await handleTranscriptionCompletedQueue(msg);
+
+        await msg.ack();
+      } catch (error) {
+        logError('Error processing transcription completed message', error);
+        await msg.nack(true); // Requeue on failure
+      }
+    });
+
+    const insightsCompletedConsumer = await insightsCompletedQueue.subscribe({ noAck: false }, async (msg) => {
+      try {
+        // TODO - maybe set a database flag indicating that the analysisEntry has insights extracted?
+        await msg.ack();
+      } catch (error) {
+        await msg.nack(true); // Requeue on failure
+      }
+    });
+
+    logInfo('Consumers started successfully');
+  } catch (err) {
+    logError('Error starting consumers', err);
+  }
+};
+
+// Main AMQP setup function
+export const connectToMessageBroker = async () => {
+  try {
+    // 1. Establish connection
+    const amqp = new AMQPClient(process.env.LAVINMQ_HOST);
+    connection = await amqp.connect(); // Establish connection to the message broker - one connection for all channels
+
+    // 2. Open producer and consumer channels
+    channel = await connection.channel(); // One channel for producing & consuming messages
+
+    // 3. Declare exchanges & queues & bindings
+
+    // 3.1 Declare exchanges
+
+    const analysisExchange = await channel.exchangeDeclare('analysis_exchange', 'topic', { // Name , type
+      durable: true,
+      passive: false,
+      autoDelete: false,
+      internal: false,
+    });
+
+    // 3.2  Declare queues
+    transcriptionRequestQueue = await channel.queue('transcription_requested_queue', { // queue name
+      durable: true,
+      passive: false,
+      autoDelete: false,
+      exclusive: false,
+    });
+
+    transcriptionCompletedQueue = await channel.queue('transcription_requested_queue', { // queue name
+      durable: true,
+      passive: false,
+      autoDelete: false,
+      exclusive: false,
+    });
+
+    insightsCompletedQueue = await channel.queue('insights_completed_queue', { // queue name
+      durable: true,
+      passive: false,
+      autoDelete: false,
+      exclusive: false,
+    });
+
+    // 3.3  Bind queues to exchange with routing keys
+
+    await transcriptionRequestQueue.bind('analysis_exchange', 'analysis.analysisEntry.transcription.requested', { // queue name, exchange name, routing key
+    });
+
+    await insightsCompletedQueue.bind('analysis_exchange', 'analysis.analysisEntry.insights.completed', { // queue name, exchange name, routing key
+    });
+
+    // Start consumers after successful connection
+    await startConsumers();
+    logInfo('monolith successfully connected to LavinMQ message broker');
+
+    return {
+      connection: connection, channel: channel, analysisExchange, transcriptionQueue: transcriptionRequestQueue,
+    };
+  } catch (e) {
+    logError('error connecting to message broker', e);
+    e.connection?.close();
+    return setTimeout(connectToMessageBroker, 1000); // will try to reconnect in 1s
+  }
+};
+
+// function for publishing to transcription queue
+
+export const publishToTranscriptionRequestQueue = async (message) => {
+  try {
+    await transcriptionRequestQueue.publish(message);
+  } catch (err) {
+    logError('error publishing transcription request', err);
+  }
+};
