@@ -6,7 +6,6 @@ let connection;
 let channel;
 let transcriptionRequestedQueue;
 let transcriptionCompletedQueue;
-
 let insightsCompletedQueue;
 
 const startConsumers = async () => {
@@ -66,7 +65,7 @@ export const connectToMessageBroker = async () => {
       exclusive: false,
     });
 
-    transcriptionCompletedQueue = await channel.queue('transcription_requested_queue', {
+    transcriptionCompletedQueue = await channel.queue('transcription_completed_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
