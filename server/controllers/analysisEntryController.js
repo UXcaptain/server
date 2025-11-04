@@ -1,6 +1,5 @@
 import { logError } from '../config/loggerFunctions.js';
 import { generateGetS3PresignedUrl, generatePutS3PresignedUrl } from '../integrations/aws/s3.js';
-import { requestAnalysisTranscription } from '../integrations/aws/transcriptionJob.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -21,7 +20,7 @@ export const updateAnalysisEntry = async (req, res) => {
   await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
 
   try {
-    await requestAnalysisTranscription(analysisEntryId, analysisId);
+    const message = {
   } catch (error) {
     logError(`Error starting AWS transcription job for analysisEntry ${analysisEntryId}`, error);
   }
