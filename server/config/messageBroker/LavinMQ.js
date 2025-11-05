@@ -1,6 +1,6 @@
 import { AMQPClient } from '@cloudamqp/amqp-client';
 import { logError, logInfo } from '../loggerFunctions.js';
-import { handleTranscriptionCompletedQueue } from './transcriptionQueue.js';
+import { handleTranscriptionCompletedQueue } from './transcriptionCompletedQueue.js';
 
 let connection;
 let channel;
@@ -105,8 +105,8 @@ export const connectToMessageBroker = async () => {
 
 export const publishToTranscriptionRequestQueue = async (message) => {
   try {
-    await transcriptionRequestedQueue.publish(message);
+    return await transcriptionRequestedQueue.publish(message);
   } catch (err) {
-    logError('error publishing transcription request', err);
+    return logError('error publishing transcription request', err);
   }
 };
