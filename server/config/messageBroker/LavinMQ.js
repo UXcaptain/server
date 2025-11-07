@@ -6,6 +6,7 @@ let connection;
 let channel;
 let transcriptionRequestedQueue;
 let transcriptionCompletedQueue;
+let insightsRequestedQueue;
 let insightsCompletedQueue;
 
 const startConsumers = async () => {
@@ -72,6 +73,13 @@ export const connectToMessageBroker = async () => {
       exclusive: false,
     });
 
+    insightsRequestedQueue = await channel.queue('insights_requested_queue', {
+      durable: true,
+      passive: false,
+      autoDelete: false,
+      exclusive: false,
+    });
+
     insightsCompletedQueue = await channel.queue('insights_completed_queue', {
       durable: true,
       passive: false,
@@ -84,11 +92,15 @@ export const connectToMessageBroker = async () => {
     await transcriptionRequestedQueue.bind('analysis_exchange', 'analysis.analysisEntry.transcription.requested', {
     });
 
+    await insightsRequestedQueue.bind('analysis_exchange', 'analysis.analysisEntry.insights.requested', {
+    });
+
     await insightsCompletedQueue.bind('analysis_exchange', 'analysis.analysisEntry.insights.completed', {
     });
 
     // Start consumers after successful connection
     await startConsumers();
+
     logInfo('monolith successfully connected to LavinMQ message broker');
 
     return {
@@ -110,3 +122,30 @@ export const publishToTranscriptionRequestedQueue = async (message) => {
     return logError('error publishing transcription request', err);
   }
 };
+
+export const publishToInsightsRequestedQueue = async (message) => {
+  try {
+    return await insightsRequestedQueue.publish(message);
+  } catch (err) {
+    return logError('error publishing transcription request', err);
+  }
+};
+
+//* Use this somewhere
+
+/*
+
+  const message = {
+      analysisEntryId: analysisEntryId,
+      analysisId: analysisId,
+      timestamp: new Date().toISOString(),
+      mediaType: 'video',
+      languageCode: 'es-ES',
+      outputBucket: process.env.AWS_BUCKET,
+    };
+
+    const stringifiedMessage = JSON.stringify(message);
+
+    publishToInsightsRequestedQueue(stringifiedMessage);
+
+*/
