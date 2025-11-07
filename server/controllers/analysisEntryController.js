@@ -27,7 +27,7 @@ export const updateAnalysisEntry = async (req, res) => {
       timestamp: new Date().toISOString(),
       mediaType: 'video',
       languageCode: 'es-ES',
-      outputBucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+      outputBucket: process.env.AWS_BUCKET,
     };
 
     const stringifiedMessage = JSON.stringify(message);

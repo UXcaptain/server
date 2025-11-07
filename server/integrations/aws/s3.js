@@ -1,10 +1,9 @@
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-// https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/modules/credentials.html
 export const s3client = new S3Client({
   region: process.env.AWS_REGION,
-  credentials: {
+  credentials: { // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/modules/credentials.html
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
@@ -12,7 +11,7 @@ export const s3client = new S3Client({
 
 export const generateGetS3PresignedUrl = async (key) => {
   const command = new GetObjectCommand({
-    Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+    Bucket: process.env.AWS_BUCKET,
     Key: key,
   });
 
@@ -23,7 +22,7 @@ export const generateGetS3PresignedUrl = async (key) => {
 
 export const generatePutS3PresignedUrl = async (key) => {
   const command = new PutObjectCommand({
-    Bucket: process.env.DEPLOY_ENVIRONMENT === 'latest' ? 'prod-analysis-entry-storage' : 'dev-analysis-entry-storage',
+    Bucket: process.env.AWS_BUCKET,
     Key: key,
     ContentType: 'video/mp4',
   });
