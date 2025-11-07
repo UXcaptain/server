@@ -103,7 +103,7 @@ export const connectToMessageBroker = async () => {
 
 // function for publishing to transcription queue
 
-export const publishToTranscriptionRequestQueue = async (message) => {
+export const publishToTranscriptionRequestedQueue = async (message) => {
   try {
     return await transcriptionRequestedQueue.publish(message);
   } catch (err) {
