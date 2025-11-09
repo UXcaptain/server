@@ -73,12 +73,10 @@ export const getAnalysisEntryDetails = async (req, res) => {
 
   const analysisEntryRecordingPresignedUrl = await generateGetS3PresignedUrl(`${key}/recording.mp4`);
 
-  const analysisEntryTranscriptPresignedUrl = await generateGetS3PresignedUrl(`${key}/transcription.json`);
-
   return res.status(200).json({
     message: 'recording & transcription links retrieved successfully',
     analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
-    analysisEntryGetTranscriptPresignedUrl: analysisEntryTranscriptPresignedUrl,
+    transcription: analysisEntryDetails.transcription,
   });
 };
 

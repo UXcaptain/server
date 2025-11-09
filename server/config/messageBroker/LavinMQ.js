@@ -1,6 +1,6 @@
 import { AMQPClient } from '@cloudamqp/amqp-client';
 import { logError, logInfo } from '../loggerFunctions.js';
-import { handleTranscriptionCompletedQueue } from './transcriptionCompletedQueue.js';
+import { insertAnalysisEntryTranscriptionInDb } from '../../models/analysisEntryModel.js';
 
 let connection;
 let channel;
@@ -72,7 +72,17 @@ export const connectToMessageBroker = async () => {
 
     await transcriptionCompletedQueue.subscribe({ noAck: false }, async (msg) => {
       try {
-        await handleTranscriptionCompletedQueue(msg);
+        const contentStr = msg.bodyToString(msg);
+        const transcriptionRequest = JSON.parse(contentStr);
+
+        await insertAnalysisEntryTranscriptionInDb(transcriptionRequest);
+
+        /*
+        const exampleReceivedMessage = {
+          analysisEntryId: transcriptionJobDetails._id,
+          transcriptionData: parsedTranscriptionJobDataStructure.results,
+        };
+      */
 
         await msg.ack();
       } catch (error) {
