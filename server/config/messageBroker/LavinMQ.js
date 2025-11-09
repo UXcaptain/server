@@ -5,37 +5,7 @@ import { handleTranscriptionCompletedQueue } from './transcriptionCompletedQueue
 let connection;
 let channel;
 let transcriptionRequestedQueue;
-let transcriptionCompletedQueue;
 let insightsRequestedQueue;
-let insightsCompletedQueue;
-
-const startConsumers = async () => {
-  try {
-    const transcriptionCompletedConsumer = await transcriptionCompletedQueue.subscribe({ noAck: false }, async (msg) => {
-      try {
-        await handleTranscriptionCompletedQueue(msg);
-
-        await msg.ack();
-      } catch (error) {
-        logError('Error processing transcription completed message', error);
-        await msg.nack(true); // Requeue on failure
-      }
-    });
-
-    const insightsCompletedConsumer = await insightsCompletedQueue.subscribe({ noAck: false }, async (msg) => {
-      try {
-        // TODO - maybe set a database flag indicating that the analysisEntry has insights extracted?
-        await msg.ack();
-      } catch (error) {
-        await msg.nack(true); // Requeue on failure
-      }
-    });
-
-    logInfo('Consumers started successfully');
-  } catch (err) {
-    logError('Error starting consumers', err);
-  }
-};
 
 // Main AMQP setup function
 export const connectToMessageBroker = async () => {
@@ -66,7 +36,7 @@ export const connectToMessageBroker = async () => {
       exclusive: false,
     });
 
-    transcriptionCompletedQueue = await channel.queue('transcription_completed_queue', {
+    const transcriptionCompletedQueue = await channel.queue('transcription_completed_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
@@ -80,7 +50,7 @@ export const connectToMessageBroker = async () => {
       exclusive: false,
     });
 
-    insightsCompletedQueue = await channel.queue('insights_completed_queue', {
+    const insightsCompletedQueue = await channel.queue('insights_completed_queue', {
       durable: true,
       passive: false,
       autoDelete: false,
@@ -99,7 +69,25 @@ export const connectToMessageBroker = async () => {
     });
 
     // Start consumers after successful connection
-    await startConsumers();
+
+    await transcriptionCompletedQueue.subscribe({ noAck: false }, async (msg) => {
+      try {
+        await handleTranscriptionCompletedQueue(msg);
+
+        await msg.ack();
+      } catch (error) {
+        logError('Error processing transcription completed message', error);
+        await msg.nack(true); // Requeue on failure
+      }
+    });
+
+    await insightsCompletedQueue.subscribe({ noAck: false }, async (msg) => {
+      try {
+        await msg.ack();
+      } catch (error) {
+        await msg.nack(true); // Requeue on failure
+      }
+    });
 
     logInfo('monolith successfully connected to LavinMQ message broker');
 
@@ -130,22 +118,3 @@ export const publishToInsightsRequestedQueue = async (message) => {
     return logError('error publishing transcription request', err);
   }
 };
-
-//* Use this somewhere
-
-/*
-
-  const message = {
-      analysisEntryId: analysisEntryId,
-      analysisId: analysisId,
-      timestamp: new Date().toISOString(),
-      mediaType: 'video',
-      languageCode: 'es-ES',
-      outputBucket: process.env.AWS_BUCKET,
-    };
-
-    const stringifiedMessage = JSON.stringify(message);
-
-    publishToInsightsRequestedQueue(stringifiedMessage);
-
-*/

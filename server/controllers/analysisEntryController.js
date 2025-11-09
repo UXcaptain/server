@@ -27,14 +27,13 @@ export const updateAnalysisEntry = async (req, res) => {
       timestamp: new Date().toISOString(),
       mediaType: 'video',
       languageCode: 'es-ES',
-      outputBucket: process.env.AWS_BUCKET,
     };
 
     const stringifiedMessage = JSON.stringify(message);
 
     await publishToTranscriptionRequestedQueue(stringifiedMessage);
   } catch (error) {
-    logError(`Error starting AWS transcription job for analysisEntry ${analysisEntryId}`, error);
+    logError(`Error sending transcription request analysisEntry ${analysisEntryId}`, error);
   }
 
   return res.status(200).json({
