@@ -56,7 +56,7 @@ model ParticipantProfile {
   updated_at      DateTime          @default(now()) @updatedAt
   User            User              @relation(fields: [user_id], references: [id])
   user_id         String            @unique
-  AnalysisEntries AnalysisEntries[]
+  AnalysisEntry AnalysisEntry[]
 }
 
 model CustomerProfile {
@@ -109,12 +109,12 @@ model Analysis {
   created_at                 DateTime          @default(now())
   updated_at                 DateTime          @default(now()) @updatedAt
   max_number_of_participants Int
-  AnalysisEntries            AnalysisEntries[]
+  AnalysisEntry            AnalysisEntry[]
 
   // @@index([owner_id]) // Not a unique field, but requires an index
 }
 
-model AnalysisEntries {
+model AnalysisEntry {
   id                 String                        @id @default(uuid())
   Analysis           Analysis                      @relation(fields: [analysis_id], references: [id])
   analysis_id        String
