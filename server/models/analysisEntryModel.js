@@ -12,6 +12,7 @@ export const getEntryDetailsById = async (entryId) => {
     where: whereClause,
     select: {
       id: true,
+      transcription: true,
       Analysis: {
         select: {
           id: true,
@@ -80,4 +81,23 @@ export const markAnalysisEntriesAsCancelled = async () => {
   if (analysisEntriesMarkedAsCancelledQuery.count > 0) {
     logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
   }
+};
+
+export const insertAnalysisEntryTranscriptionInDb = async (transcriptionCompletedMessage) => {
+  const whereClause = {
+    // id: transcriptionCompletedMessage.analysisEntryId,
+    id: '040e27d4-d229-4410-936b-d8fdca68b89a',
+  };
+
+  const transcriptionInsertion = await prisma.analysisEntries.update({
+    where: whereClause,
+    data: {
+      transcription: transcriptionCompletedMessage.transcriptionData,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return transcriptionInsertion;
 };
