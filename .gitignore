@@ -27,6 +27,10 @@ staging.env
 
 /test-results
 
+# compose files
+compose.next.yaml
+compose.latest.yaml
+
 # middlewares
 server/middlewares/permissionByRoleChecker.mjs
 server/middlewares/subscriptionChecker.mjs
