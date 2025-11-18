@@ -8,10 +8,11 @@ export const getEntryDetailsById = async (entryId) => {
     id: entryId,
   };
 
-  const getEntryDetailsByIdQuery = await prisma.analysisEntries.findUnique({
+  const getEntryDetailsByIdQuery = await prisma.analysisEntry.findUnique({
     where: whereClause,
     select: {
       id: true,
+      transcription: true,
       Analysis: {
         select: {
           id: true,
@@ -25,7 +26,7 @@ export const getEntryDetailsById = async (entryId) => {
 };
 
 export const createAnalysisEntryInDb = async (analysisId) => {
-  const createAnalysisEntryQuery = await prisma.analysisEntries.create({
+  const createAnalysisEntryQuery = await prisma.analysisEntry.create({
     data: {
       status: 'in_progress',
       Analysis: {
@@ -47,7 +48,7 @@ export const updateAnalysisEntryInDb = async (analysisEntryId, status) => {
     id: analysisEntryId,
   };
 
-  const analysisEntryUpdateQuery = await prisma.analysisEntries.update({
+  const analysisEntryUpdateQuery = await prisma.analysisEntry.update({
     where: whereClause,
     data: {
       status: status,
@@ -70,7 +71,7 @@ export const markAnalysisEntriesAsCancelled = async () => {
     },
   };
 
-  const analysisEntriesMarkedAsCancelledQuery = await prisma.analysisEntries.updateMany({
+  const analysisEntriesMarkedAsCancelledQuery = await prisma.analysisEntry.updateMany({
     where: whereClause,
     data: {
       status: 'cancelled',
@@ -80,4 +81,23 @@ export const markAnalysisEntriesAsCancelled = async () => {
   if (analysisEntriesMarkedAsCancelledQuery.count > 0) {
     logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
   }
+};
+
+export const insertAnalysisEntryTranscriptionInDb = async (transcriptionCompletedMessage) => {
+  const whereClause = {
+    // id: transcriptionCompletedMessage.analysisEntryId,
+    id: '040e27d4-d229-4410-936b-d8fdca68b89a',
+  };
+
+  const transcriptionInsertion = await prisma.analysisEntry.update({
+    where: whereClause,
+    data: {
+      transcription: transcriptionCompletedMessage.transcriptionData,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return transcriptionInsertion;
 };

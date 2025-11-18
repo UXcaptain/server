@@ -4,6 +4,7 @@ logs
 npm-debug.log*
 
 
+
 # Dependency directories
 node_modules/
 
@@ -27,9 +28,12 @@ staging.env
 
 /test-results
 
+# compose files
+
+compose.latest.yaml
+compose.next.yaml
+
 # middlewares
-server/middlewares/permissionByRoleChecker.mjs
-server/middlewares/subscriptionChecker.mjs
 
 # prisma client
 
