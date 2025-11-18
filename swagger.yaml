@@ -1840,7 +1840,7 @@ components:
           $ref: '#/components/schemas/AnalysisId'
         max_number_of_participants:
           $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
-        AnalysisEntries:
+        AnalysisEntry:
           type: array
           items:
             $ref: '#/components/schemas/AnalysisEntryWithParticipant'
@@ -1982,7 +1982,7 @@ components:
       type: object
       description: the number of analysis entries in a given analysis
       properties: 
-        AnalysisEntries:
+        AnalysisEntry:
           type: number
           examples: [
             1,
