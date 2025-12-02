@@ -42,7 +42,6 @@ export const createStripeCheckoutSession = async (
       userId: userId,
       companyId: companyId,
     },
-    customer: companyStripeId,
     ui_mode: 'hosted',
     allow_promotion_codes: true,
     billing_address_collection: 'auto', //* Disable this for non-corporate users
