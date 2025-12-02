@@ -32,7 +32,7 @@ export const getBillingCustomerPortalUrl = async (req, res) => {
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = subcriptionData;
+  const { stripe_id: companyStripeId } = subcriptionData.Company;
 
   const customerPortalCreationQuery = await createStripeCustomerPortalSession(companyStripeId);
 
@@ -53,7 +53,7 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = subcriptionData;
+  const { stripe_id: companyStripeId } = subcriptionData.Company;
 
   const { planName, planBillingCycle } = req.body;
 

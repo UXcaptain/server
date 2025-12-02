@@ -85,8 +85,7 @@ export const markAnalysisEntriesAsCancelled = async () => {
 
 export const insertAnalysisEntryTranscriptionInDb = async (transcriptionCompletedMessage) => {
   const whereClause = {
-    // id: transcriptionCompletedMessage.analysisEntryId,
-    id: '040e27d4-d229-4410-936b-d8fdca68b89a',
+    id: transcriptionCompletedMessage.analysisEntryId,
   };
 
   const transcriptionInsertion = await prisma.analysisEntry.update({

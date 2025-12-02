@@ -9,9 +9,9 @@ export const createStripeCheckoutSession = async (
 ) => {
   const priceIds = {
     latest_basic_monthly: 'price_1RcXRcKwyQnTsu7pzA3sHJ0i',
-    latest_basic_annual: 'price_1RcXRcKwyQnTsu7p7MQDyGL5',
-    next_basic_monthly: 'price_1RcXYn4EThrTH3EtBV4SNesj',
-    next_basic_annual: 'price_1RcXZ64EThrTH3EtiQQB7i36',
+    // latest_basic_annual: 'price_1RcXRcKwyQnTsu7p7MQDyGL5',
+    next_basic_monthly: 'price_1SZs7jKNsGqZfOkoNh69nTfa',
+    // next_basic_annual: 'price_1SZs7jKNsGqZfOkoNh69nTfa',
   };
 
   const checkoutSession = await stripeInstance.checkout.sessions.create({
@@ -22,6 +22,7 @@ export const createStripeCheckoutSession = async (
         quantity: 1,
       },
     ],
+    customer: companyStripeId,
     customer_update: {
       name: 'auto',
       address: 'auto',
@@ -41,7 +42,6 @@ export const createStripeCheckoutSession = async (
       userId: userId,
       companyId: companyId,
     },
-    customer: companyStripeId,
     ui_mode: 'hosted',
     allow_promotion_codes: true,
     billing_address_collection: 'auto', //* Disable this for non-corporate users
