@@ -11,8 +11,8 @@ services:
       POSTHOG_API_KEY: ${POSTHOG_API_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       BREVO_API_KEY: ${BREVO_API_KEY}
-      PRISMA_POSTGRES_DIRECT_URL: postgresql://postgres:prismaORM124!@database:5432/public
-      PRISMA_POSTGRES_CONNECTION_STRING: postgresql://postgres:prismaORM124!@database:5432/public
+      PRISMA_POSTGRES_DIRECT_URL: ${PRISMA_POSTGRES_DIRECT_URL}
+      PRISMA_POSTGRES_CONNECTION_STRING: ${PRISMA_POSTGRES_CONNECTION_STRING}
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
       FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
       STRIPE_API_KEY: ${STRIPE_API_KEY}
@@ -46,9 +46,9 @@ services:
     volumes:
       - uxcaptain-database:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=public
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=prismaORM124!
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - 5432:5432
     networks:
