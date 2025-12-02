@@ -56,6 +56,7 @@ export const getSubscriptionDataInDb = async (companyId) => {
     select: {
       id: true,
       expires_at: true,
+      Company: true, // TODO - improve this query to return only stripe_id
     },
   });
 
