@@ -29,7 +29,7 @@ export const createAnalysisInDb = async (analysisData) => {
 
   logInfo(`analysis ${analysisCreationInDbResponse.id} created in db`, analysisData);
 
-  posthogAnalysisCreated(analysisCreationInDbResponse);
+  posthogAnalysisCreated(analysisCreationInDbResponse, analysisCreationInDbResponse.id);
 
   return analysisCreationInDbResponse;
 };
