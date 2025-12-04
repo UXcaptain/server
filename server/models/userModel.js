@@ -1,6 +1,7 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.js';
 import {
+  logError,
   logInfo,
 } from '../config/loggerFunctions.js';
 
@@ -79,14 +80,18 @@ export const getUserByEmail = async (userEmail) => {
 };
 
 export const updateUserLastLoginDate = async (userId) => {
-  const queryResult = await prisma.user.update({
-    where: { id: userId },
-    data: {
-      last_login_at: new Date(),
-    },
-  });
+  try {
+    const queryResult = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        last_login_at: new Date(),
+      },
+    });
 
-  return queryResult;
+    return queryResult;
+  } catch (error) {
+    return logError(`could not update last login date for userid ${userId}`);
+  }
 };
 
 export const getUserPassword = async (userId) => {

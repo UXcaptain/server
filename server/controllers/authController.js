@@ -3,7 +3,8 @@ import { logError } from '../config/loggerFunctions.js';
 import passport from '../auth/passportjs.js';
 import { posthogUserSuccessLoggedIn } from '../models/posthogModel.js';
 import {
-  getUserByEmail, updateUserPasswordInDB,
+  getUserByEmail,
+  updateUserPasswordInDB,
   createCustomerInDB,
   getUserPassword,
   updateUserLastLoginDate,
@@ -209,9 +210,9 @@ export const loginLocal = async (req, res, next) => {
       }
 
       // Successful login
-      posthogUserSuccessLoggedIn(user.id, 'local');
+      posthogUserSuccessLoggedIn(user.id, 'local'); // Fire-and-forget function
 
-      updateUserLastLoginDate(user.id);
+      updateUserLastLoginDate(user.id); // Fire-and-forget function
 
       return res.status(200).json({
         success: true,
