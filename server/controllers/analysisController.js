@@ -110,7 +110,7 @@ export const participateInAnalysis = async (req, res) => {
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 
-  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+  if (analysisDataForParticipants._count.AnalysisEntry >= analysisDataForParticipants.max_number_of_participants) {
     return res.status(403).json({
       success: false,
       message: 'The maximum number of participants has been reached.',
