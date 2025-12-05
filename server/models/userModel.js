@@ -26,7 +26,7 @@ export const createCustomerInDB = async (userData) => {
 
   logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
-  posthogUserSignedUp(createUserInDbQuery);
+  posthogUserSignedUp(createUserInDbQuery); // Fire-and-forget
 
   return createUserInDbQuery;
 };
@@ -41,8 +41,6 @@ export const createAdminInDB = async (userData) => {
   });
 
   logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
-
-  posthogUserSignedUp(createUserInDbQuery);
 
   return createUserInDbQuery;
 };
@@ -62,7 +60,7 @@ export const createParticipantInDB = async (userData) => {
 
   logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
 
-  posthogUserSignedUp(createUserInDbQuery);
+  // posthogUserSignedUp(createUserInDbQuery); // TODO - convert into participant
 
   return createUserInDbQuery;
 };
