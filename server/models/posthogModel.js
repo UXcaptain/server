@@ -3,6 +3,15 @@ import { logError } from '../config/loggerFunctions.js';
 
 export const posthogUserSignedUp = async (user) => {
   try {
+    client.groupIdentify({
+      groupType: 'company',
+      groupKey: user.company_id,
+      properties: {
+        name: 'unknown',
+        subscription: 'free trial',
+      },
+    });
+
     client.capture({
       distinctId: user.id,
       event: 'userSignedUp',
@@ -10,8 +19,10 @@ export const posthogUserSignedUp = async (user) => {
         $set_once: {
           email: user.email,
           role: user.role,
+          company: user.company_id,
         },
       },
+      groups: { company: user.company_id },
     });
   } catch (error) {
     logError('error sending posthogUserSignedUp event to posthog', error, 'userSignedUp');
@@ -89,17 +100,21 @@ export const posthogUserDeleteAccount = async (distinctId) => {
   }
 };
 
-export const posthogAnalysisCreated = async (analysisData) => {
+export const posthogAnalysisCreated = async (analysisData, analysisId) => {
   try {
     client.capture({
-      distinctId: analysisData.created_by, // * Will need to revisit this in the future when doing multi user teams
+      distinctId: analysisData.created_by,
       event: 'AnalysisCreated',
       properties: {
         company_id: analysisData.owner_company_id,
-        creator_user_id: analysisData.created_by,
+        analysis_device: analysisData.device,
+        analysis_url: analysisData.url,
+        analysis_name: analysisData.name,
+        max_number_of_participants: analysisData.maxNumberOfParticipants,
+        analysis_id: analysisId,
       },
     });
   } catch (error) {
-    logError('error sending posthogUserUpdatedPassword event to posthog', error, 'userUpdatedPassword');
+    logError('error sending posthogAnalysisCreated event to posthog', error, 'analysisCreated');
   }
 };

@@ -105,3 +105,8 @@ Stripe client for debugging can be started with `npm` command `npm run stripe:li
 # API documentation
 
 All the up-to-date documentation can be found in the `swagger.yaml` file
+
+
+# AWS Permissions
+
+- All permissions are strict and handled via users and groups in [AWS IAM Console](https://us-east-1.console.aws.amazon.com/iam/home)
