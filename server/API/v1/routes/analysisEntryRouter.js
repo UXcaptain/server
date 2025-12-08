@@ -1,7 +1,6 @@
 import Router from 'express';
 import {
   getAnalysisEntryDetails,
-  getAnalysisEntryPresignedUploadUrl,
   updateAnalysisEntry,
   createAnalysisEntry,
 } from '../../../controllers/analysisEntryController.js';
@@ -10,8 +9,6 @@ import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChec
 export const analysisEntryRouter = new Router();
 
 analysisEntryRouter.post('/', createAnalysisEntry);
-
-analysisEntryRouter.post('/upload-url', getAnalysisEntryPresignedUploadUrl);
 
 analysisEntryRouter.patch('/', updateAnalysisEntry);
 

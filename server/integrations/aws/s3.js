@@ -9,7 +9,7 @@ export const s3client = new S3Client({
   },
 });
 
-export const generateGetS3PresignedUrl = async (key) => {
+export const generateS3GetPresignedUrl = async (key) => {
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_BUCKET,
     Key: key,
@@ -20,7 +20,7 @@ export const generateGetS3PresignedUrl = async (key) => {
   return analysisEntryGetPresignedUrl;
 };
 
-export const generatePutS3PresignedUrl = async (key) => {
+export const generateS3PutPresignedUrl = async (key) => {
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET,
     Key: key,
@@ -28,7 +28,7 @@ export const generatePutS3PresignedUrl = async (key) => {
   });
 
   const analysisEntryPutPresignedUrl = await getSignedUrl(s3client, command, {
-    expiresIn: 60 * 60, // 60 minute expiration
+    expiresIn: 60 * 90, // 90 minute expiration
   });
 
   return analysisEntryPutPresignedUrl;
