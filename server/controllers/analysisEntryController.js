@@ -1,6 +1,6 @@
 import { logError } from '../config/loggerFunctions.js';
 import { publishToTranscriptionRequestedQueue } from '../config/messageBroker/LavinMQ.js';
-import { generateGetS3PresignedUrl, generatePutS3PresignedUrl } from '../integrations/aws/s3.js';
+import { generateS3GetPresignedUrl, generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
 import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -71,7 +71,7 @@ export const getAnalysisEntryDetails = async (req, res) => {
 
   const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}`;
 
-  const analysisEntryRecordingPresignedUrl = await generateGetS3PresignedUrl(`${key}/recording.mp4`);
+  const analysisEntryRecordingPresignedUrl = await generateS3GetPresignedUrl(`${key}/recording.mp4`);
 
   return res.status(200).json({
     message: 'recording & transcription links retrieved successfully',
@@ -85,7 +85,7 @@ export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
 
   const key = `analysis/${analysisId}/${analysisEntryId}/recording.mp4`;
 
-  const analysisEntryPresignedUrl = await generatePutS3PresignedUrl(key);
+  const analysisEntryPresignedUrl = await generateS3PutPresignedUrl(key);
 
   return res.status(200).json({
     success: true,
