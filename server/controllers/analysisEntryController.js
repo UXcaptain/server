@@ -1,7 +1,7 @@
 import { logError } from '../config/loggerFunctions.js';
 import { publishToTranscriptionRequestedQueue } from '../config/messageBroker/LavinMQ.js';
 import { generateS3GetPresignedUrl, generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
-import { createAnalysisEntryInDb, getEntryDetailsById as getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
+import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
   const { analysisId } = req.body;
@@ -76,7 +76,7 @@ export const getAnalysisEntryDetails = async (req, res) => {
   return res.status(200).json({
     message: 'recording & transcription links retrieved successfully',
     analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
-    transcription: analysisEntryDetails.transcription,
+    transcriptionSegments: analysisEntryDetails.transcription_segments,
   });
 };
 

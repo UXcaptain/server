@@ -1548,7 +1548,7 @@ paths:
                     example: recording & transcription links retrieved successfully
                   analysisEntryGetRecordingPresignedUrl:
                     $ref: "#/components/schemas/AnalysisEntryGetRecordingPresignedUrl"
-                  transcription:
+                  transcriptionSegments:
                     type: array
         400:
           description: Analysis entry ID has not been provided
