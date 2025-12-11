@@ -7,6 +7,7 @@ import {
   from '../models/analysisModel.js';
 
 import { createAnalysisEntryInDb } from '../models/analysisEntryModel.js';
+import { generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -125,10 +126,15 @@ export const participateInAnalysis = async (req, res) => {
     analysisUrl: analysisDataForParticipants.url,
   };
 
+  const key = `analysis/${analysisId}/${analysisEntry.id}/recording.mp4`;
+
+  const analysisEntryPresignedUploadUrl = await generateS3PutPresignedUrl(key);
+
   return res.status(200).json({
     success: true,
     message: 'Analysis info retrieved successfully',
     analysisData: analysisData,
     analysisEntryId: analysisEntry.id,
+    analysisPresignedUploadUrl: analysisEntryPresignedUploadUrl,
   });
 };

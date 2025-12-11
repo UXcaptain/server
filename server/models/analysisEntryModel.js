@@ -3,7 +3,7 @@ import { logInfo } from '../config/loggerFunctions.js';
 
 const prisma = new PrismaClient();
 
-export const getEntryDetailsById = async (entryId) => {
+export const getAnalysisEntryDetailsById = async (entryId) => {
   const whereClause = {
     id: entryId,
   };
@@ -12,7 +12,7 @@ export const getEntryDetailsById = async (entryId) => {
     where: whereClause,
     select: {
       id: true,
-      transcription: true,
+      transcription_segments: true,
       Analysis: {
         select: {
           id: true,
@@ -91,7 +91,8 @@ export const insertAnalysisEntryTranscriptionInDb = async (transcriptionComplete
   const transcriptionInsertion = await prisma.analysisEntry.update({
     where: whereClause,
     data: {
-      transcription: transcriptionCompletedMessage.transcriptionData,
+      transcription_segments: transcriptionCompletedMessage.transcriptionSegments,
+      full_transcript: transcriptionCompletedMessage.fullTranscript,
     },
     select: {
       id: true,
