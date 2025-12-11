@@ -123,7 +123,8 @@ model AnalysisEntry {
   status             AnalysisEntryCompletionStatus @default(in_progress)
   created_at         DateTime                      @default(now())
   updated_at         DateTime                      @default(now()) @updatedAt
-  transcription Json?
+  transcription_segments Json?
+  full_transcript String?
 
   @@index([analysis_id, status])
 }

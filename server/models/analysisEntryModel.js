@@ -91,7 +91,8 @@ export const insertAnalysisEntryTranscriptionInDb = async (transcriptionComplete
   const transcriptionInsertion = await prisma.analysisEntry.update({
     where: whereClause,
     data: {
-      transcription: transcriptionCompletedMessage.transcriptionData,
+      transcription_segments: transcriptionCompletedMessage.transcriptionSegments,
+      full_transcript: transcriptionCompletedMessage.fullTranscript,
     },
     select: {
       id: true,

@@ -73,14 +73,15 @@ export const connectToMessageBroker = async () => {
     await transcriptionCompletedQueue.subscribe({ noAck: false }, async (msg) => {
       try {
         const contentStr = msg.bodyToString(msg);
-        const transcriptionRequest = JSON.parse(contentStr);
+        const completedTranscriptionRequest = JSON.parse(contentStr);
 
-        await insertAnalysisEntryTranscriptionInDb(transcriptionRequest);
+        await insertAnalysisEntryTranscriptionInDb(completedTranscriptionRequest);
 
         /*
         const exampleReceivedMessage = {
           analysisEntryId: transcriptionJobDetails._id,
-          transcriptionData: parsedTranscriptionJobDataStructure.results,
+          transcriptionData: array of objects, each representing a segment of the transcription
+          fullTranscript: 'lorem ipsum dolor sit amet, consectetur adipiscing elit'
         };
       */
 
