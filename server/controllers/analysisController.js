@@ -135,6 +135,6 @@ export const participateInAnalysis = async (req, res) => {
     message: 'Analysis info retrieved successfully',
     analysisData: analysisData,
     analysisEntryId: analysisEntry.id,
-    analysisPresignedUploadUrl: analysisEntryPresignedUploadUrl,
+    analysisEntryPresignedUploadUrl: analysisEntryPresignedUploadUrl,
   });
 };
