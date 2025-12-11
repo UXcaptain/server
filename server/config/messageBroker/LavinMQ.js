@@ -80,7 +80,7 @@ export const connectToMessageBroker = async () => {
         /*
         const exampleReceivedMessage = {
           analysisEntryId: transcriptionJobDetails._id,
-          transcriptionData: array of objects, each representing a segment of the transcription
+          transcriptionSegments: array of objects, each representing a segment of the transcription
           fullTranscript: 'lorem ipsum dolor sit amet, consectetur adipiscing elit'
         };
       */
