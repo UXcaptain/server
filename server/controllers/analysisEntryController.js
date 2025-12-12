@@ -16,9 +16,9 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, analysisEntryStatus, analysisId } = req.body;
+  const { analysisEntryId } = req.body;
 
-  await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
+  await markAnalysisEntryAsSubmitted(analysisEntryId);
 
   try {
     const message = {
