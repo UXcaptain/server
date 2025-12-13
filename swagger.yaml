@@ -1489,13 +1489,10 @@ paths:
                           type: object
                           required:
                             - analysisId
-                            - status
                             - analysisEntryId
                           properties:
                               analysisEntryId:
                                   $ref: "#/components/schemas/AnalysisEntryId"
-                              analysisEntryStatus:
-                                $ref: "#/components/schemas/AnalysisEntryCompletionStatus"
                               analysisId:
                                 $ref: "#/components/schemas/AnalysisId"
         responses:
@@ -1506,8 +1503,6 @@ paths:
                 schema:
                   type: object
                   properties:
-                    success:
-                      $ref: "#/components/schemas/SuccessTrueStatus"
                     message:
                       type: string
                       example: Analysis entry updated successfully

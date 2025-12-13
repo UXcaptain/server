@@ -29,7 +29,6 @@ export const updateAnalysisEntry = async (req, res) => {
   processTranscriptionRequest(transcriptionRequest); // Fire-and-forget
 
   return res.status(200).json({
-    success: true,
     message: 'Analysis entry updated successfully',
   });
 };
