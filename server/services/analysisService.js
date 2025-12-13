@@ -17,6 +17,8 @@ export const processTranscriptionRequest = async (transcriptionRequest) => {
     await insertTranscriptionRequestInDb(transcriptionRequest);
 
     await requestAnalysisEntryTranscriptionToAWSTranscribe(transcriptionRequest);
+
+    await updateSingleTranscriptionRequestInDb(transcriptionRequest.analysisEntryId);
   } catch (error) {
     logError('Error processing transcription request', error);
   }

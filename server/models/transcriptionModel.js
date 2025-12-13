@@ -13,22 +13,17 @@ export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
   });
 };
 
-export const updateSingleTranscriptionRequestInDb = async (transcriptionRequestInsertId) => {
-  const db = await connectToMongoDB();
+export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
+  const whereClause = {
+    analysis_entry_id: analysisEntryId,
+  };
 
-  const transcriptionRequests = db.collection('transcriptionRequests');
-
-  const updateResult = await transcriptionRequests.updateOne(
-    { _id: transcriptionRequestInsertId },
-    {
-      $set: {
-        status: 'IN_PROGRESS',
-        updatedAt: new Date(),
-      },
+  await prisma.transcriptionJob.update({
+    where: whereClause,
+    data: {
+      status: 'IN_PROGRESS',
     },
-  );
-
-  return updateResult;
+  });
 };
 
 export const getCompletedTranscriptions = async () => {
