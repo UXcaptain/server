@@ -131,12 +131,13 @@ model AnalysisEntry {
 }
 
 model TranscriptionJob {
-  id                String                 @id @unique @default(uuid())
+  id                Int                 @id @unique @default(autoincrement())
   AnalysisEntry     AnalysisEntry          @relation(fields: [analysis_entry_id], references: [id])
   analysis_entry_id String                 @unique
   status            TranscriptionJobStatus @default(pending)
   created_at        DateTime               @default(now())
   updated_at        DateTime               @default(now()) @updatedAt
+  language_code String
 }
 
 enum TranscriptionJobStatus {
