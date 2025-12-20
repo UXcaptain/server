@@ -26,51 +26,42 @@ export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
   });
 };
 
-export const getCompletedTranscriptions = async () => {
-  const db = await connectToMongoDB();
+export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => {
+  const whereClause = {
+    id: transcriptionJobName,
+  };
 
-  const transcriptionsCollection = db.collection('transcriptionRequests');
-
-  const completedTranscriptions = await transcriptionsCollection.find({
-    publishedToQueue: false,
-    status: 'COMPLETED',
-  }).toArray();
-
-  return completedTranscriptions;
-};
-
-export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobDetails) => {
-  const db = await connectToMongoDB();
-
-  const transcriptionsCollection = db.collection('transcriptionRequests');
-
-  const transcriptionJobDetailsResult = await transcriptionsCollection.findOne(
-    { _id: transcriptionJobDetails },
-  );
+  const transcriptionJobDetailsResult = await prisma.analysisEntry.findUnique({
+    where: whereClause,
+    select: {
+      analysis_id: true,
+      transcriptionJob: {
+        select: {
+          status: true,
+        },
+      },
+    },
+  });
 
   return transcriptionJobDetailsResult;
 };
 
-export const storeNormalizedTranscriptionInDb = async (transcriptionJobInsertId, normalizedTranscriptionJob, transcriptionJobResult) => {
-  const db = await connectToMongoDB();
+export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, normalizedTranscriptionJob, transcriptionJobResult) => {
+  const whereClause = {
+    analysis_entry_id: transcriptionJobName,
+  };
 
-  const transcriptionsCollection = db.collection('transcriptionRequests');
-
-  const updateResult = await transcriptionsCollection.updateOne(
-    { _id: transcriptionJobInsertId },
-    {
-      $set: {
-        status: 'COMPLETED',
-        transcriptionData: {
-          fullTranscript: transcriptionJobResult.results.transcripts[0].transcript,
-          segments: normalizedTranscriptionJob.results.segments,
+  await prisma.analysisEntry.update({
+    where: whereClause,
+    data: {
+      full_transcript: transcriptionJobResult.results.transcripts[0].transcript,
+      transcription_segments: normalizedTranscriptionJob.results.segments,
+      transcriptionJob: {
+        update: {
+          status: 'COMPLETED',
         },
-        updatedAt: new Date(),
-        publishedToQueue: false,
       },
     },
-  );
-
-  return updateResult;
+  });
 };
 
