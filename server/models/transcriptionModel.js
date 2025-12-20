@@ -74,34 +74,3 @@ export const storeNormalizedTranscriptionInDb = async (transcriptionJobInsertId,
   return updateResult;
 };
 
-export const markTranscriptionAsPublishedToQueue = async (transcriptionJobInsertId) => {
-  const db = await connectToMongoDB();
-
-  const transcriptionsCollection = db.collection('transcriptionRequests');
-
-  const updateResult = await transcriptionsCollection.updateOne(
-    { _id: transcriptionJobInsertId },
-    {
-      $set: {
-        // publishedToQueue: false, // * DEBUG
-        publishedToQueue: true,
-        updatedAt: new Date(),
-      },
-    },
-  );
-
-  return updateResult;
-};
-
-export const getTranscriptionJobsInCompletedStatusNotPublishedToQueue = async () => {
-  const db = await connectToMongoDB();
-
-  const transcriptionsCollection = db.collection('transcriptionRequests');
-
-  const transcriptionJobs = await transcriptionsCollection.find({
-    status: 'COMPLETED',
-    publishedToQueue: false,
-  }).toArray();
-
-  return transcriptionJobs;
-};
