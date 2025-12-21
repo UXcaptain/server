@@ -3,11 +3,10 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 const prisma = new PrismaClient();
 
 export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
-  await prisma.transcriptionRequest.create({
+  await prisma.transcriptionJob.create({
     data: {
       analysis_entry_id: transcriptionRequest.analysisEntryId,
       status: 'pending',
-      type: transcriptionRequest.mediaType,
       language_code: transcriptionRequest.languageCode,
     },
   });
@@ -64,4 +63,3 @@ export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, nor
     },
   });
 };
-
