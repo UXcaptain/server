@@ -54,7 +54,7 @@ export const markAnalysisEntryAsSubmitted = async (analysisEntryId) => {
       status: 'submitted',
     },
     select: {
-      status: true,
+      analysis_id: true,
     },
   });
 

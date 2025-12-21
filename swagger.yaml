@@ -1488,13 +1488,10 @@ paths:
                       schema:
                           type: object
                           required:
-                            - analysisId
                             - analysisEntryId
                           properties:
                               analysisEntryId:
                                   $ref: "#/components/schemas/AnalysisEntryId"
-                              analysisId:
-                                $ref: "#/components/schemas/AnalysisId"
         responses:
           200:
             description: Success

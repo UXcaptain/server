@@ -15,14 +15,13 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, analysisId } = req.body;
+  const { analysisEntryId } = req.body;
 
-  await markAnalysisEntryAsSubmitted(analysisEntryId);
+  const updatedAnalysisEntry = await markAnalysisEntryAsSubmitted(analysisEntryId);
 
   const transcriptionRequest = {
     analysisEntryId: analysisEntryId,
-    analysisId: analysisId,
-    mediaType: 'video',
+    analysisId: updatedAnalysisEntry.analysis_id,
     languageCode: 'es-ES',
   };
 
