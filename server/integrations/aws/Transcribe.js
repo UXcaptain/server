@@ -5,6 +5,7 @@ import {
   DeleteTranscriptionJobCommand,
 } from '@aws-sdk/client-transcribe';
 import { getS3Object } from './s3.js';
+import { logInfo } from '../../config/loggerFunctions.js';
 
 const transcribeClient = new TranscribeClient({ region: process.env.AWS_REGION });
 
@@ -25,8 +26,7 @@ export const requestAnalysisEntryTranscriptionToAWSTranscribe = async (transcrip
 export const listCompletedTranscriptionJobsFromAWS = async () => {
   const command = new ListTranscriptionJobsCommand({
     Status: 'COMPLETED',
-    MaxResults: 100,
-
+    MaxResults: 10, // Ensure memory is not hogged - if more ara available, they will be processed in the next iteration
   });
 
   const completedTranscriptionJobs = await transcribeClient.send(command);
@@ -44,6 +44,7 @@ export const fetchSingleTranscriptionJob = async (analysisId, analysisEntryId) =
 };
 
 export const deleteCompletedTranscriptionJobFromAWS = async (transcriptionJobName) => {
+  logInfo(`deleting ${transcriptionJobName} from AWS Transcribe`);
   const command = new DeleteTranscriptionJobCommand({
     TranscriptionJobName: transcriptionJobName,
   });

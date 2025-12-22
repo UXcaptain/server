@@ -4,11 +4,11 @@ import {
   updateSingleTranscriptionRequestInDb,
   getSingleTranscriptionJobDetailsFromDb,
   storeNormalizedTranscriptionInDb,
-  markTranscriptionAsPublishedToQueue,
 } from '../models/transcriptionModel.js';
 import {
   requestAnalysisEntryTranscriptionToAWSTranscribe, deleteCompletedTranscriptionJobFromAWS,
   fetchSingleTranscriptionJob,
+  listCompletedTranscriptionJobsFromAWS,
 } from '../integrations/aws/Transcribe.js';
 import { normalizeTranscript } from '../utils/transcription/transcriptionNormalizer.js';
 
@@ -32,6 +32,42 @@ export const processTranscriptionRequest = async (transcriptionRequest) => {
 };
 
 const processSingleCompletedTranscriptionJob = async (transcriptionJob) => {
+  logInfo(`Processing completed transcription job: ${transcriptionJob.TranscriptionJobName}`);
+
+  try {
+    // 1. Get transcription job details from database
+    const transcriptionJobDetails = await getSingleTranscriptionJobDetailsFromDb(transcriptionJob.TranscriptionJobName);
+
+    // Delete from AWS Transcribe if already processed - Shouldnt happen if AWS Transcribe job deletion is working properly
+
+    if (transcriptionJobDetails.transcriptionJob.status === 'COMPLETED') { // Handle duplicate entries to avoid normalization reprocessing
+      logInfo(`Deleting already processed job: ${transcriptionJob.TranscriptionJobName}`);
+      await deleteCompletedTranscriptionJobFromAWS(transcriptionJob.TranscriptionJobName);
+    }
+
+    // 2. Construct S3 key and fetch transcription file from AWS
+    const transcriptionJobResultString = await fetchSingleTranscriptionJob(transcriptionJobDetails.analysis_id, transcriptionJob.TranscriptionJobName);
+
+    // 3. Parse the transcription job result (JSON string to object)
+    const transcriptionJobResult = JSON.parse(transcriptionJobResultString);
+
+    // 4. Normalize transcription job result
+    const normalizedTranscriptionJob = await normalizeTranscript(transcriptionJobResult);
+
+    // 5. Store normalized transcript in DB and update status to COMPLETED
+    await storeNormalizedTranscriptionInDb(transcriptionJob.TranscriptionJobName, normalizedTranscriptionJob, transcriptionJobResult);
+
+    try {
+      await deleteCompletedTranscriptionJobFromAWS(transcriptionJob.TranscriptionJobName);
+    } catch (error) {
+      logError(`Error deleting transcription job ${transcriptionJob.TranscriptionJobName} from AWS Transcribe`, error);
+    // AWS Transcribe deletion failing is not an issue since it will be caught by a CRON-based retry mechanism
+    }
+
+    logInfo(`Successfully processed transcription job: ${transcriptionJob.TranscriptionJobName}`);
+  } catch (error) {
+    logError(`Error processing transcription job ${transcriptionJob.TranscriptionJobName}`, error);
+  }
 };
 
 export const handleCompletedVideoTranscriptionJobs = async () => {
@@ -42,6 +78,7 @@ export const handleCompletedVideoTranscriptionJobs = async () => {
 
     if (completedTranscriptionJobsSummary.length === 0) {
       logInfo('no completed transcription jobs available to process');
+      return;
     }
 
     for (const transcriptionJob of completedTranscriptionJobsSummary) {

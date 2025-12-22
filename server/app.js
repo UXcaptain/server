@@ -46,7 +46,7 @@ app.use(globalErrorHandler);
 //* Start the server
 server.listen(process.env.PORT, () => {
 // eslint-disable-next-line no-console
-  console.log(`Server running at http://localhost:${process.env.PORT}/`);
+  console.log('Server running');
 });
 
 startCronJobs();
