@@ -6,7 +6,7 @@ export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
   await prisma.transcriptionJob.create({
     data: {
       analysis_entry_id: transcriptionRequest.analysisEntryId,
-      status: 'pending',
+      status: 'PENDING',
       language_code: transcriptionRequest.languageCode,
     },
   });
