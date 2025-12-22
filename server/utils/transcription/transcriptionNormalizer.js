@@ -1,3 +1,5 @@
+import { logError } from '../../config/loggerFunctions.js';
+
 /**
  * Converts string numbers to actual numbers
  * @param {string|number} value - Value to convert
@@ -170,7 +172,7 @@ export const normalizeTranscript = async (transcript) => {
       },
     };
   } catch (error) {
-    console.error('Error normalizing transcript:', error);
+    logError(`Error normalizing transcript: ${error.message}`, error);
     return {
       status: 'FAILED',
       results: {
