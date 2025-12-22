@@ -28,7 +28,26 @@ export const processTranscriptionRequest = async (transcriptionRequest) => {
     }
   } catch (error) {
     logError('Error storing transcription request in DB', error);
+  }
+};
+
+const processSingleCompletedTranscriptionJob = async (transcriptionJob) => {
+};
+
+export const handleCompletedVideoTranscriptionJobs = async () => {
+  try {
+    // Get the completed Jobs from AWS Transcribe
+    logInfo('Retrieving completed transcription jobs');
+    const completedTranscriptionJobsSummary = await listCompletedTranscriptionJobsFromAWS();
+
+    if (completedTranscriptionJobsSummary.length === 0) {
+      logInfo('no completed transcription jobs available to process');
+    }
+
+    for (const transcriptionJob of completedTranscriptionJobsSummary) {
+      await processSingleCompletedTranscriptionJob(transcriptionJob);
+    }
   } catch (error) {
-    logError('Error processing transcription request', error);
+    logError('Error processing transcription jobs', error);
   }
 };
