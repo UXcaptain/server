@@ -27,16 +27,16 @@ export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
 
 export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => {
   const whereClause = {
-    id: transcriptionJobName,
+    analysis_entry_id: transcriptionJobName,
   };
 
-  const transcriptionJobDetailsResult = await prisma.analysisEntry.findUnique({
+  const transcriptionJobDetailsResult = await prisma.transcriptionJob.findUnique({
     where: whereClause,
     select: {
-      analysis_id: true,
-      transcriptionJob: {
+      status: true,
+      AnalysisEntry: {
         select: {
-          status: true,
+          analysis_id: true,
         },
       },
     },

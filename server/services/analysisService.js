@@ -40,13 +40,13 @@ const processSingleCompletedTranscriptionJob = async (transcriptionJob) => {
 
     // Delete from AWS Transcribe if already processed - Shouldnt happen if AWS Transcribe job deletion is working properly
 
-    if (transcriptionJobDetails.transcriptionJob.status === 'COMPLETED') { // Handle duplicate entries to avoid normalization reprocessing
+    if (transcriptionJobDetails.status === 'COMPLETED') { // Handle duplicate entries to avoid normalization reprocessing
       logInfo(`Deleting already processed job: ${transcriptionJob.TranscriptionJobName}`);
       await deleteCompletedTranscriptionJobFromAWS(transcriptionJob.TranscriptionJobName);
     }
 
     // 2. Construct S3 key and fetch transcription file from AWS
-    const transcriptionJobResultString = await fetchSingleTranscriptionJob(transcriptionJobDetails.analysis_id, transcriptionJob.TranscriptionJobName);
+    const transcriptionJobResultString = await fetchSingleTranscriptionJob(transcriptionJobDetails.AnalysisEntry.analysis_id, transcriptionJob.TranscriptionJobName);
 
     // 3. Parse the transcription job result (JSON string to object)
     const transcriptionJobResult = JSON.parse(transcriptionJobResultString);
