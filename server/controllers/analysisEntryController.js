@@ -1,7 +1,6 @@
-import { logError } from '../config/loggerFunctions.js';
-import { publishToTranscriptionRequestedQueue } from '../config/messageBroker/LavinMQ.js';
 import { generateS3GetPresignedUrl, generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
-import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, updateAnalysisEntryInDb } from '../models/analysisEntryModel.js';
+import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmitted } from '../models/analysisEntryModel.js';
+import { processTranscriptionRequest } from '../services/analysisService.js';
 
 export const createAnalysisEntry = async (req, res) => {
   const { analysisId } = req.body;
@@ -16,28 +15,19 @@ export const createAnalysisEntry = async (req, res) => {
 };
 
 export const updateAnalysisEntry = async (req, res) => {
-  const { analysisEntryId, analysisEntryStatus, analysisId } = req.body;
+  const { analysisEntryId } = req.body;
 
-  await updateAnalysisEntryInDb(analysisEntryId, analysisEntryStatus);
+  const updatedAnalysisEntry = await markAnalysisEntryAsSubmitted(analysisEntryId);
 
-  try {
-    const message = {
-      analysisEntryId: analysisEntryId,
-      analysisId: analysisId,
-      timestamp: new Date().toISOString(),
-      mediaType: 'video',
-      languageCode: 'es-ES',
-    };
+  const transcriptionRequest = {
+    analysisEntryId: analysisEntryId,
+    analysisId: updatedAnalysisEntry.analysis_id,
+    languageCode: 'es-ES',
+  };
 
-    const stringifiedMessage = JSON.stringify(message);
-
-    await publishToTranscriptionRequestedQueue(stringifiedMessage);
-  } catch (error) {
-    logError(`Error sending transcription request analysisEntry ${analysisEntryId}`, error);
-  }
+  processTranscriptionRequest(transcriptionRequest); // Fire-and-forget
 
   return res.status(200).json({
-    success: true,
     message: 'Analysis entry updated successfully',
   });
 };

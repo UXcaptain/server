@@ -12,7 +12,6 @@ import { slowLimiter } from './middlewares/express-slow-down.js';
 import { startCronJobs } from './cron/jobsContainer.js';
 import { globalErrorHandler } from './middlewares/globalErrorHandler.js';
 import { webhookRouter } from './webhooks/webhooksRouter.js';
-import { connectToMessageBroker } from './config/messageBroker/LavinMQ.js';
 
 const app = express();
 const server = createServer(app);
@@ -47,10 +46,9 @@ app.use(globalErrorHandler);
 //* Start the server
 server.listen(process.env.PORT, () => {
 // eslint-disable-next-line no-console
-  console.log(`Server running at http://localhost:${process.env.PORT}/`);
+  console.log('Server running');
 });
 
-connectToMessageBroker();
 startCronJobs();
 
 const gracefulShutdown = () => {

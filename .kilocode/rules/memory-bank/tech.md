@@ -107,9 +107,6 @@ TELEGRAM_BOT_API_KEY=your-bot-token
 
 # Frontend
 FRONT_WEB_APP_ORIGIN_URL=http://localhost:5173
-
-# Message Queue
-LAVINMQ_HOST=localhost
 ```
 
 ### Local Development Commands

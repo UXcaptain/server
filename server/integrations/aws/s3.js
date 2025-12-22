@@ -33,3 +33,17 @@ export const generateS3PutPresignedUrl = async (key) => {
 
   return analysisEntryPutPresignedUrl;
 };
+
+export const getS3Object = async (key) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.AWS_BUCKET,
+    Key: key,
+  });
+
+  const s3Object = await s3client.send(command);
+
+  // Read the response body as a stream and convert to string so it is workable
+  const responseBody = await s3Object.Body.transformToString();
+
+  return responseBody;
+};
