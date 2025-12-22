@@ -26,7 +26,7 @@ export const requestAnalysisEntryTranscriptionToAWSTranscribe = async (transcrip
 export const listCompletedTranscriptionJobsFromAWS = async () => {
   const command = new ListTranscriptionJobsCommand({
     Status: 'COMPLETED',
-    MaxResults: 10, // Ensure memory is not hogged - if more ara available, they will be processed in the next iteration
+    MaxResults: 10, // Ensure memory is not hogged - if more are available, they will be processed in the next iteration
   });
 
   const completedTranscriptionJobs = await transcribeClient.send(command);
