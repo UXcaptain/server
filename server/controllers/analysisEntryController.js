@@ -25,7 +25,9 @@ export const updateAnalysisEntry = async (req, res) => {
     languageCode: 'es-ES',
   };
 
-  processTranscriptionRequest(transcriptionRequest); // Fire-and-forget
+  if (process.env.TRANSCRIPTION_ENABLED === 'true') {
+    processTranscriptionRequest(transcriptionRequest); // Fire-and-forget
+  }
 
   return res.status(200).json({
     message: 'Analysis entry updated successfully',

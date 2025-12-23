@@ -6,7 +6,11 @@ import { markAnalysisEntriesAsCancelledScheduler } from './markAsCancelledAnalys
 export const startCronJobs = () => {
   try {
     deletePasswordResetTokensScheduler.start();
-    markAnalysisEntriesAsCancelledScheduler.start();
+
+    if (process.env.TRANSCRIPTION_ENABLED === true) {
+      markAnalysisEntriesAsCancelledScheduler.start();
+    }
+
     getCompletedTranscriptionJobsScheduler.start();
 
     console.log('Cron jobs started');
