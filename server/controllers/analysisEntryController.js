@@ -1,4 +1,4 @@
-import { generateS3GetPresignedUrl, generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
+import { generateS3GetPresignedUrl } from '../integrations/aws/s3.js';
 import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmitted } from '../models/analysisEntryModel.js';
 import { processTranscriptionRequest } from '../services/analysisService.js';
 
@@ -69,19 +69,5 @@ export const getAnalysisEntryDetails = async (req, res) => {
     message: 'recording & transcription links retrieved successfully',
     analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
     transcriptionSegments: analysisEntryDetails.transcription_segments,
-  });
-};
-
-export const getAnalysisEntryPresignedUploadUrl = async (req, res) => {
-  const { analysisEntryId, analysisId } = req.body;
-
-  const key = `analysis/${analysisId}/${analysisEntryId}/recording.mp4`;
-
-  const analysisEntryPresignedUrl = await generateS3PutPresignedUrl(key);
-
-  return res.status(200).json({
-    success: true,
-    message: 'PresignedUploadUrl retrieved successfully',
-    analysisEntryPresignedUploadUrl: analysisEntryPresignedUrl,
   });
 };
