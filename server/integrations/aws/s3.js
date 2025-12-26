@@ -2,10 +2,12 @@ import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export const s3client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: { // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/modules/credentials.html
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION, // irrelevant since  miniIO doesnt takei into account
+  endpoint: 'http://localhost:9000', // Container network endpoint
+  forcePathStyle: true, // Required for MinIO path-style URLs
+  credentials: {
+    accessKeyId: process.env.MINIO_ROOT_USER,
+    secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
   },
 });
 
