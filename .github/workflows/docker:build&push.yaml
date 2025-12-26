@@ -32,7 +32,7 @@ jobs:
                 images: sergion14/uxcaptain-server
                 tags: |
                     type=raw,value=${{ github.ref_name }}
-                    type=raw,value=${{ github.ref_name }}-${{ github.sha_short }}
+                    type=sha,value=${{ github.ref_name }}-${{ github.sha_short }}
         -
             name: Build and push
             uses: docker/build-push-action@v6
