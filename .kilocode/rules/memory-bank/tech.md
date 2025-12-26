@@ -89,7 +89,7 @@ PRISMA_POSTGRES_CONNECTION_STRING=postgresql://user:password@localhost:5432/uxca
 # AWS S3
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_REGION=eu-west-3
+S3_REGION=eu-west-3
 AWS_BUCKET=your-bucket-name
 
 # Stripe
