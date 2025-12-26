@@ -7,16 +7,16 @@ import {
 import { getS3Object } from './s3.js';
 import { logInfo } from '../../config/loggerFunctions.js';
 
-const transcribeClient = new TranscribeClient({ region: process.env.AWS_REGION });
+const transcribeClient = new TranscribeClient({ region: process.env.S3_REGION });
 
 export const requestAnalysisEntryTranscriptionToAWSTranscribe = async (transcriptionRequest) => {
   const command = new StartTranscriptionJobCommand({
     TranscriptionJobName: transcriptionRequest.analysisEntryId,
     LanguageCode: transcriptionRequest.languageCode,
     Media: {
-      MediaFileUri: `s3://${process.env.AWS_BUCKET}/analysis/${transcriptionRequest.analysisId}/${transcriptionRequest.analysisEntryId}/recording.mp4`,
+      MediaFileUri: `s3://${process.env.S3_BUCKET}/analysis/${transcriptionRequest.analysisId}/${transcriptionRequest.analysisEntryId}/recording.mp4`,
     },
-    OutputBucketName: process.env.AWS_BUCKET,
+    OutputBucketName: process.env.S3_BUCKET,
     OutputKey: `analysis/${transcriptionRequest.analysisId}/${transcriptionRequest.analysisEntryId}/transcription.json`,
   });
 

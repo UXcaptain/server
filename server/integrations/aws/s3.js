@@ -13,7 +13,7 @@ export const s3client = new S3Client({
 
 export const generateS3GetPresignedUrl = async (key) => {
   const command = new GetObjectCommand({
-    Bucket: process.env.AWS_BUCKET,
+    Bucket: process.env.S3_BUCKET,
     Key: key,
   });
 
@@ -24,7 +24,7 @@ export const generateS3GetPresignedUrl = async (key) => {
 
 export const generateS3PutPresignedUrl = async (key) => {
   const command = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET,
+    Bucket: process.env.S3_BUCKET,
     Key: key,
     ContentType: 'video/mp4',
   });
@@ -38,7 +38,7 @@ export const generateS3PutPresignedUrl = async (key) => {
 
 export const getS3Object = async (key) => {
   const command = new GetObjectCommand({
-    Bucket: process.env.AWS_BUCKET,
+    Bucket: process.env.S3_BUCKET,
     Key: key,
   });
 
