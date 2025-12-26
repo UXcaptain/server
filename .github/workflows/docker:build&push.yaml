@@ -31,4 +31,4 @@ jobs:
                 context: .
                 platforms: linux/amd64 #,linux/arm64 - Not building for ARM, since ubuntu server is just amd64
                 push: true
-                tags: sergion14/uxcaptain:server-${{ github.ref_name }}
+                tags: sergion14/uxcaptain-server-${{ github.ref_name }}
