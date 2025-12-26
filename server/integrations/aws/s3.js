@@ -2,16 +2,18 @@ import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export const s3client = new S3Client({
-  region: process.env.AWS_REGION,
-  credentials: { // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/modules/credentials.html
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.S3_REGION, // irrelevant since  miniIO doesnt takei into account
+  endpoint: process.env.S3_ENDPOINT, // Container network endpoint
+  forcePathStyle: true, // Required for MinIO path-style URLs
+  credentials: {
+    accessKeyId: process.env.MINIO_ROOT_USER,
+    secretAccessKey: process.env.MINIO_ROOT_PASSWORD,
   },
 });
 
 export const generateS3GetPresignedUrl = async (key) => {
   const command = new GetObjectCommand({
-    Bucket: process.env.AWS_BUCKET,
+    Bucket: process.env.S3_BUCKET,
     Key: key,
   });
 
@@ -22,7 +24,7 @@ export const generateS3GetPresignedUrl = async (key) => {
 
 export const generateS3PutPresignedUrl = async (key) => {
   const command = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET,
+    Bucket: process.env.S3_BUCKET,
     Key: key,
     ContentType: 'video/mp4',
   });
@@ -32,4 +34,18 @@ export const generateS3PutPresignedUrl = async (key) => {
   });
 
   return analysisEntryPutPresignedUrl;
+};
+
+export const getS3Object = async (key) => {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET,
+    Key: key,
+  });
+
+  const s3Object = await s3client.send(command);
+
+  // Read the response body as a stream and convert to string so it is workable
+  const responseBody = await s3Object.Body.transformToString();
+
+  return responseBody;
 };

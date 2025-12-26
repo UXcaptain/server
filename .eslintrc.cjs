@@ -44,5 +44,8 @@ module.exports = {
     'import/no-relative-packages': 'off',
     'no-case-declarations': 'off',
     'max-len': 'off',
+    'no-plusplus': 'off',
+    'no-await-in-loop': 'off',
+    'no-restricted-syntax': 'off',
   },
 };

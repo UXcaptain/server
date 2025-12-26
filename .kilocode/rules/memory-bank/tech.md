@@ -89,8 +89,8 @@ PRISMA_POSTGRES_CONNECTION_STRING=postgresql://user:password@localhost:5432/uxca
 # AWS S3
 AWS_ACCESS_KEY_ID=your-access-key
 AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_REGION=eu-west-3
-AWS_BUCKET=your-bucket-name
+S3_REGION=eu-west-3
+S3_BUCKET=your-bucket-name
 
 # Stripe
 STRIPE_API_KEY=sk_test_...
@@ -107,9 +107,6 @@ TELEGRAM_BOT_API_KEY=your-bot-token
 
 # Frontend
 FRONT_WEB_APP_ORIGIN_URL=http://localhost:5173
-
-# Message Queue
-LAVINMQ_HOST=localhost
 ```
 
 ### Local Development Commands
