@@ -179,10 +179,7 @@ export const loginLocal = async (req, res, next) => {
 
   return passport.authenticate('local', (err, user /* , info */) => {
     if (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'An error occurred during login',
-      });
+      return next(err);
     }
 
     if (!user) { //* Will trigger if user does not exist
