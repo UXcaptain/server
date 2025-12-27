@@ -458,8 +458,6 @@ paths:
                       schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
                                 example: Login successful
@@ -477,8 +475,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: The combination of email and password is incorrect
@@ -490,8 +486,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: User could not be created due to validation errors
@@ -507,8 +501,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
