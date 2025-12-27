@@ -1,4 +1,18 @@
 name: uxcaptain
+
+networks:
+  uxcaptain-network:
+    name: uxcaptain-network
+    driver: bridge
+
+volumes:
+  uxcaptain-database:
+    name: uxcaptain-database
+
+  whisper-transcription-models:
+    name: whisper-transcription-models
+
+
 services:
   # server:
   #   container_name: server
@@ -40,6 +54,15 @@ services:
           # condition: service_started
   #   networks:
   #     - uxcaptain-network
+
+  #   deploy:
+  #       resources:
+  #         limits:
+  #           cpus: '1.0'
+  #           memory: 512M
+  #         reservations:
+  #           cpus: '0.5'
+  #           memory: 256M
   
   minio:
     image: minio/minio:latest
@@ -74,11 +97,22 @@ services:
     networks:
       - uxcaptain-network 
 
-networks:
-  uxcaptain-network:
-    name: uxcaptain-network
-    driver: bridge
+  whisper-transcribe:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    container_name: whisper-asr
+    ports:
+      - 9006:9000
+    volumes:
+      - whisper-transcription-models:/root/.cache  # Model persistence (~2-5GB)
+      - /Users/martaperezsanchez/repos/minio:ro  # Mount your video storage
+    environment:
+      - ASR_MODEL=medium  # Or base/tiny for speed
+      - ASR_DEVICE=cpu
+      - ASR_ENGINE=openai_whisper
+      - MAX_REQUEST_SIZE=5000  # MB for large videos
+    restart: unless-stopped
+    networks:
+      - uxcaptain-network  # Same as MinIO/monolith
 
-volumes:
-  uxcaptain-database:
+
 
