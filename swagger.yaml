@@ -458,8 +458,6 @@ paths:
                       schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
                                 example: Login successful
@@ -477,12 +475,20 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: The combination of email and password is incorrect
              
+            403:
+              description: Participant login is disabled
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: Participant login is disabled
             422:
               description: Validation error
               content:
@@ -490,8 +496,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: User could not be created due to validation errors
@@ -507,8 +511,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                     $ref: '#/components/schemas/InternalErrorMessage'
 
