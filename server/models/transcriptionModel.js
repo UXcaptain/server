@@ -2,7 +2,7 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 
 const prisma = new PrismaClient();
 
-export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
+export const insertTranscriptionJobInDb = async (transcriptionRequest) => {
   await prisma.transcriptionJob.create({
     data: {
       analysis_entry_id: transcriptionRequest.analysisEntryId,
@@ -12,7 +12,7 @@ export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
   });
 };
 
-export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
+export const markInProgressSingleTranscriptionJobInDb = async (analysisEntryId) => {
   const whereClause = {
     analysis_entry_id: analysisEntryId,
   };
@@ -62,4 +62,21 @@ export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, nor
       },
     },
   });
+};
+
+export const getPendingTranscriptionJobsFromDb = async () => {
+  const whereClause = {
+    status: 'PENDING',
+  };
+
+  const pendingTranscriptionJobs = await prisma.transcriptionJob.findMany({
+    where: whereClause,
+    select: {
+      analysis_entry_id: true,
+      language_code: true,
+    },
+    take: 10,
+  });
+
+  return pendingTranscriptionJobs;
 };
