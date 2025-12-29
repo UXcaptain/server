@@ -110,7 +110,10 @@ services:
       - ASR_DEVICE=cpu
       - ASR_ENGINE=openai_whisper
       - MAX_REQUEST_SIZE=5000  # MB for large videos
+      - MODEL_IDLE_TIMEOUT=900  # Keep model loaded 15min
     restart: unless-stopped
+    depends_on:
+      - minio
     networks:
       - uxcaptain-network  # Same as MinIO/monolith
 
