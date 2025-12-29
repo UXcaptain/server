@@ -1,4 +1,5 @@
 import { generateS3GetPresignedUrl } from '../integrations/aws/s3.js';
+import { generateS3GetPresignedUrl } from '../integrations/s3-client/s3.js';
 import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmitted } from '../models/analysisEntryModel.js';
 import { processTranscriptionRequest } from '../services/analysisService.js';
 
