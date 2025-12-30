@@ -104,13 +104,13 @@ services:
       - 9006:9000
     volumes:
       - whisper-transcription-models:/root/.cache  # Model persistence (~2-5GB)
-      - /Users/martaperezsanchez/repos/minio:ro  # Mount your video storage
     environment:
       - ASR_MODEL=medium  # Or base/tiny for speed
       - ASR_DEVICE=cpu
       - ASR_ENGINE=openai_whisper
       - MAX_REQUEST_SIZE=5000  # MB for large videos
-      - MODEL_IDLE_TIMEOUT=900  # Keep model loaded 15min
+      - MODEL_IDLE_TIMEOUT=900  # in Seconds - Keep model loaded 15min+
+      - WORKERS= 2 # handle 2 concurrent requests - be extra-safe to avoid ram overload
     restart: unless-stopped
     depends_on:
       - minio
