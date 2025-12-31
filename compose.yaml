@@ -97,25 +97,30 @@ services:
     networks:
       - uxcaptain-network 
 
-  whisper-transcribe:
-    image: onerahmet/openai-whisper-asr-webservice:latest
-    container_name: whisper-asr
-    ports:
-      - 9006:9000
-    volumes:
-      - whisper-transcription-models:/root/.cache  # Model persistence (~2-5GB)
-    environment:
-      - ASR_MODEL=medium  # Or base/tiny for speed
-      - ASR_DEVICE=cpu
-      - ASR_ENGINE=openai_whisper
-      - MAX_REQUEST_SIZE=5000  # MB for large videos
-      - MODEL_IDLE_TIMEOUT=900  # in Seconds - Keep model loaded 15min+
-      - WORKERS= 2 # handle 2 concurrent requests - be extra-safe to avoid ram overload
-    restart: unless-stopped
-    depends_on:
-      - minio
-    networks:
-      - uxcaptain-network  # Same as MinIO/monolith
+  faster-whisper-transcribe:
+      image: onerahmet/openai-whisper-asr-webservice:latest
+      container_name: faster-whisper-asr
+      ports:
+        - 9007:9000
+      volumes:
+        - whisper-transcription-models:/root/.cache  # Model persistence (~2-5GB)
+      environment:
+        - ASR_MODEL=medium  # tiny,base,small,medium,large https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-the-model
+        - ASR_DEVICE=cpu # https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-device-and-quantization
+        - ASR_ENGINE=faster_whisper # openai_whisper, faster_whisper, whisperx -- https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#whisperx
+        - MODEL_IDLE_TIMEOUT=0  # in Seconds - Keep model loaded - https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-the-model-unloading-timeout
+        - ASR_QUANTIZATION=int8 # https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-device-and-quantization
+      restart: unless-stopped
+      depends_on:
+        - minio
+      networks:
+        - uxcaptain-network  # Same as MinIO/monolith
+      # deploy:
+      #   resources:
+      #     limits:
+      #       cpus: '4.0'
+      #       memory: 5000M
+
 
 
 

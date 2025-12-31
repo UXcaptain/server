@@ -25,7 +25,7 @@ export const markInProgressSingleTranscriptionJobInDb = async (analysisEntryId) 
   });
 };
 
-export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => {
+export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => { // TODO MARKED FOR DELETION
   const whereClause = {
     analysis_entry_id: transcriptionJobName,
   };
