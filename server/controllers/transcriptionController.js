@@ -14,7 +14,7 @@ export const processPendingTranscriptionJobs = async (transcriptionRequest) => {
     console.log('pendingTranscriptionJobs', pendingTranscriptionJobs);
 
     for (const transcriptionJob of pendingTranscriptionJobs) {
-      logInfo('Processing transcription job', transcriptionJob);
+      logInfo(`Processing transcription job for analysis entry ID: ${transcriptionJob.analysis_entry_id}`, transcriptionJob);
       //   await requestAnalysisEntryTranscription(transcriptionJob);
       //   logInfo('Transcription request sent to AWS Transcribe', transcriptionJob);
 

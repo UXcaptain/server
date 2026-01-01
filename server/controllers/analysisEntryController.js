@@ -20,7 +20,7 @@ export const updateAnalysisEntry = async (req, res) => {
 
   const updatedAnalysisEntry = await markAnalysisEntryAsSubmitted(analysisEntryId);
 
-  const transcriptionRequest = {
+  const transcriptionJob = {
     analysisEntryId: analysisEntryId,
     analysisId: updatedAnalysisEntry.analysis_id,
     languageCode: 'es-ES',
@@ -28,10 +28,10 @@ export const updateAnalysisEntry = async (req, res) => {
 
   if (process.env.TRANSCRIPTION_ENABLED === 'true') {
     try {
-      await insertTranscriptionJobInDb(transcriptionRequest);
-      logInfo('Transcription request stored in DB', transcriptionRequest);
+      await insertTranscriptionJobInDb(transcriptionJob);
+      logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
     } catch (error) {
-      logError(`error inserting ${transcriptionRequest.analysisEntryId} analysisEntry's transcription request`);
+      logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`);
     }
   }
 
