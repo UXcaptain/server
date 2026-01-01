@@ -74,6 +74,11 @@ export const getPendingTranscriptionJobsFromDb = async () => {
     select: {
       analysis_entry_id: true,
       language_code: true,
+      AnalysisEntry: {
+        select: {
+          analysis_id: true,
+        },
+      },
     },
     take: 10,
   });
