@@ -2,7 +2,7 @@ import { CronJob } from 'cron';
 import { processPendingTranscriptionJobs } from '../controllers/transcriptionController.js';
 import { logError } from '../config/loggerFunctions.js';
 
-export const getPendingTranscriptionJobScheduler = new CronJob('* * * * *', async () => {
+export const getPendingTranscriptionJobScheduler = new CronJob('15 * * * *', async () => {
   try {
     await processPendingTranscriptionJobs();
   } catch (error) {
