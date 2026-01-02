@@ -1,6 +1,7 @@
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { transcribeRecording } from '../integrations/whisper-asr-webservice/transcribe.js';
-import { getPendingTranscriptionJobsFromDb, markInProgressSingleTranscriptionJobInDb } from '../models/transcriptionModel.js';
+import { getPendingTranscriptionJobsFromDb, storeNormalizedTranscriptionInDb } from '../models/transcriptionModel.js';
+import { normalizeTranscript } from '../utils/transcription/transcriptionNormalizer.js';
 
 export const processPendingTranscriptionJobs = async (transcriptionRequest) => {
   try {
@@ -11,21 +12,27 @@ export const processPendingTranscriptionJobs = async (transcriptionRequest) => {
       return;
     }
 
-    console.log('pendingTranscriptionJobs', pendingTranscriptionJobs);
-
     for (const transcriptionJob of pendingTranscriptionJobs) {
       logInfo(`Processing transcription job for analysis entry ID: ${transcriptionJob.analysis_entry_id}`, transcriptionJob);
-      //   await requestAnalysisEntryTranscription(transcriptionJob);
-      //   logInfo('Transcription request sent to AWS Transcribe', transcriptionJob);
 
-      const transcriptionResult = transcribeRecording(transcriptionJob.analysis_entry_id);
+      try {
+        const { analysis_entry_id: analysisEntryId } = transcriptionJob;
 
-      await markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id);
-      logInfo('Transcription request updated in DB', transcriptionJob);
+        const transcriptionJobResult = await transcribeRecording(transcriptionJob);
 
-      //   store transcriptionResult & mark job as completed
+        const { segments, text: fullText } = transcriptionJobResult;
+        // 4. Normalize transcription job result
+        const normalizedSegments = await normalizeTranscript(segments);
 
-      logInfo('Transcription result', transcriptionResult);
+        console.log('normalizedNONparsed', normalizedSegments);
+
+        //   store transcriptionResult & mark job as completed
+        // await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, normalizedSegments);
+
+        // logInfo(`Transcription job ${transcriptionJob.analysis_entry_id} completed`, transcriptionJobResult);
+      } catch (error) {
+        logError(`Error processing transcription job, ${transcriptionJob.analysis_entry_id}`, error);
+      }
     }
 
     logInfo('Transcription request updated in DB', transcriptionRequest);
