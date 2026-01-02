@@ -8,9 +8,7 @@ export const startCronJobs = () => {
   try {
     deletePasswordResetTokensScheduler.start();
 
-    if (process.env.TRANSCRIPTION_ENABLED === 'true') {
-      getPendingTranscriptionJobScheduler.start();
-    }
+    getPendingTranscriptionJobScheduler.start();
 
     markAnalysisEntriesAsCancelledScheduler.start();
   } catch (error) {

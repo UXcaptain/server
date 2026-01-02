@@ -26,13 +26,11 @@ export const updateAnalysisEntry = async (req, res) => {
     languageCode: 'es-ES',
   };
 
-  if (process.env.TRANSCRIPTION_ENABLED === 'true') {
-    try {
-      await insertTranscriptionJobInDb(transcriptionJob);
-      logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
-    } catch (error) {
-      logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`);
-    }
+  try {
+    await insertTranscriptionJobInDb(transcriptionJob);
+    logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
+  } catch (error) {
+    logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`);
   }
 
   return res.status(200).json({
