@@ -45,16 +45,16 @@ export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobNam
   return transcriptionJobDetailsResult;
 };
 
-export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, normalizedTranscriptionJob, transcriptionJobResult) => {
+export const storeNormalizedTranscriptionInDb = async (analysisEntryId, fullText, normalizedSegments) => {
   const whereClause = {
-    id: transcriptionJobName,
+    id: analysisEntryId,
   };
 
   await prisma.analysisEntry.update({
     where: whereClause,
     data: {
-      full_transcript: transcriptionJobResult.results.transcripts[0].transcript,
-      transcription_segments: normalizedTranscriptionJob.results.segments,
+      full_transcript: fullText,
+      transcription_segments: normalizedSegments,
       transcriptionJob: {
         update: {
           status: 'COMPLETED',

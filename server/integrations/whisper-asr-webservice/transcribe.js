@@ -1,7 +1,8 @@
 import axios from 'axios';
-import fs from 'node:fs';
 import FormData from 'form-data';
 import { getS3Object } from '../s3-client/s3.js';
+import { logError, logInfo } from '../../config/loggerFunctions.js';
+import { markInProgressSingleTranscriptionJobInDb } from '../../models/transcriptionModel.js';
 
 export const transcribeRecording = async (transcriptionJob) => {
   // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed via bind mount
@@ -21,15 +22,21 @@ export const transcribeRecording = async (transcriptionJob) => {
     vad_filter: 'true',
   });
 
-  // Create form data with only the audio file
+  // Create form data with the buffer directly
   const form = new FormData();
-  form.append('audio_file', fs.createReadStream(fileBuffer));
+  form.append('audio_file', fileBuffer, {
+    filename: 'recording.mp4',
+    contentType: 'video/mp4',
+  });
 
   // Make request with query parameters
   const response = await axios.post(`http://localhost:9007/asr?${params.toString()}`, form, {
     headers: { ...form.getHeaders() },
     timeout: 1200000, // 20min
   });
+
+  await markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id); // ! unsure how to set this, because if i trigger the transcription, the function will not advance to in progress - maybe handle in progress in transcribe.js?
+  logInfo('Transcription Job updated in DB', transcriptionJob);
 
   return response.data;
 };
