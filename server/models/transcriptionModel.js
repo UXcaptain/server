@@ -25,26 +25,6 @@ export const markInProgressSingleTranscriptionJobInDb = async (analysisEntryId) 
   });
 };
 
-export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => { // TODO MARKED FOR DELETION
-  const whereClause = {
-    analysis_entry_id: transcriptionJobName,
-  };
-
-  const transcriptionJobDetailsResult = await prisma.transcriptionJob.findUnique({
-    where: whereClause,
-    select: {
-      status: true,
-      AnalysisEntry: {
-        select: {
-          analysis_id: true,
-        },
-      },
-    },
-  });
-
-  return transcriptionJobDetailsResult;
-};
-
 export const storeNormalizedTranscriptionInDb = async (analysisEntryId, fullText, normalizedSegments) => {
   const whereClause = {
     id: analysisEntryId,
