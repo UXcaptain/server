@@ -1,8 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import { getS3Object } from '../s3-client/s3.js';
-import { logInfo } from '../../config/loggerFunctions.js';
-import { markInProgressSingleTranscriptionJobInDb } from '../../models/transcriptionModel.js';
 
 export const transcribeRecording = async (transcriptionJob) => {
   // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed via bind mount
@@ -32,10 +30,6 @@ export const transcribeRecording = async (transcriptionJob) => {
     headers: { ...form.getHeaders() },
     timeout: 1200000, // 20min
   });
-
-  markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id);
-
-  logInfo(`Transcription marked as in progress for analysis entry ${transcriptionJob.analysis_entry_id} updated in DB`);
 
   return response.data;
 };

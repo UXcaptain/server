@@ -1,6 +1,10 @@
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { transcribeRecording } from '../integrations/whisper-asr-webservice/transcribe.js';
-import { getPendingTranscriptionJobsFromDb, storeNormalizedTranscriptionInDb } from '../models/transcriptionModel.js';
+import {
+  getPendingTranscriptionJobsFromDb,
+  storeNormalizedTranscriptionInDb,
+  updateStatusSingleTranscriptionJobInDb,
+} from '../models/transcriptionModel.js';
 import { cleanUpTranscriptSegments } from '../utils/transcription/transcriptionNormalizer.js';
 
 export const processPendingTranscriptionJobs = async () => {
@@ -14,8 +18,12 @@ export const processPendingTranscriptionJobs = async () => {
   for (const transcriptionJob of pendingTranscriptionJobs) {
     logInfo(`Processing transcription job for analysis entry ID: ${transcriptionJob.analysis_entry_id}`);
 
+    const { analysis_entry_id: analysisEntryId } = transcriptionJob;
+
     try {
-      const { analysis_entry_id: analysisEntryId } = transcriptionJob;
+      // Mark job as IN_PROGRESS before making async call to prevent re-queuing
+      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'IN_PROGRESS');
+      logInfo(`Marked transcription job ${analysisEntryId} as IN_PROGRESS`);
 
       const transcriptionJobResult = await transcribeRecording(transcriptionJob);
 
@@ -25,9 +33,11 @@ export const processPendingTranscriptionJobs = async () => {
 
       await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, cleanedUpSegments);
 
-      logInfo(`Transcription job ${transcriptionJob.analysis_entry_id} completed successfully`);
+      logInfo(`Transcription job ${analysisEntryId} completed successfully`);
     } catch (error) {
-      logError(`Error processing transcription job, ${transcriptionJob.analysis_entry_id}`, error);
+      // Mark job back as PENDING to allow retry
+      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'IN_PROGRESS');
+      logError(`Error processing transcription job, ${analysisEntryId}`, error);
     }
   }
 };

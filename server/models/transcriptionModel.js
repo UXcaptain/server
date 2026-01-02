@@ -12,7 +12,7 @@ export const insertTranscriptionJobInDb = async (transcriptionRequest) => {
   });
 };
 
-export const markInProgressSingleTranscriptionJobInDb = async (analysisEntryId) => {
+export const updateStatusSingleTranscriptionJobInDb = async (analysisEntryId, status) => {
   const whereClause = {
     analysis_entry_id: analysisEntryId,
   };
@@ -20,7 +20,7 @@ export const markInProgressSingleTranscriptionJobInDb = async (analysisEntryId) 
   await prisma.transcriptionJob.update({
     where: whereClause,
     data: {
-      status: 'IN_PROGRESS',
+      status: status,
     },
   });
 };
