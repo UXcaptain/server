@@ -28,12 +28,13 @@ export const transcribeRecording = async (transcriptionJob) => {
   });
 
   // Make request with query parameters
-  const response = await axios.post(`http://localhost:9007/asr?${params.toString()}`, form, {
+  const response = await axios.post(`${process.env.TRANSCRIPTION_ENDPOINT}/asr?${params.toString()}`, form, {
     headers: { ...form.getHeaders() },
     timeout: 1200000, // 20min
   });
 
-  await markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id); // ! unsure how to set this, because if i trigger the transcription, the function will not advance to in progress - maybe handle in progress in transcribe.js?
+  markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id);
+
   logInfo(`Transcription marked as in progress for analysis entry ${transcriptionJob.analysis_entry_id} updated in DB`);
 
   return response.data;

@@ -23,7 +23,7 @@ export const updateAnalysisEntry = async (req, res) => {
   const transcriptionJob = {
     analysisEntryId: analysisEntryId,
     analysisId: updatedAnalysisEntry.analysis_id,
-    languageCode: 'es-ES',
+    languageCode: 'es',
   };
 
   try {
