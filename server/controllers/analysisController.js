@@ -7,7 +7,7 @@ import {
   from '../models/analysisModel.js';
 
 import { createAnalysisEntryInDb } from '../models/analysisEntryModel.js';
-import { generateS3PutPresignedUrl } from '../integrations/aws/s3.js';
+import { generateS3PutPresignedUrl } from '../integrations/s3-client/s3.js';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {

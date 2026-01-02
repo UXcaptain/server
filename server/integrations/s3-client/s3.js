@@ -44,8 +44,8 @@ export const getS3Object = async (key) => {
 
   const s3Object = await s3client.send(command);
 
-  // Read the response body as a stream and convert to string so it is workable
-  const responseBody = await s3Object.Body.transformToString();
+  // Read the response body as a buffer for binary file handling
+  const responseBody = await s3Object.Body.transformToByteArray();
 
-  return responseBody;
+  return Buffer.from(responseBody);
 };

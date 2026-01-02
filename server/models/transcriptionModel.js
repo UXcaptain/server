@@ -2,7 +2,7 @@ import { PrismaClient } from '../config/generated/prisma/client/index.js';
 
 const prisma = new PrismaClient();
 
-export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
+export const insertTranscriptionJobInDb = async (transcriptionRequest) => {
   await prisma.transcriptionJob.create({
     data: {
       analysis_entry_id: transcriptionRequest.analysisEntryId,
@@ -12,7 +12,7 @@ export const insertTranscriptionRequestInDb = async (transcriptionRequest) => {
   });
 };
 
-export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
+export const updateStatusSingleTranscriptionJobInDb = async (analysisEntryId, status) => {
   const whereClause = {
     analysis_entry_id: analysisEntryId,
   };
@@ -20,41 +20,21 @@ export const updateSingleTranscriptionRequestInDb = async (analysisEntryId) => {
   await prisma.transcriptionJob.update({
     where: whereClause,
     data: {
-      status: 'IN_PROGRESS',
+      status: status,
     },
   });
 };
 
-export const getSingleTranscriptionJobDetailsFromDb = async (transcriptionJobName) => {
+export const storeNormalizedTranscriptionInDb = async (analysisEntryId, fullText, normalizedSegments) => {
   const whereClause = {
-    analysis_entry_id: transcriptionJobName,
-  };
-
-  const transcriptionJobDetailsResult = await prisma.transcriptionJob.findUnique({
-    where: whereClause,
-    select: {
-      status: true,
-      AnalysisEntry: {
-        select: {
-          analysis_id: true,
-        },
-      },
-    },
-  });
-
-  return transcriptionJobDetailsResult;
-};
-
-export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, normalizedTranscriptionJob, transcriptionJobResult) => {
-  const whereClause = {
-    id: transcriptionJobName,
+    id: analysisEntryId,
   };
 
   await prisma.analysisEntry.update({
     where: whereClause,
     data: {
-      full_transcript: transcriptionJobResult.results.transcripts[0].transcript,
-      transcription_segments: normalizedTranscriptionJob.results.segments,
+      full_transcript: fullText,
+      transcription_segments: normalizedSegments,
       transcriptionJob: {
         update: {
           status: 'COMPLETED',
@@ -62,4 +42,26 @@ export const storeNormalizedTranscriptionInDb = async (transcriptionJobName, nor
       },
     },
   });
+};
+
+export const getPendingTranscriptionJobsFromDb = async () => {
+  const whereClause = {
+    status: 'PENDING',
+  };
+
+  const pendingTranscriptionJobs = await prisma.transcriptionJob.findMany({
+    where: whereClause,
+    select: {
+      analysis_entry_id: true,
+      language_code: true,
+      AnalysisEntry: {
+        select: {
+          analysis_id: true,
+        },
+      },
+    },
+    take: 10,
+  });
+
+  return pendingTranscriptionJobs;
 };
