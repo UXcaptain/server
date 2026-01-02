@@ -26,7 +26,7 @@ const createSegmentsFromItems = (segments) => {
         transcript: item.text.trim(),
       };
 
-      segments.push(segment);
+      cleanedSegments.push(segment);
     }
   }
 

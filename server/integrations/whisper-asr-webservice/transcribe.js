@@ -1,15 +1,13 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import { getS3Object } from '../s3-client/s3.js';
-import { logError, logInfo } from '../../config/loggerFunctions.js';
+import { logInfo } from '../../config/loggerFunctions.js';
 import { markInProgressSingleTranscriptionJobInDb } from '../../models/transcriptionModel.js';
 
 export const transcribeRecording = async (transcriptionJob) => {
   // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed via bind mount
 
   const key = `analysis/${transcriptionJob.AnalysisEntry.analysis_id}/${transcriptionJob.analysis_entry_id}/recording.mp4`;
-
-  console.log('key', key);
 
   const fileBuffer = await getS3Object(key);
 
@@ -36,7 +34,7 @@ export const transcribeRecording = async (transcriptionJob) => {
   });
 
   await markInProgressSingleTranscriptionJobInDb(transcriptionJob.analysis_entry_id); // ! unsure how to set this, because if i trigger the transcription, the function will not advance to in progress - maybe handle in progress in transcribe.js?
-  logInfo('Transcription Job updated in DB', transcriptionJob);
+  logInfo(`Transcription marked as in progress for analysis entry ${transcriptionJob.analysis_entry_id} updated in DB`);
 
   return response.data;
 };
