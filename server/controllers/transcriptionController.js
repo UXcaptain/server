@@ -33,6 +33,8 @@ export const processPendingTranscriptionJobs = async () => {
 
       await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, cleanedUpSegments);
 
+      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'COMPLETED');
+
       logInfo(`Transcription job ${analysisEntryId} completed successfully`);
     } catch (error) {
       // Mark job back as PENDING to allow retry
