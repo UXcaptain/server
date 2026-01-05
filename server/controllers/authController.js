@@ -172,7 +172,6 @@ export const checkSession = async (req, res) => {
 export const loginLocal = async (req, res, next) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'Analysis could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
@@ -180,22 +179,17 @@ export const loginLocal = async (req, res, next) => {
 
   return passport.authenticate('local', (err, user /* , info */) => {
     if (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'An error occurred during login',
-      });
+      return next(err);
     }
 
     if (!user) { //* Will trigger if user does not exist
       return res.status(401).json({
-        success: false,
         message: 'The combination of email and password is incorrect',
       });
     }
 
     if (user.role === 'participant') {
       return res.status(403).json({
-        success: false,
         message: 'Participant login is disabled',
       });
     }
@@ -215,7 +209,6 @@ export const loginLocal = async (req, res, next) => {
       updateUserLastLoginDate(user.id); // Fire-and-forget function
 
       return res.status(200).json({
-        success: true,
         message: 'Login successful',
         user: {
           id: user.id,

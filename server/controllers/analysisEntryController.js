@@ -1,6 +1,7 @@
-import { generateS3GetPresignedUrl } from '../integrations/aws/s3.js';
+import { logError, logInfo } from '../config/loggerFunctions.js';
+import { generateS3GetPresignedUrl } from '../integrations/s3-client/s3.js';
 import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmitted } from '../models/analysisEntryModel.js';
-import { processTranscriptionRequest } from '../services/analysisService.js';
+import { insertTranscriptionJobInDb } from '../models/transcriptionModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
   const { analysisId } = req.body;
@@ -19,14 +20,17 @@ export const updateAnalysisEntry = async (req, res) => {
 
   const updatedAnalysisEntry = await markAnalysisEntryAsSubmitted(analysisEntryId);
 
-  const transcriptionRequest = {
+  const transcriptionJob = {
     analysisEntryId: analysisEntryId,
     analysisId: updatedAnalysisEntry.analysis_id,
-    languageCode: 'es-ES',
+    languageCode: 'es',
   };
 
-  if (process.env.TRANSCRIPTION_ENABLED === 'true') {
-    processTranscriptionRequest(transcriptionRequest); // Fire-and-forget
+  try {
+    await insertTranscriptionJobInDb(transcriptionJob);
+    logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
+  } catch (error) {
+    logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`, error);
   }
 
   return res.status(200).json({
