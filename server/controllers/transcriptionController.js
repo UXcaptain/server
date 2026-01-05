@@ -36,7 +36,7 @@ export const processPendingTranscriptionJobs = async () => {
       logInfo(`Transcription job ${analysisEntryId} completed successfully`);
     } catch (error) {
       // Mark job back as PENDING to allow retry
-      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'IN_PROGRESS');
+      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'PENDING');
       logError(`Error processing transcription job, ${analysisEntryId}`, error);
     }
   }
