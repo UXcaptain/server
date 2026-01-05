@@ -30,7 +30,7 @@ export const updateAnalysisEntry = async (req, res) => {
     await insertTranscriptionJobInDb(transcriptionJob);
     logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
   } catch (error) {
-    logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`);
+    logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`, error);
   }
 
   return res.status(200).json({
