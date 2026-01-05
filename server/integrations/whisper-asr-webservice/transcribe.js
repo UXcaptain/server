@@ -1,13 +1,13 @@
 import axios from 'axios';
 import FormData from 'form-data';
-import { getS3Object } from '../s3-client/s3.js';
+import { getInternalS3Object } from '../s3-client/s3.js';
 
 export const transcribeRecording = async (transcriptionJob) => {
-  // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed via bind mount
+  // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed directly via bind mount
 
   const key = `analysis/${transcriptionJob.AnalysisEntry.analysis_id}/${transcriptionJob.analysis_entry_id}/recording.mp4`;
 
-  const fileBuffer = await getS3Object(key);
+  const fileBuffer = await getInternalS3Object(key);
 
   // Create query parameters
   const params = new URLSearchParams({
@@ -16,7 +16,7 @@ export const transcribeRecording = async (transcriptionJob) => {
     word_timestamps: 'false', // Works with video audio
     language: 'es',
     vad_filter: 'true',
-  });
+  }); // Only showing Available params for faster-whisper engine we are using
 
   // Create form data with the buffer directly
   const form = new FormData();
