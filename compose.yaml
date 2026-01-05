@@ -35,6 +35,7 @@ services:
   #     S3_BUCKET: dev-analysis-entry-storage
   #     S3_REGION: ${S3_REGION}
   #     S3_EXTERNAL_ENDPOINT: ${S3_EXTERNAL_ENDPOINT}
+#       S3_INTERNAL_ENDPOINT: ${S3_EXTERNAL_ENDPOINT} # Has to be internal to allow in-server communication
   #     MINIO_ROOT_USER=${MINIO_ROOT_USER}
   #     MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
   #     TRANSCRIPTION_ENDPOINT= ${TRANSCRIPTION_ENDPOINT}
