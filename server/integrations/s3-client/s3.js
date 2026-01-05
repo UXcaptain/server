@@ -3,7 +3,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 export const s3client = new S3Client({
   region: process.env.S3_REGION, // irrelevant since  miniIO doesnt takei into account
-  endpoint: process.env.S3_ENDPOINT, // Container network endpoint
+  endpoint: process.env.S3_EXTERNAL_ENDPOINT, // Container network endpoint
   forcePathStyle: true, // Required for MinIO path-style URLs
   credentials: {
     accessKeyId: process.env.MINIO_ROOT_USER,
