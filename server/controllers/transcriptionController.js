@@ -11,7 +11,7 @@ export const processPendingTranscriptionJobs = async () => {
   const pendingTranscriptionJobs = await getPendingTranscriptionJobsFromDb();
 
   if (pendingTranscriptionJobs.length === 0) {
-    logInfo('No pending transcription jobs found');
+    console.log('No pending transcription jobs found');
     return;
   }
 
