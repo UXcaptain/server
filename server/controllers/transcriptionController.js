@@ -1,45 +1,88 @@
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { transcribeRecording } from '../integrations/whisper-asr-webservice/transcribe.js';
 import {
-  getPendingTranscriptionJobsFromDb,
+  getFirstTranscriptionJobFromDbByStatus,
   storeNormalizedTranscriptionInDb,
   updateStatusSingleTranscriptionJobInDb,
 } from '../models/transcriptionModel.js';
 import { cleanUpTranscriptSegments } from '../utils/transcription/transcriptionNormalizer.js';
 
 export const processPendingTranscriptionJobs = async () => {
-  const pendingTranscriptionJobs = await getPendingTranscriptionJobsFromDb();
+  // check if there is an ongoing transcription job
 
-  if (pendingTranscriptionJobs.length === 0) {
-    console.log('No pending transcription jobs found');
-    return;
+  let inProgressTranscriptionJob;
+
+  try {
+    inProgressTranscriptionJob = await getFirstTranscriptionJobFromDbByStatus('IN_PROGRESS');
+  } catch (error) {
+    return logError('error fetching first transcription job from DB', error);
+  }
+  if (inProgressTranscriptionJob) {
+    return console.log(`Transcription job id: ${inProgressTranscriptionJob.id} is in progress Skipping new jobs.`); // * Set as console log for registering but not cluttering logs
   }
 
-  for (const transcriptionJob of pendingTranscriptionJobs) {
-    logInfo(`Processing transcription job for analysis entry ID: ${transcriptionJob.analysis_entry_id}`);
+  let pendingTranscriptionJob;
 
-    const { analysis_entry_id: analysisEntryId } = transcriptionJob;
-
-    try {
-      // Mark job as IN_PROGRESS before making async call to prevent re-queuing
-      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'IN_PROGRESS');
-      logInfo(`Marked transcription job ${analysisEntryId} as IN_PROGRESS`);
-
-      const transcriptionJobResult = await transcribeRecording(transcriptionJob);
-
-      const { segments, text: fullText } = transcriptionJobResult;
-
-      const cleanedUpSegments = await cleanUpTranscriptSegments(segments);
-
-      await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, cleanedUpSegments);
-
-      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'COMPLETED');
-
-      logInfo(`Transcription job ${analysisEntryId} completed successfully`);
-    } catch (error) {
-      // Mark job back as PENDING to allow retry
-      await updateStatusSingleTranscriptionJobInDb(analysisEntryId, 'PENDING');
-      logError(`Error processing transcription job, ${analysisEntryId}`, error);
-    }
+  try {
+    pendingTranscriptionJob = await getFirstTranscriptionJobFromDbByStatus('PENDING');
+  } catch (error) {
+    return logError('Error fetching first pending transcription job from DB', error);
   }
+
+  if (!pendingTranscriptionJob) {
+    return console.log('No pending transcription jobs found.'); // * Set as console log for registering but not cluttering logs
+  }
+
+  const {
+    id: transcriptionJobId,
+    analysis_entry_id: analysisEntryId,
+  } = pendingTranscriptionJob;
+
+  logInfo(`Processing transcription job ${transcriptionJobId} for analysis entry ID: ${analysisEntryId}`);
+
+  try { // Mark job as IN_PROGRESS before making async call to prevent re-queuing
+    await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'IN_PROGRESS');
+    logInfo(`Marked transcription job ${transcriptionJobId} for analysis entry ID ${analysisEntryId} as IN_PROGRESS`);
+  } catch (error) {
+    return logError(`error updating status for transcription job ${transcriptionJobId} to IN_PROGRESS`, error);
+  }
+
+  let transcriptionJobResult;
+
+  try {
+    transcriptionJobResult = await transcribeRecording(pendingTranscriptionJob);
+  } catch (error) {
+    logError(`error transcribing recording for transcription job ${transcriptionJobId}`, error);
+    return await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'PENDING');
+  }
+  const {
+    segments,
+    text: fullText,
+  } = transcriptionJobResult;
+
+  let cleanedUpSegments;
+
+  try {
+    cleanedUpSegments = await cleanUpTranscriptSegments(segments);
+  } catch (error) {
+    logError(`error cleaning up transcript segments for transcription job ${transcriptionJobId}`, error);
+    return await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'PENDING');
+  }
+
+  try {
+    await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, cleanedUpSegments);
+  } catch (error) {
+    logError(`error inserting normalized transcription from transcription job ${transcriptionJobId} in analysis entry ${analysisEntryId}`, error);
+    return await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'PENDING');
+  }
+
+  try {
+    await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'COMPLETED');
+    logInfo(`Marked transcription job ${transcriptionJobId} for analysis entry ID ${analysisEntryId} as COMPLETED`);
+  } catch (error) {
+    logError(`error updating status for transcription job ${transcriptionJobId} to COMPLETED`, error);
+    return await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'PENDING');
+  }
+
+  return logInfo(`Transcription job ${transcriptionJobId} for analysis entry ID ${analysisEntryId} completed successfully`);
 };
