@@ -25,7 +25,7 @@ export const updateStatusSingleTranscriptionJobInDb = async (transcriptionJobId,
   });
 };
 
-export const storeNormalizedTranscriptionInDb = async (analysisEntryId, transcriptionJobId, fullText, normalizedSegments) => {
+export const storeNormalizedTranscriptionInDb = async (analysisEntryId, fullText, normalizedSegments) => {
   const whereClause = {
     id: analysisEntryId,
   };

@@ -70,7 +70,7 @@ export const processPendingTranscriptionJobs = async () => {
   }
 
   try {
-    await storeNormalizedTranscriptionInDb(analysisEntryId, transcriptionJobId, fullText, cleanedUpSegments);
+    await storeNormalizedTranscriptionInDb(analysisEntryId, fullText, cleanedUpSegments);
   } catch (error) {
     logError(`error inserting normalized transcription from transcription job ${transcriptionJobId} in analysis entry ${analysisEntryId}`, error);
     return await updateStatusSingleTranscriptionJobInDb(transcriptionJobId, 'PENDING');
