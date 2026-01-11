@@ -12,7 +12,7 @@ export const externalS3Client = new S3Client({
 });
 
 export const internalS3Client = new S3Client({
-  region: process.env.S3_REGION, // irrelevant since  miniIO doesnt takei into account
+  region: process.env.S3_REGION, // irrelevant since  miniIO doesnt take into account
   endpoint: process.env.S3_INTERNAL_ENDPOINT, // Container network endpoint
   forcePathStyle: true, // Required for MinIO path-style URLs
   credentials: {
