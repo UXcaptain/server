@@ -125,7 +125,7 @@ model AnalysisEntry {
   updated_at             DateTime                      @default(now()) @updatedAt
   transcription_segments Json?
   full_transcript        String?
-  transcriptionJob       TranscriptionJob?
+  transcriptionJob       TranscriptionJob[]
 
   @@index([analysis_id, status])
 }
@@ -133,7 +133,7 @@ model AnalysisEntry {
 model TranscriptionJob {
   id                Int                    @id @unique @default(autoincrement())
   AnalysisEntry     AnalysisEntry          @relation(fields: [analysis_entry_id], references: [id])
-  analysis_entry_id String                 @unique
+  analysis_entry_id String                 
   status            TranscriptionJobStatus @default(PENDING)
   created_at        DateTime               @default(now())
   updated_at        DateTime               @default(now()) @updatedAt
