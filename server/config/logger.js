@@ -1,12 +1,11 @@
 import pino from 'pino';
 
 const redactOptions = {
-  paths: ['context.userData.email', 'context.userData.password'],
+  paths: ['context.email', 'context.password'],
   censor: '[REDACTED]',
 };
 
 const transport = pino.transport({
-  redact: redactOptions,
   targets: [
     {
       target: 'pino-pretty',
@@ -18,4 +17,10 @@ const transport = pino.transport({
   ],
 });
 
-export const logger = pino(transport);
+// Apply redaction at the logger level so sensitive fields are removed
+export const logger = pino(
+  {
+    redact: redactOptions,
+  },
+  transport,
+);

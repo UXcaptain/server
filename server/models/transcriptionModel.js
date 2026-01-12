@@ -12,9 +12,9 @@ export const insertTranscriptionJobInDb = async (transcriptionRequest) => {
   });
 };
 
-export const updateStatusSingleTranscriptionJobInDb = async (analysisEntryId, status) => {
+export const updateStatusSingleTranscriptionJobInDb = async (transcriptionJobId, status) => {
   const whereClause = {
-    analysis_entry_id: analysisEntryId,
+    id: transcriptionJobId,
   };
 
   await prisma.transcriptionJob.update({
@@ -35,23 +35,19 @@ export const storeNormalizedTranscriptionInDb = async (analysisEntryId, fullText
     data: {
       full_transcript: fullText,
       transcription_segments: normalizedSegments,
-      transcriptionJob: {
-        update: {
-          status: 'COMPLETED',
-        },
-      },
     },
   });
 };
 
-export const getPendingTranscriptionJobsFromDb = async () => {
+export const getFirstTranscriptionJobFromDbByStatus = async (status) => {
   const whereClause = {
-    status: 'PENDING',
+    status: status,
   };
 
-  const pendingTranscriptionJobs = await prisma.transcriptionJob.findMany({
+  const pendingTranscriptionJobs = await prisma.transcriptionJob.findFirst({
     where: whereClause,
     select: {
+      id: true,
       analysis_entry_id: true,
       language_code: true,
       AnalysisEntry: {
@@ -60,7 +56,6 @@ export const getPendingTranscriptionJobsFromDb = async () => {
         },
       },
     },
-    take: 10,
   });
 
   return pendingTranscriptionJobs;

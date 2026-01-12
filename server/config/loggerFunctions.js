@@ -16,7 +16,7 @@ export const logError = (errorMessage, error, additionalInfo = 'N/A') => {
 
     sendErrorLogsToTelegram(errorMessage, error);
   } catch (err) {
-    return;
+    return; // Fail silently
   }
 };
 
