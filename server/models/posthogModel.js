@@ -5,7 +5,7 @@ export const posthogUserSignedUp = async (user) => {
   try {
     client.groupIdentify({
       groupType: 'company',
-      groupKey: user.company_id,
+      groupKey: user.company_id, // Sending ID until we have a name for the company
       properties: {
         name: 'unknown',
         subscription: 'free trial',
