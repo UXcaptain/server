@@ -138,6 +138,8 @@ model TranscriptionJob {
   created_at        DateTime               @default(now())
   updated_at        DateTime               @default(now()) @updatedAt
   language_code     String
+
+  @@index([status])
 }
 
 enum TranscriptionJobStatus {
