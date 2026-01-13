@@ -232,6 +232,13 @@ export const createCustomerInDb = async (req, res) => {
     username: req.body.username,
     password: await bcrypt.hash(req.body.password, 10),
     role: req.body.role,
+    utm_source: req.body.utm_source,
+    utm_medium: req.body.utm_medium,
+    utm_campaign: req.body.utm_campaign,
+    utm_content: req.body.utm_content,
+    utm_term: req.body.utm_term,
+    gclid: req.body.gclid,
+    fbclid: req.body.fbclid,
   };
 
   const isExistingUser = await getUserByEmail(userData.username);

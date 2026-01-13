@@ -44,4 +44,46 @@ export const createUserValidationSchema = {
     trim: true,
     escape: true,
   },
+  utm_source: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  utm_medium: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  utm_campaign: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  utm_content: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  utm_term: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  gclid: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
+  fbclid: {
+    optional: true,
+    isString: true,
+    trim: true,
+    escape: true,
+  },
 };
