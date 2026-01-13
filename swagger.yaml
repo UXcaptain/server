@@ -376,6 +376,20 @@ paths:
                                 $ref: "#/components/schemas/UserPassword"
                             role:
                                 $ref: "#/components/schemas/UserRoles"
+                            utm_source:
+                                $ref: "#/components/schemas/UtmSource"
+                            utm_medium:
+                                $ref: "#/components/schemas/UtmMedium"
+                            utm_campaign:
+                                $ref: "#/components/schemas/UtmCampaign"
+                            utm_content:
+                                $ref: "#/components/schemas/UtmContent"
+                            utm_term:
+                                $ref: "#/components/schemas/UtmTerm"
+                            gclid:
+                                $ref: "#/components/schemas/Gclid"
+                            fbclid:
+                                $ref: "#/components/schemas/Fbclid"
         responses:
             201:
                 description: Success
@@ -2047,3 +2061,38 @@ components:
       type: string
       description: Indicates an internal error failure (status 500)
       example: Internal server error - Please contact us
+
+    UtmSource:
+      type: string
+      description: UTM source parameter for tracking acquisition source
+      example: google
+
+    UtmMedium:
+      type: string
+      description: UTM medium parameter for tracking acquisition medium
+      example: cpc
+
+    UtmCampaign:
+      type: string
+      description: UTM campaign parameter for tracking acquisition campaign
+      example: spring_sale_2025
+
+    UtmContent:
+      type: string
+      description: UTM content parameter for tracking acquisition content
+      example: banner_ad
+
+    UtmTerm:
+      type: string
+      description: UTM term parameter for tracking acquisition search terms
+      example: user_research
+
+    Gclid:
+      type: string
+      description: Google Click Identifier for tracking Google Ads conversions
+      example: Cj0KCQjw5fWLBhCRARIsAC5XN5oJ3v7Q
+
+    Fbclid:
+      type: string
+      description: Facebook Click Identifier for tracking Facebook Ads conversions
+      example: IwAR2Kj3v7Q5oJ3v7Q5oJ3v7Q5oJ3v7Q

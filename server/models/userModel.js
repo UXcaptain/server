@@ -13,6 +13,13 @@ export const createCustomerInDB = async (userData) => {
       email: userData.username,
       password: userData.password,
       role: userData.role,
+      utm_source: userData.utm_source,
+      utm_medium: userData.utm_medium,
+      utm_campaign: userData.utm_campaign,
+      utm_content: userData.utm_content,
+      utm_term: userData.utm_term,
+      gclid: userData.gclid,
+      fbclid: userData.fbclid,
       CustomerProfile: {
         create: {
         },
