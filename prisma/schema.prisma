@@ -51,19 +51,36 @@ model Company {
 }
 
 model ParticipantProfile {
-  id            Int             @id @default(autoincrement())
-  name          String?
-  last_name     String?
-  age           String? // String to allow for prefer not to say option
-  gender        Genders?
-  invited_by    String?
-  country       String?
-  devices       String[]        @default([])
-  created_at    DateTime        @default(now())
-  updated_at    DateTime        @default(now()) @updatedAt
-  User          User            @relation(fields: [user_id], references: [id])
-  user_id       String          @unique
-  AnalysisEntry AnalysisEntry[]
+  id                    Int                   @id @default(autoincrement())
+  name                  String?
+  last_name             String?
+  nif                   String? // Need to we can process payments
+  payment_address       String?
+  birth_date            DateTime?
+  gender                Genders?
+  country               String?
+  available_devices     DeviceType[]          @default([COMPUTER, MOBILE])
+  education_level       EducationLevel?
+  yearly_income         Int?
+  parental_status       ParentalStatus?
+  technical_proficiency TechnicalProficiency?
+  approved              Boolean               @default(false)
+  created_at            DateTime              @default(now())
+  updated_at            DateTime              @default(now()) @updatedAt
+  User                  User                  @relation(fields: [user_id], references: [id])
+  user_id               String                @unique
+  AnalysisEntry         AnalysisEntry[]
+  ParticipantRating     ParticipantRating[]
+}
+
+model ParticipantRating {
+  id                 Int                @id @default(autoincrement())
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @default(now()) @updatedAt
+  participantProfile ParticipantProfile @relation(fields: [user_id], references: [id])
+  user_id            Int                @unique
+  score              Int
+  AnalysisEntry      AnalysisEntry[]
 }
 
 model CustomerProfile {
@@ -101,22 +118,32 @@ model Subscription {
 }
 
 model Analysis {
-  id               String         @id @default(uuid())
-  Company          Company        @relation(fields: [owner_company_id], references: [id])
-  owner_company_id String
-  device           AnalysisDevice
-  name             String
-  scenario         String
-  created_by       String
-  User             User           @relation(fields: [created_by], references: [id])
-
+  id                         String                 @id @default(uuid())
+  Company                    Company                @relation(fields: [owner_company_id], references: [id])
+  owner_company_id           String
+  device                     DeviceType
+  name                       String
+  scenario                   String
+  created_by                 String
+  User                       User                   @relation(fields: [created_by], references: [id])
   tasks                      Json
   url                        String
-  status                     AnalysisStatus  @default(draft)
-  created_at                 DateTime        @default(now())
-  updated_at                 DateTime        @default(now()) @updatedAt
+  status                     AnalysisStatus         @default(draft)
+  created_at                 DateTime               @default(now())
+  updated_at                 DateTime               @default(now()) @updatedAt
   max_number_of_participants Int
+  recruitment_type           RecruitmentType
+  min_age                    Int
+  max_age                    Int
+  gender                     Genders
+  country                    String
+  education_level            EducationLevel
+  min_yearly_income          Int
+  max_yearly_income          Int
+  technical_proficiency      TechnicalProficiency[]
+  parental_status            ParentalStatus
   AnalysisEntry              AnalysisEntry[]
+  available_spots            Int
 
   @@index([owner_company_id]) // Not a unique field, but requires an index
 }
@@ -133,6 +160,8 @@ model AnalysisEntry {
   transcription_segments Json?
   full_transcript        String?
   transcriptionJob       TranscriptionJob[]
+  ratings                ParticipantRating?            @relation(fields: [ratingsId], references: [id])
+  ratingsId              Int?
 
   @@index([analysis_id, status])
 }
@@ -140,7 +169,7 @@ model AnalysisEntry {
 model TranscriptionJob {
   id                Int                    @id @unique @default(autoincrement())
   AnalysisEntry     AnalysisEntry          @relation(fields: [analysis_entry_id], references: [id])
-  analysis_entry_id String                 
+  analysis_entry_id String
   status            TranscriptionJobStatus @default(PENDING)
   created_at        DateTime               @default(now())
   updated_at        DateTime               @default(now()) @updatedAt
@@ -161,17 +190,40 @@ enum Genders {
   prefer_not_to_say
 }
 
+enum EducationLevel {
+  no_education
+  primary_education
+  secondary_education
+  university_degree
+  masters_thesis
+}
+
+enum ParentalStatus {
+  yes_children
+  no_children
+}
+
+enum TechnicalProficiency {
+  low
+  medium
+  high
+}
+
+enum RecruitmentType {
+  user_provided
+  panel_provided
+}
+
 enum UserRoles {
   customer
   admin
   participant
 }
 
-enum AnalysisDevice {
-  computer
-  mobile
-  tablet
-  other
+enum DeviceType {
+  COMPUTER
+  MOBILE
+  TABLET
 }
 
 enum AnalysisStatus {
