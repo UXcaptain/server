@@ -98,8 +98,8 @@ export const createAnalysisSchema = {
   },
   gender: {
     isIn: {
-      options: [['MALE', 'FEMALE', 'OTHER']],
-      errorMessage: 'Gender must be MALE, FEMALE, or OTHER',
+      options: [['MALE', 'FEMALE', 'ANY']],
+      errorMessage: 'Gender must be MALE, FEMALE, or ANY',
     },
   },
   country: {
@@ -110,8 +110,8 @@ export const createAnalysisSchema = {
   },
   educationLevel: {
     isIn: {
-      options: [['NO_EDUCATION', 'PRIMARY_EDUCATION', 'SECONDARY_EDUCATION', 'UNIVERSITY_DEGREE', 'MASTERS_THESIS']],
-      errorMessage: 'Education level must be NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, or MASTERS_THESIS',
+      options: [['NO_EDUCATION', 'PRIMARY_EDUCATION', 'SECONDARY_EDUCATION', 'UNIVERSITY_DEGREE', 'MASTERS_THESIS', 'ANY']],
+      errorMessage: 'Education level must be NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS or ANY',
     },
   },
   minYearlyIncome: {
@@ -145,14 +145,14 @@ export const createAnalysisSchema = {
   },
   technicalProficiency: {
     isIn: {
-      options: [['BASIC', 'INTERMEDIATE', 'EXPERT']],
-      errorMessage: 'Technical proficiency must be BASIC, INTERMEDIATE, or EXPERT',
+      options: [['BASIC', 'INTERMEDIATE', 'EXPERT', 'ANY']],
+      errorMessage: 'Technical proficiency must be BASIC, INTERMEDIATE, EXPERT or ANY',
     },
   },
   parentalStatus: {
     isIn: {
-      options: [['YES_CHILDREN', 'NO_CHILDREN']],
-      errorMessage: 'Parental status must be YES_CHILDREN or NO_CHILDREN',
+      options: [['YES_CHILDREN', 'NO_CHILDREN', 'ANY']],
+      errorMessage: 'Parental status must be YES_CHILDREN, NO_CHILDREN or ANY',
     },
   },
 

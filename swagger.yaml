@@ -1486,8 +1486,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
                     example: The maximum number of participants has been reached.
@@ -1498,8 +1496,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
                   message:
                     type: string
                     example: Analysis not found
@@ -1900,9 +1896,9 @@ components:
 
     AnalysisDevice:
       type: string
-      enum: [computer, mobile, tablet, other]
+      enum: [COMPUTER, MOBILE, TABLET]
       description: The device that the participants should complete the analysis on
-      example: computer
+      example: COMPUTER
     
     AnalysisStatus:
       type: string
@@ -2122,7 +2118,7 @@ components:
 
     AnalysisMinAge:
       type: number
-      description: Minimum age requirement for participants
+      description: Minimum age requirement for participants - must be lower than AnalysisMaxAge
       examples: [
         18,
         25,
@@ -2131,7 +2127,7 @@ components:
 
     AnalysisMaxAge:
       type: number
-      description: Maximum age requirement for participants
+      description: Maximum age requirement for participants - must be higher than AnalysisMinAge
       examples: [
         45,
         60,
@@ -2140,37 +2136,40 @@ components:
 
     AnalysisGender:
       type: string
-      enum: [MALE, FEMALE, PREFER_NOT_TO_SAY]
+      enum: [MALE, FEMALE, PREFER_NOT_TO_SAY, ANY]
       description: Gender preference for participants
       examples: [
         MALE,
         FEMALE,
         PREFER_NOT_TO_SAY,
+        ANY,
       ]
 
     AnalysisCountry:
       type: string
-      enum: [ES]
+      enum: [ES, ANY]
       description: Country code or name for participant location filtering
       examples: [
-        ES
+        ES,
+        ANY
       ]
 
     AnalysisEducationLevel:
       type: string
-      enum: [NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS]
+      enum: [NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS, ANY]
       description: Education level requirement for participants
       examples: [
-        NO_EDUCATION
-        PRIMARY_EDUCATION
-        SECONDARY_EDUCATION
-        UNIVERSITY_DEGREE
-        MASTERS_THESIS
+        NO_EDUCATION,
+        PRIMARY_EDUCATION,
+        SECONDARY_EDUCATION,
+        UNIVERSITY_DEGREE,
+        MASTERS_THESIS,
+        ANY
       ]
 
     AnalysisMinYearlyIncome:
       type: number
-      description: Minimum yearly income requirement for participants (in EUR)
+      description: Minimum yearly income requirement for participants (in EUR) - must be lower than AnalysisMaxYearlyIncome
       examples: [
         30000,
         50000,
@@ -2179,7 +2178,7 @@ components:
 
     AnalysisMaxYearlyIncome:
       type: number
-      description: Maximum yearly income requirement for participants (in EUR)
+      description: Maximum yearly income requirement for participants (in EUR) - must be higher than AnalysisMinYearlyIncome
       examples: [
         50000,
         100000,
@@ -2188,17 +2187,21 @@ components:
 
     AnalysisTechnicalProficiency:
       type: string
-      enum: [BASIC, INTERMEDIATE, EXPERT]
+      enum: [BASIC, INTERMEDIATE, EXPERT, ANY]
       description: Technical proficiency level required for participants
       examples: [
         BASIC,
+        INTERMEDIATE,
+        EXPERT,
+        ANY
       ]
 
     AnalysisParentalStatus:
       type: string
-      enum: [YES_CHILDREN, NO_CHILDREN]
+      enum: [YES_CHILDREN, NO_CHILDREN, ANY]
       description: Parental status preference for participants
       examples: [
-        YES_CHILDREN
-        NO_CHILDREN       
+        YES_CHILDREN,
+        NO_CHILDREN,
+        ANY
       ]

@@ -188,6 +188,7 @@ enum Genders {
   MALE
   FEMALE
   PREFER_NOT_TO_SAY
+  ANY
 }
 
 enum EducationLevel {
@@ -196,17 +197,20 @@ enum EducationLevel {
   SECONDARY_EDUCATION
   UNIVERSITY_DEGREE
   MASTERS_THESIS
+  ANY
 }
 
 enum ParentalStatus {
   YES_CHILDREN
   NO_CHILDREN
+  ANY
 }
 
 enum TechnicalProficiency {
   BASIC
   INTERMEDIATE
   EXPERT
+  ANY
 }
 
 enum RecruitmentType {
@@ -224,10 +228,12 @@ enum DeviceType {
   COMPUTER
   MOBILE
   TABLET
+  ANY
 }
 
 enum Country {
   ES
+  ANY
 }
 
 enum AnalysisStatus {
