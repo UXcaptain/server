@@ -4,8 +4,9 @@ import {
   createAnalysis,
   getAllAnalyses,
   getSingleAnalysisData,
-  participateInAnalysis,
   getAvailableAnalyses,
+  participateInAnalysis,
+
 } from '../../../controllers/analysisController.js';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.js';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.js';

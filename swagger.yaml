@@ -1111,6 +1111,51 @@ paths:
                           message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
+  /v1/analysis/available:
+    get:
+      summary: Get available analyses for participants
+      description: Retrieve all published analyses that are available for the authenticated participant to join. Only returns analyses with available spots and matching the participant's device preferences.
+      tags: ["Analysis"]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Available analyses retrieved successfully
+                  analyses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          $ref: "#/components/schemas/AnalysisId"
+        403:
+          description: Participant is not approved to participate in analyses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not approved to participate in analyses.
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
   /v1/analysis/{AnalysisId}:
     get:
       summary: Retrieve one analysis
