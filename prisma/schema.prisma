@@ -24,8 +24,8 @@ model User {
   created_at          DateTime              @default(now())
   last_updated_at     DateTime              @default(now()) @updatedAt
   last_login_at       DateTime?
-  company_id          String
-  Company             Company               @relation(fields: [company_id], references: [id])
+  company_id          String?
+  Company             Company?               @relation(fields: [company_id], references: [id])
   PasswordResetTokens PasswordResetTokens[]
   Analysis            Analysis[]
   ParticipantProfile  ParticipantProfile[]
