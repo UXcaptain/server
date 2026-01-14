@@ -26,28 +26,42 @@ export const getAnalysisEntryDetailsById = async (entryId) => {
 };
 
 export const createAnalysisEntryInDb = async (analysisId, userId) => {
-  const createAnalysisEntryQuery = await prisma.analysisEntry.create({
-    data: {
-      status: 'in_progress',
-      Analysis: {
-        connect: {
-          id: analysisId,
-        },
-      },
-      ...(userId && {
-        ParticipantProfile: {
+  const [createAnalysisEntry, decrementAvailableSpotsInAnalysis] = await prisma.$transaction([
+
+    prisma.analysisEntry.create({
+      data: {
+        status: 'in_progress',
+        Analysis: {
           connect: {
-            user_id: userId,
+            id: analysisId,
           },
         },
-      }),
-    },
-    select: {
-      id: true,
-    },
-  });
+        ...(userId && {
+          ParticipantProfile: {
+            connect: {
+              user_id: userId,
+            },
+          },
+        }),
+      },
+      select: {
+        id: true,
+      },
+    }),
 
-  return createAnalysisEntryQuery;
+    prisma.analysis.update({
+      where: {
+        id: analysisId,
+      },
+      data: {
+        available_spots: {
+          decrement: 1,
+        },
+      },
+    }),
+  ]);
+
+  return createAnalysisEntry;
 };
 
 export const markAnalysisEntryAsSubmitted = async (analysisEntryId) => {
