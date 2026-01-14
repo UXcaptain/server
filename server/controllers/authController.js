@@ -188,11 +188,11 @@ export const loginLocal = async (req, res, next) => {
       });
     }
 
-    if (user.role === 'participant') {
-      return res.status(403).json({
-        message: 'Participant login is disabled',
-      });
-    }
+    // if (user.role === 'participant') {
+    //   return res.status(403).json({
+    //     message: 'Participant login is disabled',
+    //   });
+    // }
 
     // Log the user in and establish a session
     return req.login(user, (loginErr) => {
