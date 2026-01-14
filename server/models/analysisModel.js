@@ -148,17 +148,27 @@ export const getAvailableAnalysesForParticipant = async (participantProfile) => 
       max_age: {
         lte: participantProfile.age,
       },
-      gender: participantProfile.gender,
-      country: participantProfile.country,
-      education_level: participantProfile.education_level,
+      gender: {
+        in: [participantProfile.gender, 'any'],
+      },
+      country: {
+        in: [participantProfile.country, 'any'],
+      },
+      education_level: {
+        in: [participantProfile.education_level, 'any'],
+      },
       min_yearly_income: {
         gte: participantProfile.yearly_income,
       },
       max_yearly_income: {
         lte: participantProfile.yearly_income,
       },
-      parental_status: participantProfile.parental_status,
-      technical_proficiency: participantProfile.technical_proficiency,
+      parental_status: {
+        in: [participantProfile.parental_status, 'any'],
+      },
+      technical_proficiency: {
+        in: [participantProfile.technical_proficiency, 'any'],
+      },
     },
     select: {
       id: true,
