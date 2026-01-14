@@ -58,7 +58,7 @@ model ParticipantProfile {
   payment_address       String?
   birth_date            DateTime?
   gender                Genders?
-  country               String?
+  country               Country?
   available_devices     DeviceType[]          @default([COMPUTER, MOBILE])
   education_level       EducationLevel?
   yearly_income         Int?
@@ -123,7 +123,7 @@ model Analysis {
   owner_company_id           String
   device                     DeviceType
   name                       String
-  scenario                   String
+  scenario                   String?
   created_by                 String
   User                       User                   @relation(fields: [created_by], references: [id])
   tasks                      Json
@@ -136,11 +136,11 @@ model Analysis {
   min_age                    Int
   max_age                    Int
   gender                     Genders
-  country                    String
+  country                    Country
   education_level            EducationLevel
   min_yearly_income          Int
   max_yearly_income          Int
-  technical_proficiency      TechnicalProficiency[]
+  technical_proficiency      TechnicalProficiency
   parental_status            ParentalStatus
   AnalysisEntry              AnalysisEntry[]
   available_spots            Int
@@ -185,33 +185,33 @@ enum TranscriptionJobStatus {
 }
 
 enum Genders {
-  male
-  female
-  prefer_not_to_say
+  MALE
+  FEMALE
+  PREFER_NOT_TO_SAY
 }
 
 enum EducationLevel {
-  no_education
-  primary_education
-  secondary_education
-  university_degree
-  masters_thesis
+  NO_EDUCATION
+  PRIMARY_EDUCATION
+  SECONDARY_EDUCATION
+  UNIVERSITY_DEGREE
+  MASTERS_THESIS
 }
 
 enum ParentalStatus {
-  yes_children
-  no_children
+  YES_CHILDREN
+  NO_CHILDREN
 }
 
 enum TechnicalProficiency {
-  low
-  medium
-  high
+  BASIC
+  INTERMEDIATE
+  EXPERT
 }
 
 enum RecruitmentType {
-  user_provided
-  panel_provided
+  USER_PROVIDER
+  PANEL_PROVIDED
 }
 
 enum UserRoles {
@@ -224,6 +224,10 @@ enum DeviceType {
   COMPUTER
   MOBILE
   TABLET
+}
+
+enum Country {
+  ES
 }
 
 enum AnalysisStatus {

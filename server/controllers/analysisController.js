@@ -12,28 +12,14 @@ import { generateS3PutPresignedUrl } from '../integrations/s3-client/s3.js';
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'Analysis could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
 
-  const analysisData = {
-    name: req.body.name,
-    url: req.body.url,
-    device: req.body.device,
-    status: 'published', //* Default until we allow for drafts
-    tasks: req.body.tasks,
-    maxNumberOfParticipants: req.body.maxNumberOfParticipants,
-    scenario: req.body.scenario || 'No debes adoptar ningún rol específico.', // ! Patched for a fast fix - Should be a null value in the DB
-    ownerId: req.user.company_id,
-    createdBy: req.user.id,
-  };
-
-  const analysisCreationResponse = await createAnalysisInDb(analysisData);
+  const analysisCreationResponse = await createAnalysisInDb(req.body, req.user);
 
   return res.status(201).json({
-    success: true,
     message: 'analysis created successfully',
     createdAnalysisId: analysisCreationResponse.id,
   });

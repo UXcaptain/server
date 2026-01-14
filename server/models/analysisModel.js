@@ -4,24 +4,35 @@ import { posthogAnalysisCreated } from './posthogModel.js';
 
 const prisma = new PrismaClient();
 
-export const createAnalysisInDb = async (analysisData) => {
+export const createAnalysisInDb = async (analysisData, userData) => {
   const analysisCreationInDbResponse = await prisma.analysis.create({
     data: {
       name: analysisData.name,
       url: analysisData.url,
       device: analysisData.device,
-      status: analysisData.status,
+      status: 'published',
       tasks: analysisData.tasks,
       max_number_of_participants: analysisData.maxNumberOfParticipants,
-      scenario: analysisData.scenario,
+      scenario: null,
+      recruitment_type: analysisData.recruitmentType,
+      min_age: analysisData.minAge,
+      max_age: analysisData.maxAge,
+      gender: analysisData.gender,
+      country: analysisData.country,
+      education_level: analysisData.educationLevel,
+      min_yearly_income: analysisData.minYearlyIncome,
+      max_yearly_income: analysisData.maxYearlyIncome,
+      technical_proficiency: analysisData.technicalProficiency,
+      parental_status: analysisData.parentalStatus,
+      available_spots: analysisData.maxNumberOfParticipants,
       User: {
         connect: {
-          id: analysisData.createdBy,
+          id: userData.id,
         },
       },
       Company: {
         connect: {
-          id: analysisData.ownerId,
+          id: userData.company_id,
         },
       },
     },

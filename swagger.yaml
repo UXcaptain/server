@@ -1026,6 +1026,15 @@ paths:
                   - maxNumberOfParticipants
                   - device
                   - tasks
+                  - minAge
+                  - maxAge
+                  - gender
+                  - country
+                  - educationLevel
+                  - minYearlyIncome
+                  - maxYearlyIncome
+                  - technicalProficiency
+                  - parentalStatus
                 properties:
                       name:
                         $ref: '#/components/schemas/AnalysisName'
@@ -1039,6 +1048,24 @@ paths:
                         $ref: '#/components/schemas/AnalysisTasksArray'
                       device:
                         $ref: '#/components/schemas/AnalysisDevice'
+                      minAge:
+                        $ref: '#/components/schemas/AnalysisMinAge'
+                      maxAge:
+                        $ref: '#/components/schemas/AnalysisMaxAge'
+                      gender:
+                        $ref: '#/components/schemas/AnalysisGender'
+                      country:
+                        $ref: '#/components/schemas/AnalysisCountry'
+                      educationLevel:
+                        $ref: '#/components/schemas/AnalysisEducationLevel'
+                      minYearlyIncome:
+                        $ref: '#/components/schemas/AnalysisMinYearlyIncome'
+                      maxYearlyIncome:
+                        $ref: '#/components/schemas/AnalysisMaxYearlyIncome'
+                      technicalProficiency:
+                        $ref: '#/components/schemas/AnalysisTechnicalProficiency'
+                      parentalStatus:
+                        $ref: '#/components/schemas/AnalysisParentalStatus'
 
       responses:
         201:
@@ -1048,8 +1075,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
                   message:
                     type: string
                     examples: [
@@ -1064,8 +1089,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 examples: [
@@ -2096,3 +2119,86 @@ components:
       type: string
       description: Facebook Click Identifier for tracking Facebook Ads conversions
       example: IwAR2Kj3v7Q5oJ3v7Q5oJ3v7Q5oJ3v7Q
+
+    AnalysisMinAge:
+      type: number
+      description: Minimum age requirement for participants
+      examples: [
+        18,
+        25,
+        30
+      ]
+
+    AnalysisMaxAge:
+      type: number
+      description: Maximum age requirement for participants
+      examples: [
+        45,
+        60,
+        75
+      ]
+
+    AnalysisGender:
+      type: string
+      enum: [MALE, FEMALE, PREFER_NOT_TO_SAY]
+      description: Gender preference for participants
+      examples: [
+        MALE,
+        FEMALE,
+        PREFER_NOT_TO_SAY,
+      ]
+
+    AnalysisCountry:
+      type: string
+      enum: [ES]
+      description: Country code or name for participant location filtering
+      examples: [
+        ES
+      ]
+
+    AnalysisEducationLevel:
+      type: string
+      enum: [NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS]
+      description: Education level requirement for participants
+      examples: [
+        NO_EDUCATION
+        PRIMARY_EDUCATION
+        SECONDARY_EDUCATION
+        UNIVERSITY_DEGREE
+        MASTERS_THESIS
+      ]
+
+    AnalysisMinYearlyIncome:
+      type: number
+      description: Minimum yearly income requirement for participants (in EUR)
+      examples: [
+        30000,
+        50000,
+        75000
+      ]
+
+    AnalysisMaxYearlyIncome:
+      type: number
+      description: Maximum yearly income requirement for participants (in EUR)
+      examples: [
+        50000,
+        100000,
+        150000
+      ]
+
+    AnalysisTechnicalProficiency:
+      type: string
+      enum: [BASIC, INTERMEDIATE, EXPERT]
+      description: Technical proficiency level required for participants
+      examples: [
+        BASIC,
+      ]
+
+    AnalysisParentalStatus:
+      type: string
+      enum: [YES_CHILDREN, NO_CHILDREN]
+      description: Parental status preference for participants
+      examples: [
+        YES_CHILDREN
+        NO_CHILDREN       
+      ]
