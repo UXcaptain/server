@@ -1,14 +1,9 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.js';
-import {
-  logError,
-  logInfo,
-} from '../config/loggerFunctions.js';
+import { logInfo } from '../config/loggerFunctions.js';
 
 const prisma = new PrismaClient();
 
 export const getParticipantProfileFromDb = async (participantId) => {
-
   const whereClause = {
     user_id: participantId,
   };

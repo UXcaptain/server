@@ -3,11 +3,13 @@ import {
   getAllAnalysesFromDb,
   getAnalysisDataById,
   getAnalysisDataForParticipantsFromDb,
+  getAvailableAnalysesForParticipant,
 }
   from '../models/analysisModel.js';
 
 import { createAnalysisEntryInDb } from '../models/analysisEntryModel.js';
 import { generateS3PutPresignedUrl } from '../integrations/s3-client/s3.js';
+import { getParticipantProfileFromDb } from '../models/participantModel.js';
 
 export const createAnalysis = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -16,7 +18,6 @@ export const createAnalysis = async (req, res) => {
       errors: req.sanitizedErrors,
     });
   }
-
   const analysisCreationResponse = await createAnalysisInDb(req.body, req.user);
 
   return res.status(201).json({
@@ -117,7 +118,6 @@ export const participateInAnalysis = async (req, res) => {
   const analysisEntryPresignedUploadUrl = await generateS3PutPresignedUrl(key);
 
   return res.status(200).json({
-    success: true,
     message: 'Analysis info retrieved successfully',
     analysisData: analysisData,
     analysisEntryId: analysisEntry.id,
@@ -128,7 +128,15 @@ export const participateInAnalysis = async (req, res) => {
 export const getAvailableAnalyses = async (req, res) => {
   const { id: userId } = req.user;
 
-  const availableAnalyses = await getAvailableAnalysesForParticipant(userId);
+  const participantProfile = await getParticipantProfileFromDb(userId);
+
+  if (!participantProfile.approved) {
+    return res.status(403).json({
+      message: 'You are not approved to participate in analyses.',
+    });
+  }
+
+  const availableAnalyses = await getAvailableAnalysesForParticipant(participantProfile);
 
   return res.status(200).json({
     message: 'Available analyses retrieved successfully',
