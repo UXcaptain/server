@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
-  checkAnalysisAvailability,
   createAnalysis,
   getAllAnalyses,
   getSingleAnalysisData,
   participateInAnalysis,
+  getAvailableAnalyses,
 } from '../../../controllers/analysisController.js';
 import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSchema.js';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.js';
@@ -16,7 +16,7 @@ export const analysisRouter = Router();
 
 analysisRouter.post('/', checkAuthentication(), checkPermissionByRole('customer'), checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
 
-analysisRouter.post('/validate-participation', checkAnalysisAvailability);
+analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('participant'), getAvailableAnalyses);
 
 analysisRouter.post('/participate', participateInAnalysis);
 

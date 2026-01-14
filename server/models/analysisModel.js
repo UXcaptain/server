@@ -119,3 +119,40 @@ export const getAnalysisDataForParticipantsFromDb = async (analysisId) => {
 
   return analysisDataForParticipants;
 };
+
+export const getAvailableAnalysesForParticipant = async (participantProfile) => {
+  const availableAnalyses = await prisma.analysis.findMany({
+    where: {
+      status: 'published',
+      recruitment_type: 'panel_provided',
+      available_spots: {
+        gt: 0,
+      },
+      device: {
+        in: participantProfile.available_devices,
+      },
+      min_age: {
+        gte: participantProfile.age,
+      },
+      max_age: {
+        lte: participantProfile.age,
+      },
+      gender: participantProfile.gender,
+      country: participantProfile.country,
+      education_level: participantProfile.education_level,
+      min_yearly_income: {
+        gte: participantProfile.yearly_income,
+      },
+      max_yearly_income: {
+        lte: participantProfile.yearly_income,
+      },
+      parental_status: participantProfile.parental_status,
+      technical_proficiency: participantProfile.technical_proficiency,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return availableAnalyses;
+};

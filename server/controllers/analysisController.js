@@ -138,3 +138,14 @@ export const participateInAnalysis = async (req, res) => {
     analysisEntryPresignedUploadUrl: analysisEntryPresignedUploadUrl,
   });
 };
+
+export const getAvailableAnalyses = async (req, res) => {
+  const { id: userId } = req.user;
+
+  const availableAnalyses = await getAvailableAnalysesForParticipant(userId);
+
+  return res.status(200).json({
+    message: 'Available analyses retrieved successfully',
+    analyses: availableAnalyses,
+  });
+};
