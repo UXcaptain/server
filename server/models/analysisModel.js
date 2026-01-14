@@ -135,40 +135,42 @@ export const getAvailableAnalysesForParticipant = async (participantProfile) => 
   const availableAnalyses = await prisma.analysis.findMany({
     where: {
       status: 'published',
-      recruitment_type: 'panel_provided',
+      recruitment_type: 'PANEL_PROVIDED',
       available_spots: {
         gt: 0,
       },
       device: {
         in: participantProfile.available_devices,
       },
-      min_age: {
-        gte: participantProfile.age,
-      },
-      max_age: {
-        lte: participantProfile.age,
-      },
-      gender: {
-        in: [participantProfile.gender, 'any'],
-      },
-      country: {
-        in: [participantProfile.country, 'any'],
-      },
-      education_level: {
-        in: [participantProfile.education_level, 'any'],
-      },
-      min_yearly_income: {
-        gte: participantProfile.yearly_income,
-      },
-      max_yearly_income: {
-        lte: participantProfile.yearly_income,
-      },
-      parental_status: {
-        in: [participantProfile.parental_status, 'any'],
-      },
-      technical_proficiency: {
-        in: [participantProfile.technical_proficiency, 'any'],
-      },
+      // min_age: {
+      //   // gte: 1, // FIX
+      //   gte: participantProfile.age, // !FIX - this shouldnt work
+      // },
+      // max_age: {
+      //   // lte: 100, // FIX
+      //   lte: participantProfile.age, // !FIX - this shouldnt work -- change it to birthdate
+      // },
+      // gender: {
+      //   in: [participantProfile.gender, 'ANY'].filter(Boolean),
+      // },
+      // country: {
+      //   in: [participantProfile.country, 'ANY'].filter(Boolean),
+      // },
+      // education_level: {
+      //   in: [participantProfile.education_level, 'ANY'].filter(Boolean),
+      // },
+      // min_yearly_income: {
+      //   gte: participantProfile.yearly_income,
+      // },
+      // max_yearly_income: {
+      //   lte: participantProfile.yearly_income,
+      // },
+      // parental_status: {
+      //   in: [participantProfile.parental_status, 'ANY'].filter(Boolean),
+      // },
+      // technical_proficiency: {
+      //   in: [participantProfile.technical_proficiency, 'ANY'].filter(Boolean),
+      // },
     },
     select: {
       id: true,
