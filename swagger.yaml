@@ -1414,73 +1414,6 @@ paths:
                       analysisUrl:
                         $ref: '#/components/schemas/AnalysisUrl'
         
-  /v1/analysis/validate-participation:
-    post:
-      summary: Validate if analysis exists and is accepting new participants
-      description: Validate if analysis exists and is accepting new participants
-      tags: ["Analysis"]
-      requestBody:
-            required: true
-            content:
-                application/json:
-                    schema:
-                        type: object
-                        required:
-                          - analysisId
-                        properties:
-                            analysisId:
-                                $ref: "#/components/schemas/AnalysisId"
-
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
-                  message:
-                    type: string
-                    example: This analysis is accepting participants
-        403:
-          description: Maximum number of participants reached
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    type: string
-                    example: The maximum number of participants has been reached.
-        404:
-          description: Analysis not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    type: string
-                    example: Analysis not found
-        500:
-          description: Unexpected error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessFalseStatus"
-                  message:
-                    $ref: '#/components/schemas/InternalErrorMessage'
-
-
   /v1/analysis/participate:
     post:
       summary: Participate in an analysis
@@ -1506,8 +1439,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
                   message:
                     type: string
                     example: Analysis info retrieved successfully
