@@ -68,44 +68,29 @@ export const getSingleAnalysisData = async (req, res) => {
   });
 };
 
-export const checkAnalysisAvailability = async (req, res) => {
+export const participateInAnalysis = async (req, res) => {
   const { analysisId } = req.body;
+
+  let userId;
+
+  if (req.user) {
+    userId = req.user.id;
+  }
 
   const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
 
-  if (analysisDataForParticipants === null) {
+  if (!analysisDataForParticipants) {
     return res.status(404).json({
-      success: false,
       message: 'Analysis not found',
     });
   }
 
-  if (analysisDataForParticipants._count.AnalysisEntries >= analysisDataForParticipants.max_number_of_participants) {
+  if (analysisDataForParticipants.available_spots <= 0) {
     return res.status(403).json({
-      success: false,
       message: 'The maximum number of participants has been reached.',
     });
   }
-
-  return res.status(200).json({
-    success: true,
-    message: 'This analysis is accepting participants',
-  });
-};
-
-export const participateInAnalysis = async (req, res) => {
-  const { analysisId } = req.body;
-
-  const analysisDataForParticipants = await getAnalysisDataForParticipantsFromDb(analysisId);
-
-  if (analysisDataForParticipants._count.AnalysisEntry >= analysisDataForParticipants.max_number_of_participants) {
-    return res.status(403).json({
-      success: false,
-      message: 'The maximum number of participants has been reached.',
-    });
-  }
-
-  const analysisEntry = await createAnalysisEntryInDb(analysisId);
+  const analysisEntry = await createAnalysisEntryInDb(analysisId, userId);
 
   const analysisData = {
     tasks: analysisDataForParticipants.tasks,
