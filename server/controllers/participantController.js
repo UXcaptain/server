@@ -1,4 +1,3 @@
-import { logError } from '../config/loggerFunctions.js';
 import { updateParticipantProfileInDB } from '../models/participantModel.js';
 
 export const updateParticipantProfile = async (req, res) => {
@@ -19,8 +18,3 @@ export const updateParticipantProfile = async (req, res) => {
     profile: updatedProfile,
   });
 };
-
-export const getParticipantProfile = async (req, res) => {
-
-// TODO -- complete this function
-}

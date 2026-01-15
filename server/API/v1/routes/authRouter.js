@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { checkSchema } from 'express-validator';
 import {
-  createCustomerInDb,
+  createCustomer,
   updateUserPassword,
   checkSession,
   requestPasswordResetToken,
@@ -9,8 +9,8 @@ import {
   checkPasswordResetTokenValidity,
   updateRecoveredUserPassword,
   logoutUser,
-  // createAdminInDb,
-  createParticipantInDb,
+  // createAdmin,
+  createParticipant,
 } from '../../../controllers/authController.js';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.js';
 import { createUserValidationSchema } from '../../../utils/validators/createUserSchema.js';
@@ -25,11 +25,11 @@ export const authRouter = Router();
 
 authRouter.post('/login/local', checkSchema(userLoginValidationSchema), sanitizerResult, loginLocal);
 
-authRouter.post('/register/local/participant', checkSchema(createUserValidationSchema), sanitizerResult, createParticipantInDb);
+authRouter.post('/register/local/participant', checkSchema(createUserValidationSchema), sanitizerResult, createParticipant);
 
-authRouter.post('/register/local/customer', checkSchema(createUserValidationSchema), sanitizerResult, createCustomerInDb);
+authRouter.post('/register/local/customer', checkSchema(createUserValidationSchema), sanitizerResult, createCustomer);
 
-// authRouter.post('/register/local/admin', checkSchema(createUserValidationSchema), sanitizerResult, createAdminInDb); //* Admin registration is not publicly available
+// authRouter.post('/register/local/admin', checkSchema(createUserValidationSchema), sanitizerResult, createAdmin); //* Admin registration is not publicly available
 
 authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 

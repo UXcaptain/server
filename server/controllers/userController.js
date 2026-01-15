@@ -1,34 +1,19 @@
 import {
   getCustomerProfile,
-  getParticipantProfile,
   deleteUserInDb,
 } from '../models/userModel.js';
 import { logError } from '../config/loggerFunctions.js';
 
 export const getUserProfile = async (req, res) => {
-  const { id: userId, role } = req.user;
+  const { id: userId } = req.user;
 
-  if (role === 'customer') {
-    const customerProfile = await getCustomerProfile(userId);
+  const customerProfile = await getCustomerProfile(userId);
 
-    return res.status(200).json({
-      success: true,
-      message: 'user profile retrieved successfully - DB',
-      user: customerProfile,
-    });
-  }
-
-  if (role === 'participant') {
-    const participantProfile = await getParticipantProfile(req.userId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'participant profile retrieved successfully - DB',
-      user: participantProfile,
-    });
-  }
-
-  throw new Error('User role could not be detected');
+  return res.status(200).json({
+    success: true,
+    message: 'user profile retrieved successfully - DB',
+    user: customerProfile,
+  });
 };
 
 export const deleteUser = async (req, res) => {

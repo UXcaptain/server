@@ -52,7 +52,7 @@ export const createAdminInDB = async (userData) => {
   return createUserInDbQuery;
 };
 
-export const createParticipantInDB = async (userData) => {
+export const createParticipantInDb = async (userData) => {
   const createUserInDbQuery = await prisma.user.create({
     data: {
       email: userData.username,
@@ -180,22 +180,6 @@ export const getUserByStripeCustomerId = async (stripeCustomerId) => {
   });
 
   return user;
-};
-
-export const getParticipantProfile = async (participantId) => {
-  const whereClause = {
-    id: participantId,
-  };
-
-  const participantProfile = await prisma.user.findUnique({
-    where: whereClause,
-    select: {
-      email: true,
-      role: true,
-    },
-  });
-
-  return participantProfile;
 };
 
 export const getCustomerProfile = async (customerId) => {

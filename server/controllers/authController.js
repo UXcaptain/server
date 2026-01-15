@@ -8,7 +8,7 @@ import {
   createCustomerInDB,
   getUserPassword,
   updateUserLastLoginDate,
-  createParticipantInDB,
+  createParticipantInDb,
   createAdminInDB,
 } from '../models/userModel.js';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.js';
@@ -219,7 +219,7 @@ export const loginLocal = async (req, res, next) => {
   })(req, res, next);
 };
 
-export const createCustomerInDb = async (req, res) => {
+export const createCustomer = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
@@ -271,7 +271,7 @@ export const createCustomerInDb = async (req, res) => {
   });
 };
 
-export const createParticipantInDb = async (req, res) => {
+export const createParticipant = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
@@ -295,7 +295,7 @@ export const createParticipantInDb = async (req, res) => {
     });
   }
 
-  const createdUser = await createParticipantInDB(userData);
+  const createdUser = await createParticipantInDb(userData);
   return res.status(201).json({
     success: true,
     message: 'User created successfully',
@@ -303,7 +303,7 @@ export const createParticipantInDb = async (req, res) => {
   });
 };
 
-export const createAdminInDb = async (req, res) => {
+export const createAdmin = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
       success: false,
