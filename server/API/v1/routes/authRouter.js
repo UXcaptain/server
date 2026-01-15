@@ -9,7 +9,7 @@ import {
   checkPasswordResetTokenValidity,
   updateRecoveredUserPassword,
   logoutUser,
-  createAdminInDb,
+  // createAdminInDb,
   createParticipantInDb,
 } from '../../../controllers/authController.js';
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.js';
