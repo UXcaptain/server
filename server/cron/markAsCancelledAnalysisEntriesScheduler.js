@@ -1,9 +1,9 @@
 import { CronJob } from 'cron';
-import { markAnalysisEntriesAsCancelled } from '../models/analysisEntryModel.js';
+import { markAnalysisEntriesAsCancelled } from '../controllers/analysisEntryController.js';
 
 export const markAnalysisEntriesAsCancelledScheduler = new CronJob(
   '0 * * * *',
   () => {
-    markAnalysisEntriesAsCancelled();
+    markAnalysisEntriesAsCancelled(); // Fire-and-forget
   },
 );

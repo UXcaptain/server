@@ -82,7 +82,7 @@ export const markAnalysisEntryAsSubmitted = async (analysisEntryId) => {
   return analysisEntryUpdateQuery;
 };
 
-export const markAnalysisEntriesAsCancelled = async () => {
+export const findExpiredAnalysisEntriesInDb = async () => {
   const sixtyMinutesAgo = new Date(Date.now() - 60 * 60 * 1000);
 
   const whereClause = {
@@ -92,16 +92,48 @@ export const markAnalysisEntriesAsCancelled = async () => {
     },
   };
 
-  const analysisEntriesMarkedAsCancelledQuery = await prisma.analysisEntry.updateMany({
+  const expiredAnalysisEntriesQuery = await prisma.analysisEntry.findMany({
     where: whereClause,
-    data: {
-      status: 'cancelled',
+    select: {
+      id: true,
+      analysis_id: true,
     },
   });
 
-  if (analysisEntriesMarkedAsCancelledQuery.count > 0) {
-    logInfo(`Marked ${analysisEntriesMarkedAsCancelledQuery.count} analysis entries as cancelled automatically`);
-  }
+  return expiredAnalysisEntriesQuery;
+};
+
+export const markAnalysisEntriesAsCancelledInDb = async (expiredAnalysisEntries, groupedEntries) => {
+  const markedAnalysisEntries = await prisma.$transaction(
+    async (tx) => {
+      // Update all entries to cancelled
+      const markedEntries = await tx.analysisEntry.updateMany({
+        where: {
+          id: {
+            in: expiredAnalysisEntries.map((entry) => entry.id),
+          },
+        },
+        data: {
+          status: 'cancelled',
+        },
+      });
+
+      // Update each analysis's available_spots by the count of entries
+      // groupedEntries is [[analysisId, count], ...]
+      await Promise.all(groupedEntries.map(([analysisId, count]) => tx.analysis.update({
+        where: { id: analysisId },
+        data: {
+          available_spots: {
+            increment: count,
+          },
+        },
+      })));
+
+      return markedEntries;
+    },
+  );
+
+  return markedAnalysisEntries;
 };
 
 export const insertAnalysisEntryTranscriptionInDb = async (transcriptionCompletedMessage) => {

@@ -1,6 +1,8 @@
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { generateS3GetPresignedUrl } from '../integrations/s3-client/s3.js';
-import { createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmitted } from '../models/analysisEntryModel.js';
+import {
+  createAnalysisEntryInDb, findExpiredAnalysisEntriesInDb, getAnalysisEntryDetailsById, markAnalysisEntriesAsCancelledInDb, markAnalysisEntryAsSubmitted,
+} from '../models/analysisEntryModel.js';
 import { insertTranscriptionJobInDb } from '../models/transcriptionModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
@@ -74,4 +76,38 @@ export const getAnalysisEntryDetails = async (req, res) => {
     analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
     transcriptionSegments: analysisEntryDetails.transcription_segments,
   });
+};
+
+export const markAnalysisEntriesAsCancelled = async () => {
+  const expiredAnalysisEntries = await findExpiredAnalysisEntriesInDb();
+
+  if (expiredAnalysisEntries.length === 0) {
+    console.log('No expired analysis entries found');
+    return;
+  }
+
+  // Helper function to group entries by analysis_id - returns array of [analysisId, count] pairs
+  const groupEntriesByAnalysisId = (entries) => {
+    const grouped = entries.reduce((acc, entry) => {
+      acc[entry.analysis_id] = (acc[entry.analysis_id] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Convert object to array of [key, value] pairs
+    // analysis_id is a String (UUID), not a number
+    return Object.entries(grouped).map(([analysisId, count]) => [
+      analysisId,
+      count,
+    ]);
+  };
+
+  const groupedEntries = groupEntriesByAnalysisId(expiredAnalysisEntries);
+
+  console.log(groupedEntries);
+
+  const markedAnalysisEntries = await markAnalysisEntriesAsCancelledInDb(expiredAnalysisEntries, groupedEntries);
+
+  if (markedAnalysisEntries.count > 0) {
+    console.log(`Marked ${markedAnalysisEntries.count} analysis entries as cancelled automatically`);
+  }
 };
