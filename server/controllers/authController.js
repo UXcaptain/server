@@ -172,7 +172,7 @@ export const checkSession = async (req, res) => {
 export const loginLocal = async (req, res, next) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      message: 'Analysis could not be created due to validation errors',
+      message: 'User could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
