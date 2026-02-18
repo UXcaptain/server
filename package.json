@@ -15,6 +15,7 @@
         "start:local-backend": "cd backend && node --watch --env-file=.env ./server/app.js",
         "start:local-frontend": "cd frontend && npm run start:local",
         "install": "cd backend && npm i && cd ../frontend && npm i",
+        "update": "cd backend && npm update && cd ../frontend && npm update",
         "test": "jest"
     },
     "repository": {
