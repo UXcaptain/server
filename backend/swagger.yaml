@@ -1,0 +1,2180 @@
+openapi: '3.1.0'
+info:
+  version: '1.0.0'
+  title: 'UXcaptain API'
+  description: Buy or rent user tests
+
+servers:
+  [
+    {
+      "url": "server.latest.uxcaptain.com/api",
+      "description": "latest branch server for uxcaptain"
+    },
+    {
+      url: "server.next.uxcaptain.com/api",
+      "description": "next branch server uxcaptain"
+    }
+  ]
+
+paths:
+  /v1/admin:
+    get:
+      summary: Get all users
+      description: Returns all users - Allows for filtering via query parameters
+      tags: ["admin"]
+      parameters:
+          - name: role
+            in: query
+            description: Indicates the role of the user
+            required: false
+            schema: 
+                $ref: "#/components/schemas/UserRoles"
+          - name: email
+            in: query
+            description: email of the user
+            required: false
+            schema:
+                $ref: "#/components/schemas/UserEmail"
+          - name: id
+            in: query
+            description: id of the user
+            required: false
+            schema:
+                $ref: "#/components/schemas/UserId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Users successfully retrieved - DB",
+                            "User successfully retrieved - cache"
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        userCount:
+                            description: Indicates the number of users being returned
+                            type: integer
+                            examples: [
+                              1
+                            ]
+                        users:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/CustomerProfile'
+                            
+        403:
+          description: User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User does not have the required permissions"
+                            ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/admin/{UserId}:
+    get:
+      summary: Returns one user
+      description: Returns one user by UserId
+      tags: ["admin"]
+      parameters:
+        - name: UserId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserId"
+      
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Users successfully retrieved - DB"
+                          ]
+                        user:
+                            $ref: "#/components/schemas/CustomerProfile"
+        400:
+          description: User not found
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User not found"
+                            ]
+        403:
+          description: User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User does not have the required permissions"
+                            ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+    
+    delete:
+      summary: Deletes one user
+      description: This endpoint will delete one user
+      tags: ["admin"]
+      parameters:
+        - name: UserId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserId"
+      
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User successfully deleted"
+                            ] 
+        403:
+          description: User deletion failed - User does not have the required permissions
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User deletion failed - User does not have the required permissions"
+                            ]
+        404:
+          description: User deletion failed - User does not exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            examples: [
+                              "User deletion failed - User does not exist"
+                            ] 
+        409:
+          description: User deletion failed - Related DB entries exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: [
+                              "User deletion failed - Related DB entries exist"
+                            ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/session:
+    get:
+      summary: Checks if the session is active
+      description: Checks if the session is active for a given UserId
+      tags: ["auth"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Session is valid"
+                          ]
+                        user:
+                            type: object
+                            properties:
+                              id:
+                                $ref: '#/components/schemas/UserId'
+        401:
+          description: Session is not valid
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  "Session is not valid"
+                                ]
+  /v1/waitlist:
+    post:
+        summary: Adds a new user to the launch waitlist
+        description: Adds a new user to the launch waitlist
+        tags: ["waitlist"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - email
+                          - consent
+                        properties:
+                            email:
+                                $ref: "#/components/schemas/UserEmail"
+                            consent:
+                                $ref: "#/components/schemas/Consent"
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: User was sucessfully added to launch waitlist
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+
+  /v1/auth/register/local:
+    post:
+        summary: Register a new user
+        description: Registers one user
+        tags: ["auth"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - email
+                          - password
+                          - role
+                        properties:
+                            email:
+                                $ref: "#/components/schemas/UserEmail"
+                            password:
+                                $ref: "#/components/schemas/UserPassword"
+                            role:
+                                $ref: "#/components/schemas/UserRoles"
+                            utm_source:
+                                $ref: "#/components/schemas/UtmSource"
+                            utm_medium:
+                                $ref: "#/components/schemas/UtmMedium"
+                            utm_campaign:
+                                $ref: "#/components/schemas/UtmCampaign"
+                            utm_content:
+                                $ref: "#/components/schemas/UtmContent"
+                            utm_term:
+                                $ref: "#/components/schemas/UtmTerm"
+                            gclid:
+                                $ref: "#/components/schemas/Gclid"
+                            fbclid:
+                                $ref: "#/components/schemas/Fbclid"
+        responses:
+            201:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: User created successfully
+                              userId:
+                                $ref: "#/components/schemas/UserId"
+            409:
+              description: User already exists
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User creation failed - User already exists
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+                
+  /v1/auth/login/local:
+    post:
+        summary: Local strategy login route
+        description: Login a user using local strategy.
+        tags: ["auth"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - email
+                          - password
+                        properties:
+                            email:
+                                $ref: "#/components/schemas/UserEmail"
+                            password:
+                                $ref: "#/components/schemas/UserPassword"
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: Login successful
+                              user:
+                                type: object
+                                properties:
+                                    id: 
+                                        $ref: "#/components/schemas/UserId"
+                                    role: 
+                                        $ref: "#/components/schemas/UserRoles"
+            401:
+              description: Incorrect email & password combination
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: The combination of email and password is incorrect
+             
+            403:
+              description: Participant login is disabled
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: Participant login is disabled
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+             
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/logout:
+    post:
+        summary: Local strategy logout  route
+        description: Logs out a currently authenticated user using local strategy.
+        tags: ["auth"]
+
+        responses:
+            200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  "User logged out successfully"
+                                ]
+            400:
+              description: User is not logged in
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                  type: string
+                                  examples: [
+                                    "User is not logged in"
+                                  ]
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/update-user-password:
+    patch:
+      summary: Update the password of a user
+      description: Update the password of a user. 
+      tags: ["auth"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - currentPassword
+                          - newPassword
+                        properties:
+                            currentPassword:
+                                $ref: "#/components/schemas/UserPassword"
+                            newPassword:
+                                $ref: "#/components/schemas/UserPassword"
+      responses:
+        200:
+                description: Success
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessTrueStatus"
+                              message:
+                                type: string
+                                example: Password updated successfully  
+        400:
+              description: Password update failed - old password is incorrect
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: Current password is incorrect
+             
+        
+        404:
+              description: User not found
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                example: User not found
+             
+        
+        422:
+                description: Validation error
+                content:
+                  application/json:
+                      schema:
+                            type: object
+                            properties:
+                                success:
+                                    $ref: "#/components/schemas/SuccessFalseStatus"
+                                message:
+                                  type: string
+                                  example: User could not be created due to validation errors
+                                errors:
+                                  type: array
+                                  items:
+                                    $ref: "#/components/schemas/ValidationErrors"
+        500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/password-reset:
+    get:
+      summary: Validate the password reset token
+      description: Validate the password reset token.
+      tags: ["auth"]
+      parameters:
+          - name: token
+            in: query
+            description: Indicates the status of token
+            required: true
+            schema: 
+                $ref: "#/components/schemas/PasswordResetToken"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Successfully retrieved password reset token
+        400:
+          description: Password reset token has not been provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Token is required
+        403:
+          description: Password reset token is expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Token expired - Please request a new password reset link
+        404:
+          description: Password reset token was not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Password reset token does not exist
+         
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+    post:
+      summary: Request a new password reset token
+      description: Request a new password reset token for the user.
+      tags: ["auth"]
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+                type: object
+                required:
+                  - email
+                properties:
+                      email:
+                        $ref: '#/components/schemas/UserEmail'
+      
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: If this email exists, a reset link will be sent
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+    patch:
+      summary: Update user password using password reset token
+      tags: ["auth"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  newPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  confirmNewPassword:
+                      $ref: "#/components/schemas/UserPassword"
+                  passwordResetToken:
+                      $ref: "#/components/schemas/PasswordResetToken"
+
+
+      responses:
+        200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessTrueStatus"
+                    message:
+                      type: string
+                      example: User password updated successfully using password reset token
+        400:
+            description: Token expired or passwords do not match
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessFalseStatus"
+                    message:
+                      type: string
+                      examples: [
+                        "Token expired - Please request a new password reset link",
+                        "Passwords do not match"
+                      ]
+        422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                type: string
+                                examples: [
+                                  "Analysis could not be created due to validation errors"
+                                ]
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/user:
+    get:
+     summary: Returns the user profile
+     description: Returns the user profile of the currently authenticated user. 
+     tags: ["user"]
+
+     responses:
+       200:
+         description: Success
+         content:
+           application/json:
+             schema:
+              type: object
+              properties:
+                success:
+                  $ref: "#/components/schemas/SuccessTrueStatus"
+                message:
+                  type: string
+                  example: user profile retrieved successfully - cache
+                cacheKey:
+                  $ref: "#/components/schemas/CacheKey"
+                cacheTTL_seconds: 
+                  $ref: "#/components/schemas/CacheTTL_seconds"
+                user:
+                  $ref: "#/components/schemas/CustomerProfile"
+                
+       401:
+         description: User not authenticated
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 success:
+                   $ref: "#/components/schemas/SuccessFalseStatus"
+                 message:
+                   type: string
+                   example: Unauthorized access
+       500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+    delete:
+      summary: Deletes the user account
+      description: Deletes the user account and all related data from the database. This operation is irreversible and should be used with caution.
+      tags: ["user"]
+      responses:
+        200:
+         description: Success
+         content:
+           application/json:
+             schema:
+              type: object
+              properties:
+                success:
+                  $ref: "#/components/schemas/SuccessTrueStatus"
+                message:
+                  type: string
+                  example: User deleted successfully
+        409:
+          description: User deletion failed - Related DB entries exist
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                            type: string
+                            example: User deletion failed - Related DB entries exist
+        500:
+            description: Unexpected error
+            content:
+              application/json:
+                  schema:
+                        type: object
+                        properties:
+                            success:
+                                $ref: "#/components/schemas/SuccessFalseStatus"
+                            message:
+                                  $ref: '#/components/schemas/InternalErrorMessage'
+      
+  /v1/analysis:
+    get:
+      summary: Retrieve all analyses
+      description: Retrieve all analyses for a given user.
+      tags: ["Analysis"]
+      parameters:
+          - name: status
+            in: query
+            description: Indicates the status of the analysis
+            required: false
+            schema: 
+                $ref: "#/components/schemas/AnalysisStatus"
+          - name: device
+            in: query
+            description: Indicates the device in which the analysis has been run
+            required: false
+            schema:
+                $ref: "#/components/schemas/AnalysisDevice"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Analysis successfully retrieved - DB",
+                            "Analysis successfully retrieved - cache"
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        analysisCount:
+                            description: Indicates the number of Analysis being returned
+                            type: integer
+                            examples: [
+                              1
+                            ]
+                        analyses:
+                            type: array
+                            items:
+                                $ref: '#/components/schemas/AnalysisWithCount'
+
+                            
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+    post:
+      summary: Create a new analysis
+      description: Creates a new analysis - given that the validation is passed.
+      tags: ["Analysis"]
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+                type: object
+                required:
+                  - name
+                  - url
+                  - maxNumberOfParticipants
+                  - device
+                  - tasks
+                  - minAge
+                  - maxAge
+                  - gender
+                  - country
+                  - educationLevel
+                  - minYearlyIncome
+                  - maxYearlyIncome
+                  - technicalProficiency
+                  - parentalStatus
+                properties:
+                      name:
+                        $ref: '#/components/schemas/AnalysisName'
+                      url:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      maxNumberOfParticipants:
+                        $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      device:
+                        $ref: '#/components/schemas/AnalysisDevice'
+                      minAge:
+                        $ref: '#/components/schemas/AnalysisMinAge'
+                      maxAge:
+                        $ref: '#/components/schemas/AnalysisMaxAge'
+                      gender:
+                        $ref: '#/components/schemas/AnalysisGender'
+                      country:
+                        $ref: '#/components/schemas/AnalysisCountry'
+                      educationLevel:
+                        $ref: '#/components/schemas/AnalysisEducationLevel'
+                      minYearlyIncome:
+                        $ref: '#/components/schemas/AnalysisMinYearlyIncome'
+                      maxYearlyIncome:
+                        $ref: '#/components/schemas/AnalysisMaxYearlyIncome'
+                      technicalProficiency:
+                        $ref: '#/components/schemas/AnalysisTechnicalProficiency'
+                      parentalStatus:
+                        $ref: '#/components/schemas/AnalysisParentalStatus'
+
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples: [
+                      "analysis created successfully"
+                    ]
+                  createdAnalysisId:
+                    $ref: "#/components/schemas/AnalysisId"
+        422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                examples: [
+                                  "Analysis could not be created due to validation errors"
+                                ]
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+        
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+                schema:
+                      type: object
+                      properties:
+                          success:
+                              $ref: "#/components/schemas/SuccessFalseStatus"
+                          message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis/available:
+    get:
+      summary: Get available analyses for participants
+      description: Retrieve all published analyses that are available for the authenticated participant to join. Only returns analyses with available spots and matching the participant's device preferences.
+      tags: ["Analysis"]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Available analyses retrieved successfully
+                  analyses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          $ref: "#/components/schemas/AnalysisId"
+        403:
+          description: Participant is not approved to participate in analyses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: You are not approved to participate in analyses.
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis/{AnalysisId}:
+    get:
+      summary: Retrieve one analysis
+      description: Retrieve all analysis details for a given analysis.
+      tags: ["Analysis"]
+      parameters:
+        - name: AnalysisId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/AnalysisId"
+
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Analysis data successfully retrieved - cache",
+                            "Analysis details retrieved successfully"
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        analysisData:
+                              $ref: '#/components/schemas/AnalysisWithEntryDetails'
+                            
+        403:
+          description: User does not have permission to access this analysis
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                          type: string
+                          examples: [
+                            "You do not have permission to access this analysis."
+                          ]
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                        $ref: '#/components/schemas/SuccessFalseStatus'
+                  message:
+                    type: string
+                    example: "Analysis not found"
+                  
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing:
+    get:
+      summary: Returns the billing data of the currently authenticated user
+      description: Retrieve billing & subscription status 
+      tags: ["billing"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Billing data retrieved successfully - cache",
+                            "Billing data retrieved successfully - DB"
+                          ]
+                        cacheKey:
+                          $ref: "#/components/schemas/CacheKey"
+                        cacheTTL_seconds: 
+                          $ref: "#/components/schemas/CacheTTL_seconds"
+                        subscriptionData:
+                              $ref: '#/components/schemas/CompanySubscriptionData'
+    
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing/checkout-session:
+    post:
+      summary: Creates a billing checkout session
+      description: Creates a billing checkout session for the currently authenticated user
+      tags: ["billing"]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - planName
+              - planBillingCycle
+              properties:
+                  planName:
+                    $ref: '#/components/schemas/BillingPlanName'
+                  planBillingCycle:
+                    $ref: '#/components/schemas/BillingPlanBillingCycle'
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessTrueStatus"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Billing checkout session generated successfully"
+                          ]
+                        checkoutSessionUrl:
+                          $ref: '#/components/schemas/BillingCheckoutSessionUrl'
+        403:
+          description: Checkout Session cant be created - user already has a subscription
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            $ref: "#/components/schemas/SuccessFalseStatus"
+                        message:
+                          type: string
+                          examples: [
+                            "Checkout Session cant be created - user already has a subscription"
+                          ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/billing/customer-portal:
+    post:
+      summary: Creates a billing portal
+      description: Creates a billing checkout session for the currently authenticated user
+      tags: ["billing"]
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+                schema:
+                    type: object
+                    properties:
+                        success:
+                            type: string
+                            example: "success"
+                        message:
+                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
+                          type: string
+                          examples: [
+                            "Customer portal URL retrieved successfully"
+                          ]
+                        customerPortalUrl:
+                          $ref: '#/components/schemas/BillingCustomerPortalUrl'
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                          type: object
+                          properties:
+                              success:
+                                  $ref: "#/components/schemas/SuccessFalseStatus"
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/guestParticipant/participate:
+    get:
+      summary: Participate in an analysis
+      description: Allows a participant to join an analysis and get the necessary details to complete it.
+      tags: ["guestRouter"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessTrueStatus"
+                  message:
+                    type: string
+                    example: Analysis info retrieved successfully
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+        
+  /v1/analysis/participate:
+    post:
+      summary: Participate in an analysis
+      description: Retrieve the details of an analysis entry for participants & create participation entry
+      tags: ["Analysis"]
+      requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - analysisId
+                        properties:
+                            analysisId:
+                                $ref: "#/components/schemas/AnalysisId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  analysisData:
+                    type: object
+                    properties:
+                      tasks:
+                        $ref: '#/components/schemas/AnalysisTasksArray'
+                      scenario:
+                        $ref: '#/components/schemas/AnalysisScenario'
+                      analysisUrl:
+                        $ref: '#/components/schemas/AnalysisUrl'
+                  analysisEntryId:
+                    $ref: '#/components/schemas/AnalysisEntryId'
+                  AnalysisEntryPresignedUploadUrl:
+                    $ref: '#/components/schemas/AnalysisEntryPresignedUploadUrl'
+        403:
+          description: Maximum number of participants reached
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The maximum number of participants has been reached.
+        404:
+          description: Analysis not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Analysis not found
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/:
+    patch:
+        summary: Update analysis entry details
+        description: Update the details of an analysis entry
+        tags: ["Analysis Entry"]
+        requestBody:
+              required: true
+              content:
+                  application/json:
+                      schema:
+                          type: object
+                          required:
+                            - analysisEntryId
+                          properties:
+                              analysisEntryId:
+                                  $ref: "#/components/schemas/AnalysisEntryId"
+        responses:
+          200:
+            description: Success
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Analysis entry updated successfully
+          500:
+            description: Unexpected error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    success:
+                      $ref: "#/components/schemas/SuccessFalseStatus"
+                    message:
+                      $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/analysis-entry/{AnalysisEntryId}:
+    get:
+      summary: Get analysis entry details for participants
+      description: Retrieve the details of an analysis entry for participants, including a presigned URL to access the entry.
+      tags: ["Analysis Entry"]
+      parameters:
+        - name: AnalysisEntryId
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/AnalysisEntryId"
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: recording & transcription links retrieved successfully
+                  analysisEntryGetRecordingPresignedUrl:
+                    $ref: "#/components/schemas/AnalysisEntryGetRecordingPresignedUrl"
+                  transcriptionSegments:
+                    type: array
+        400:
+          description: Analysis entry ID has not been provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis entry ID has not been provided
+        403:
+          description: Analysis entry has not been completed yet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    example: Analysis entry has not been completed yet
+        404:
+          description: Analysis entry doesn't have a video URL yet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    type: string
+                    examples: [
+                      "Analysis not found",
+                      "Analysis does not have a video url"
+                    ]
+        500:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: "#/components/schemas/SuccessFalseStatus"
+                  message:
+                    $ref: '#/components/schemas/InternalErrorMessage'
+
+    
+
+components:
+  schemas:  
+    SuccessTrueStatus:
+      description: Success status for any API call
+      type: boolean
+      example: true
+
+    SuccessFalseStatus:
+      description: false status for any API call
+      type: boolean
+      example: false
+
+    UserId:
+      description: The unique identifier of a user
+      type: string
+      format: uuid
+      examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
+
+    AnalysisId:
+        description: The unique identifier of an analysis
+        type: string
+        format: uuid
+        examples: [
+          "0464ac85-e565-4d44-bde7-d6de0aa358ea",
+        ]
+    
+    AnalysisEntryId:
+        description: The unique identifier of an entry
+        type: string
+        format: uuid
+        examples: [
+          "d7c8843e-b500-45be-a3e6-7f2d3c33ae13"
+        ]
+    
+    UserRoles:
+      type: string
+      enum: [customer, admin, participant]
+      description: role assigned to user
+      examples: [
+        customer,
+        admin,
+        participant
+      ]
+    
+    CacheTTL_seconds:
+      type: string
+      default: 60
+      description: time in seconds for cache to expire - * Returned only if cache is used
+      examples: [
+        60
+      ]
+
+    CacheKey:
+      type: string
+      description: unique identifier for cache entry - * Returned only if cache is used
+      examples: [
+        "allUsers-{\"role\":\"customer\"}-all",
+        "userId-5586eab9-e25c-48b6-a3c9-73a567218b81",
+      ]
+
+    ValidationErrors:
+      type: object
+      properties:
+        type:
+          type: string
+          example: field
+        value:
+          type: string
+          example: [ REDACTED ]
+        msg:
+          type: string
+          example: Username is required
+        path:
+          type: string
+          example: username
+        location:
+          type: string
+          example: body
+
+    CustomerProfile:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/UserEmail"
+        role:
+          $ref: "#/components/schemas/UserRoles"
+        
+    ParticipantProfile:
+      type: object
+      properties:
+        email:
+          $ref: "#/components/schemas/UserEmail"
+        role:
+          $ref: "#/components/schemas/UserRoles"
+    
+    CreatedAt:
+      type: string
+      description: Date of creation
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    UpdatedAt:
+      type: string
+      description: The date of update
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    LastLoginAt:
+      type: string
+      description: The last login time of the user
+      examples: [
+        2025-05-15T14:23:21.303Z
+      ]
+
+    StripeId:
+      type: string
+      description: The Stripe customer ID associated with the company
+      examples: [
+        cus_SWWUxsoPPQnVSb,
+        cus_HvgQzGHkJLqERn,
+      ]
+
+    Analysis:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/AnalysisId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        maxNumberOfParticipants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+
+    AnalysisWithCount:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/AnalysisId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        max_number_of_participants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        _count: 
+          $ref: '#/components/schemas/AnalysisEntriesCount'
+        
+
+    AnalysisWithEntryDetails:
+      type: object
+      properties:
+        owner_id:
+          $ref: '#/components/schemas/UserId'
+        device:
+          $ref: '#/components/schemas/AnalysisDevice'
+        name:
+          $ref: '#/components/schemas/AnalysisName'
+        scenario:
+          $ref: '#/components/schemas/AnalysisScenario'
+        tasks:
+          $ref: '#/components/schemas/AnalysisTasksArray'
+        url:
+          $ref: '#/components/schemas/AnalysisUrl'
+        status:
+          $ref: '#/components/schemas/AnalysisStatus'
+        created_at:
+          $ref: '#/components/schemas/CreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+        id: 
+          $ref: '#/components/schemas/AnalysisId'
+        max_number_of_participants:
+          $ref: '#/components/schemas/AnalysisMaxNumberOfParticipants'
+        AnalysisEntry:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysisEntryWithParticipant'
+
+    AnalysisEntryUrl:
+      type: string
+      format: url
+      description: The URL of the completed entry
+      examples: [
+        'https://www.storage.com/1234'
+      ]
+
+    AnalysisEntry:
+      type: object
+      description: The details of a completed entry for an analysis
+      properties:
+        id: 
+          $ref: '#/components/schemas/AnalysisEntryId'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'
+
+    AnalysisEntryWithParticipant:
+      type: object
+      description: The details of a completed entry for an analysis with participant data
+      properties:
+        id: 
+          $ref: '#/components/schemas/AnalysisEntryId'
+        updated_at:
+          $ref: '#/components/schemas/UpdatedAt'        
+
+    AnalysisName:
+      type: string
+      description: The title of the analysis - Helps the user differentiate between their analysis
+      examples: [
+        'Landing page analysis',
+        'Figma Prototype analysis'
+      ]
+
+    AnalysisMaxNumberOfParticipants:
+      type: number
+      description: The maximum number of participants that can join
+      examples: [
+        10,
+      ]          
+
+    AnalysisTasksArray:
+      description: An array of analysis tasks that make up the analysis
+      type: array
+      items:
+        $ref: "#/components/schemas/AnalysisTasks"
+
+    AnalysisTasks:
+      type: object
+      properties:
+        taskType:
+          $ref: "#/components/schemas/AnalysisTaskType"
+        taskContent:
+          $ref: "#/components/schemas/AnalysisTaskContent"
+
+    AnalysisTaskContent:
+      type: string
+      description: The content of the task that the participants should complete
+      examples: [
+        'Search for a hand bag in this website',
+        'Without clicking on anything - Share your thoughts on what this website does',
+        'Try to find the return policy of this website'
+      ]
+
+    AnalysisTaskType:
+      type: string
+      description: The type of the task being created
+      enum: [text]
+
+    AnalysisDevice:
+      type: string
+      enum: [COMPUTER, MOBILE, TABLET]
+      description: The device that the participants should complete the analysis on
+      example: COMPUTER
+    
+    AnalysisStatus:
+      type: string
+      default: published
+      enum: [draft, published, completed]
+      description: The status of the analysis
+
+    AnalysisUrl:
+      type: string
+      format: url
+      examples: [
+        'https://www.siteToAnalyze.com',
+        'https://www.figma-prototype.com'
+      ]
+      description: The url of the site the user must visit
+
+    AnalysisScenario:
+      type: string
+      default: ''
+      examples: [
+        'Imagine you are buying a house and your budget is 5000€',
+        'Imagine its your brothers birthday and you want to gift him a dog leash with a price tag of 50€ or less'
+      ]
+      description: The scenario the user must adopt while completing the analysis
+    
+    AnalysisEntryCompletionStatus:
+      type: string
+      default: submitted
+      enum: [in_progress, cancelled, submitted, accepted, rejected]
+      description: The status of the analysis entry
+    
+    UserEmail:
+      type: string
+      description: The email address of the user
+      examples: [
+        username@gmail.com
+      ]
+
+    UserPassword:
+      type: string
+      format: password
+      description: user password
+      example: 123456
+
+    PasswordResetToken:
+      type: string
+      format: uuid
+      description: Token for restoring password
+      examples: [
+        9f4398c9-c049-40dd-85f7-28d04eb7b3ae
+      ]
+
+    StripeSubscriptionId:
+      type: string
+      description: The Stripe subscription ID associated with a user's subscription
+      examples: [
+        sub_1ReNIs4EThrTH3Et8fmPxMXe
+      ]
+
+    AnalysisEntriesCount: 
+      type: object
+      description: the number of analysis entries in a given analysis
+      properties: 
+        AnalysisEntry:
+          type: number
+          examples: [
+            1,
+            2,
+            3,
+          ]
+
+    CompanySubscriptionData:
+      type: object
+      properties:
+        Subscription:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/StripeSubscriptionId'
+              expires_at:
+                $ref: '#/components/schemas/ExpirationDate'
+
+    BillingPlanBillingCycle:
+      type: string
+      description: Indicates the renewal frequency of the billing plan
+      examples: [
+        monthly,
+        biannual,
+        annual        
+      ]
+
+    BillingPlanName:
+      type: string
+      description: Indicates the name of the billing plan
+      examples: [
+        free,
+        basic,
+        pro,
+        enterprise
+      ]
+
+
+    ExpirationDate:
+      type: string
+      description: date of the expiration
+      examples: [
+        '2025-10-22 09:46:56.655',
+      ]
+
+    AnalysisEntryPresignedUploadUrl:
+      type: string
+      format: url
+      description: Indicates the presigned PUT S3 URL that the client can use to upload the completed analysis entry - Has a validity of 90 minutes
+      examples: [
+          https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/e1e0c675-179b-453e-9d4f-226eb0ddcd6b/068b2e8b-025a-4eb5-8fe0-4197e48e733d/068b2e8b-025a-4eb5-8fe0-4197e48e733d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20251025%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20251025T151537Z&X-Amz-Expires=900&X-Amz-Signature=9d6f48b6a913b424ef4ba59bf050e865110592f5a9708070a54c399783208502&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject
+      ]
+
+    AnalysisEntryGetRecordingPresignedUrl:
+      type: string
+      format: url
+      description: Indicates the presigned GET S3 URL that the client can use to view the completed analysis entry
+      examples: [
+          https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/e1e0c675-179b-453e-9d4f-226eb0ddcd6b/068b2e8b-025a-4eb5-8fe0-4197e48e733d/068b2e8b-025a-4eb5-8fe0-4197e48e733d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20251025%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20251025T151958Z&X-Amz-Expires=3600&X-Amz-Signature=4f408ef37c4a513e943c63f398327c475b5e03461d4a6831eddf0a5ac7244ae4&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+      ]
+
+    AnalysisEntryGetTranscriptPresignedUrl:
+      type: string
+      format: url
+      description: Indicates the presigned GET S3 URL that the client can use to view the completed analysis entry
+      examples: [
+          https://dev-analysis-entry-storage.s3.eu-west-3.amazonaws.com/analysis/e1e0c675-179b-453e-9d4f-226eb0ddcd6b/068b2e8b-025a-4eb5-8fe0-4197e48e733d/068b2e8b-025a-4eb5-8fe0-4197e48e733d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAQTEOOHOGGDJ5YJFY%2F20251025%2Feu-west-3%2Fs3%2Faws4_request&X-Amz-Date=20251025T151958Z&X-Amz-Expires=3600&X-Amz-Signature=4f408ef37c4a513e943c63f398327c475b5e03461d4a6831eddf0a5ac7244ae4&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+      ]
+
+    BillingPlanStatus:
+      type: string
+      enum: [active, refunded, cancelled]
+      description: Indicates the status of the billing
+      examples: [
+        active,
+        refunded,
+        cancelled
+      ]
+
+    Consent:
+      type: string
+      enum: [true, false]
+      description: Indicates the status of the given consent
+      examples: [
+        true,
+        false,
+      ]
+
+    AwsObjectKey:
+      type: string
+      description: The AWS object key for the analysis entry
+      examples: [
+        analysis/04ade421-5238-4d28-ac0e-3c5f02e22c03/analysisEntry/fa5b9cd0-0d9d-4a47-a1c4-b97b3c17996c
+      ]
+
+    BillingCheckoutSessionUrl:
+      type: string
+      format: url
+      description: Indicates the checkout session URL provided by the billing partner
+      examples: [
+        https://checkout.stripe.com/c/pay/cs_test_b1hyOpSnwbXh52Fd7u33UIgaiUayRJPKj2ByJWknbODW0T83p9f2RQYeyj#fid2cGd2ZndsdXFsamtQa2x0cGBrYHZ2QGtkZ2lgYSc%2FY2RpdmApJ2R1bE5gfCc%2FJ3VuWnFgdnFaMDRXPHJcXDFAUW13UU02QHFhXzFQZEZoVGlHVU9fNVBMVkpdVUl%2FU0Jrb3Z3Zkl1YT1gZktmajY8f2hwU0ZhUjJAZjFMfTNSXGFrfWtoUkoxfERiS1VOT2Y1NWhHf21WUnBsJyknY3dqaFZgd3Ngdyc%2FcXdwYCknaWR8anBxUXx1YCc%2FJ2hwaXFsWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl
+      ]
+
+    BillingCustomerPortalUrl:
+      type: string
+      format: url
+      description: Indicates the billing portal URL provided by the billing partner
+      examples: [
+        https://billing.stripe.com/p/session/test_YWNjdF8xUjl3WVk0RVRoclRIM0V0LF9TWGRGSnZnZFNVa1l2M3FZZEJwTzRrYllnWFBiZXVU01008zqe7Luk
+      ]
+
+    InternalErrorMessage:
+      type: string
+      description: Indicates an internal error failure (status 500)
+      example: Internal server error - Please contact us
+
+    UtmSource:
+      type: string
+      description: UTM source parameter for tracking acquisition source
+      example: google
+
+    UtmMedium:
+      type: string
+      description: UTM medium parameter for tracking acquisition medium
+      example: cpc
+
+    UtmCampaign:
+      type: string
+      description: UTM campaign parameter for tracking acquisition campaign
+      example: spring_sale_2025
+
+    UtmContent:
+      type: string
+      description: UTM content parameter for tracking acquisition content
+      example: banner_ad
+
+    UtmTerm:
+      type: string
+      description: UTM term parameter for tracking acquisition search terms
+      example: user_research
+
+    Gclid:
+      type: string
+      description: Google Click Identifier for tracking Google Ads conversions
+      example: Cj0KCQjw5fWLBhCRARIsAC5XN5oJ3v7Q
+
+    Fbclid:
+      type: string
+      description: Facebook Click Identifier for tracking Facebook Ads conversions
+      example: IwAR2Kj3v7Q5oJ3v7Q5oJ3v7Q5oJ3v7Q
+
+    AnalysisMinAge:
+      type: number
+      description: Minimum age requirement for participants - must be lower than AnalysisMaxAge
+      examples: [
+        18,
+        25,
+        30
+      ]
+
+    AnalysisMaxAge:
+      type: number
+      description: Maximum age requirement for participants - must be higher than AnalysisMinAge
+      examples: [
+        45,
+        60,
+        75
+      ]
+
+    AnalysisGender:
+      type: string
+      enum: [MALE, FEMALE, PREFER_NOT_TO_SAY, ANY]
+      description: Gender preference for participants
+      examples: [
+        MALE,
+        FEMALE,
+        PREFER_NOT_TO_SAY,
+        ANY,
+      ]
+
+    AnalysisCountry:
+      type: string
+      enum: [ES, ANY]
+      description: Country code or name for participant location filtering
+      examples: [
+        ES,
+        ANY
+      ]
+
+    AnalysisEducationLevel:
+      type: string
+      enum: [NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS, ANY]
+      description: Education level requirement for participants
+      examples: [
+        NO_EDUCATION,
+        PRIMARY_EDUCATION,
+        SECONDARY_EDUCATION,
+        UNIVERSITY_DEGREE,
+        MASTERS_THESIS,
+        ANY
+      ]
+
+    AnalysisMinYearlyIncome:
+      type: number
+      description: Minimum yearly income requirement for participants (in EUR) - must be lower than AnalysisMaxYearlyIncome
+      examples: [
+        30000,
+        50000,
+        75000
+      ]
+
+    AnalysisMaxYearlyIncome:
+      type: number
+      description: Maximum yearly income requirement for participants (in EUR) - must be higher than AnalysisMinYearlyIncome
+      examples: [
+        50000,
+        100000,
+        150000
+      ]
+
+    AnalysisTechnicalProficiency:
+      type: string
+      enum: [BASIC, INTERMEDIATE, EXPERT, ANY]
+      description: Technical proficiency level required for participants
+      examples: [
+        BASIC,
+        INTERMEDIATE,
+        EXPERT,
+        ANY
+      ]
+
+    AnalysisParentalStatus:
+      type: string
+      enum: [YES_CHILDREN, NO_CHILDREN, ANY]
+      description: Parental status preference for participants
+      examples: [
+        YES_CHILDREN,
+        NO_CHILDREN,
+        ANY
+      ]
