@@ -1,0 +1,23 @@
+{
+    "name": "uxcaptain-research-platform",
+    "engines": {
+        "node": "24.x"
+    },
+    "description": "User Research Platform",
+    "main": "app.js",
+    "private": true,
+    "version": "1.0.0",
+    "type": "module",
+    "keywords": [],
+    "license": "Proprietary",
+    "author": "Sergio Navarro Redondo",
+    "scripts": {
+        "start:local": "cd backend && node --env-file=.env ./server/app.js",
+        "start:local-backend": "cd backend && node --watch --env-file=.env ./server/app.js",
+        "test": "jest"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/uxcaptain/server"
+    }
+}
