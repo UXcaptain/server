@@ -103,7 +103,7 @@ export const participateInAnalysis = async (req, res) => {
   const analysisEntryPresignedUploadUrl = await generateS3PutPresignedUrl(key);
 
   return res.status(200).json({
-    message: 'Analysis info retrieved successfully',
+
     analysisData: analysisData,
     analysisEntryId: analysisEntry.id,
     analysisEntryPresignedUploadUrl: analysisEntryPresignedUploadUrl,

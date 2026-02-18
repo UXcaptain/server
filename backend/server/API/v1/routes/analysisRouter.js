@@ -19,7 +19,7 @@ analysisRouter.post('/', checkAuthentication(), checkPermissionByRole('customer'
 
 analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('participant'), getAvailableAnalyses);
 
-analysisRouter.post('/participate', participateInAnalysis); // TODO - separate this into 2 - current single participate is not ideal
+analysisRouter.post('/participate', participateInAnalysis); // TODO - separate this into 2 - current single participate is not ideal for guest vs registered users
 
 analysisRouter.get('/', checkAuthentication(), checkPermissionByRole('customer'), getAllAnalyses);
 

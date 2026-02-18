@@ -1439,9 +1439,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                    example: Analysis info retrieved successfully
                   analysisData:
                     type: object
                     properties:
