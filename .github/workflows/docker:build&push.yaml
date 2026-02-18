@@ -14,11 +14,11 @@ jobs:
                     - 
                         name: backend
                         context: backend
-                        image_name: sergion14/uxcaptain-backend
+                        image_name: sergion14/uxcaptain-server
                     - 
                         name: frontend
                         context: frontend
-                        image_name: sergion14/uxcaptain-frontend
+                        image_name: sergion14/uxcaptain-webapp
         steps:
         -
             name: Checkout
