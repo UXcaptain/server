@@ -1,0 +1,51 @@
+{
+  "name": "user-research-platform-frontend",
+  "engines": {
+    "node": "24.x"
+  },
+  "description": "Front-End using an Vite ReactJS app for User Research Platform",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "keywords": [],
+  "license": "Proprietary",
+  "author": "Sergio Navarro Redondo",
+  "scripts": {
+    "build": "vite build",
+    "start:local": "vite",
+    "docker-build:local": "docker build --platform=linux/amd64 --build-arg VITE_API_BASE_URL=http://localhost:3000 --build-arg VITE_PUBLIC_POSTHOG_KEY=phc_rEM8kq6iDndSMMDYlYoVVb0iitdyUx1KOXaLVPIQR9q -t sergion14/uxcaptain:front-local .",
+    "docker-build:prod": "docker build -t sergion14/uxcaptain:front-latest . && docker push sergion14/uxcaptain:front-latest",
+    "docker-build:dev": "docker build --platform=linux/amd64 -t sergion14/uxcaptain:front-next . && docker push sergion14/uxcaptain:front-next"
+  },
+  "dependencies": {
+    "@mantine/core": "^8.2.1",
+    "@mantine/form": "^8.2.1",
+    "@mantine/hooks": "^8.2.1",
+    "@tabler/icons-react": "^3.31.0",
+    "axios": "^1.7.9",
+    "js-cookie": "^3.0.5",
+    "posthog-js": "^1.257.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router": "^7.1.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.18.0",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.18",
+    "globals": "^16.3.0",
+    "postcss": "^8.5.3",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
+    "vite": "^7.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uxcaptain/web-app"
+  }
+}
