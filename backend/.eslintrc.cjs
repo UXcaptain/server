@@ -47,6 +47,6 @@ module.exports = {
     'no-plusplus': 'off',
     'no-await-in-loop': 'off',
     'no-restricted-syntax': 'off',
-    'no-return-await': 'off'
+    'no-return-await': 'off',
   },
 };

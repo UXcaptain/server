@@ -12,8 +12,9 @@
     "license": "Proprietary",
     "author": "Sergio Navarro Redondo",
     "scripts": {
-        "start:local": "cd backend && node --env-file=.env ./server/app.js",
         "start:local-backend": "cd backend && node --watch --env-file=.env ./server/app.js",
+        "start:local-frontend": "cd frontend && npm run start:local",
+        "install": "cd backend && npm i && cd ../frontend && npm i",
         "test": "jest"
     },
     "repository": {
