@@ -3,7 +3,6 @@ import { checkSchema } from 'express-validator';
 import {
   createCustomer,
   updateUserPassword,
-  checkSession,
   requestPasswordResetToken,
   loginLocal,
   checkPasswordResetTokenValidity,
@@ -40,8 +39,6 @@ authRouter.use(checkAuthentication());
 authRouter.post('/logout', logoutUser);
 
 authRouter.patch('/update-user-password', checkSchema(updatePasswordSchema), sanitizerResult, updateUserPassword);
-
-authRouter.get('/session', checkSession);
 
 authRouter.use('/*fallback', (req, res) => {
   res.status(404).json({

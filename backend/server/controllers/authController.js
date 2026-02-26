@@ -150,19 +150,6 @@ export const updateRecoveredUserPassword = async (req, res) => {
   }
 };
 
-export const checkSession = async (req, res) => {
-  if (req.user) {
-    return res.status(200).json({
-      message: 'Session is valid',
-    });
-  }
-
-  return res.status(401).json({
-    success: false,
-    message: 'Session is invalid',
-  });
-};
-
 export const loginLocal = async (req, res, next) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
