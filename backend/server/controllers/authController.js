@@ -193,15 +193,15 @@ export const loginLocal = async (req, res, next) => {
       }
 
       // Successful login
-      posthogUserSuccessLoggedIn(user.id, 'local'); // Fire-and-forget function
+      posthogUserSuccessLoggedIn(user._id, 'local'); // Fire-and-forget function
 
-      updateUserLastLoginDate(user.id); // Fire-and-forget function
+      updateUserLastLoginDate(user._id); // Fire-and-forget function
 
       return res.status(200).json({
         message: 'Login successful',
         user: {
           id: user.id,
-          role: req.user.role,
+          role: user.role,
         },
       });
     });

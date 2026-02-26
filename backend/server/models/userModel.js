@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { posthogUserDeleteAccount, posthogCustomerSignedUp, posthogParticipantSignedUp } from './posthogModel.js';
 import {
@@ -87,14 +88,16 @@ export const getUserByEmail = async (username) => {
 
 export const updateUserLastLoginDate = async (userId) => {
   try {
-    const queryResult = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        last_login_at: new Date(),
-      },
-    });
+    const date = new Date();
 
-    return queryResult;
+    return await collections.user.bulkWrite([
+      {
+        updateOne: {
+          filter: { _id: new ObjectId(userId) },
+          update: { $set: { lastLoginAt: date } },
+        },
+      },
+    ]);
   } catch (error) {
     return logError(`could not update last login date for userid ${userId}`);
   }
@@ -112,6 +115,7 @@ export const getUserAuthDetails = async (email) => {
         _id: 1,
         email: 1,
         password: 1,
+        role: 1,
       },
     },
   ]);
@@ -127,18 +131,33 @@ export const getUserAuthDetails = async (email) => {
 };
 
 export const getUserById = async (userId) => {
-  const whereClause = {
-    id: userId,
-  };
+  // Convert userId string to ObjectId for MongoDB query
+  const objectId = new ObjectId(userId);
 
-  const getUserByIdQuery = await prisma.user.findUnique({
-    where: whereClause,
-    omit: {
-      password: true,
+  const cursor = collections.user.aggregate([
+    {
+      $match: {
+        _id: objectId,
+      },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        role: 1,
+        // Exclude password from result
+      },
+    },
+  ]);
 
-  return getUserByIdQuery;
+  const user = await cursor.next();
+
+  // Normalize MongoDB _id to id for consistency with the rest of the codebase
+  if (user) {
+    user.id = user._id;
+  }
+
+  return user;
 };
 
 export const updateUserPasswordInDB = async (userId, newPassword) => {
