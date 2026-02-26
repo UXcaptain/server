@@ -587,7 +587,6 @@ paths:
                                 type: array
                                 items:
                                   $ref: "#/components/schemas/ValidationErrors"
-             
             500:
               description: Unexpected error
               content:
@@ -600,20 +599,18 @@ paths:
 
   /v1/auth/logout:
     post:
-        summary: Local strategy logout  route
+        summary: Local strategy logout route
         description: Logs out a currently authenticated user using local strategy.
         tags: ["auth"]
 
         responses:
             200:
-                description: Success
+                description: Logout Success
                 content:
                   application/json:
                       schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
                                 examples: [
@@ -626,8 +623,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                   type: string
                                   examples: [

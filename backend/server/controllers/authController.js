@@ -348,7 +348,6 @@ export const updateUserPassword = async (req, res) => {
 export const logoutUser = (req, res, next) => {
   if (!req.user) {
     return res.status(400).json({
-      success: false,
       message: 'User is not logged in',
     });
   }
@@ -360,7 +359,7 @@ export const logoutUser = (req, res, next) => {
     }
 
     // Destroy session explicitly
-    req.session.destroy((error) => {
+    return req.session.destroy((error) => {
       if (error) {
         logError('Session destruction failed', error);
         return next(error);
@@ -370,7 +369,6 @@ export const logoutUser = (req, res, next) => {
       res.clearCookie('connect.sid');
 
       return res.status(200).json({
-        success: true,
         message: 'User logged out successfully',
       });
     });
