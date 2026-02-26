@@ -24,6 +24,7 @@
         "@quixo3/prisma-session-store": "^3.1.13",
         "axios": "^1.13.2",
         "bcryptjs": "^3.0.3",
+        "connect-mongo": "^6.0.0",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
         "cron": "^4.3.4",
