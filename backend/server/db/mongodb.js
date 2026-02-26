@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 
 // Connection URL
-const url = 'mongodb+srv://snavarroredondo_db_user:iNPnToq85QtrfBnS@next.rd1qh6y.mongodb.net/?appName=Next';
+const url = process.env.MONGODB_URI;
 const client = new MongoClient(url);
 
 // Database Name
