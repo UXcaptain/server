@@ -6,9 +6,9 @@ import {
   getUserByEmail,
   updateUserPasswordInDB,
   createCustomerInDB,
-  getUserAuthDetails,
   updateUserLastLoginDate,
   createParticipantInDb,
+  getUserAuthDetailsById,
 } from '../models/userModel.js';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.js';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.js';
@@ -301,7 +301,7 @@ export const updateUserPassword = async (req, res) => {
   try {
     const { _id: userId } = req.user;
 
-    const user = await getUserAuthDetails(userId.toString());
+    const user = await getUserAuthDetailsById(userId);
 
     if (!user) {
       return res.status(404).json({
@@ -324,11 +324,10 @@ export const updateUserPassword = async (req, res) => {
     const newHashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update password in database
-    const updatedUser = await updateUserPasswordInDB(userId, newHashedPassword);
+    await updateUserPasswordInDB(userId, newHashedPassword);
 
     return res.status(200).json({
       message: 'Password updated successfully',
-      userId: updatedUser.id,
     });
   } catch (error) {
     logError('Password update failed', error);

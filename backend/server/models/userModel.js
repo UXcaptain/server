@@ -103,7 +103,7 @@ export const updateUserLastLoginDate = async (userId) => {
   }
 };
 
-export const getUserAuthDetails = async (email) => {
+export const getUserAuthDetailsByEmail = async (email) => {
   const cursor = collections.user.aggregate([
     {
       $match: {
@@ -125,14 +125,30 @@ export const getUserAuthDetails = async (email) => {
   return user;
 };
 
-export const getUserById = async (userId) => {
-  // Convert userId string to ObjectId for MongoDB query
-  const objectId = new ObjectId(userId);
-
+export const getUserAuthDetailsById = async (userId) => {
   const cursor = collections.user.aggregate([
     {
       $match: {
-        _id: objectId,
+        _id: new ObjectId(userId),
+      },
+    },
+    {
+      $project: {
+        password: 1,
+      },
+    },
+  ]);
+
+  const user = await cursor.next(); // Gets single doc or null
+
+  return user;
+};
+
+export const getUserById = async (userId) => {
+  const cursor = collections.user.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(userId),
       },
     },
     {
@@ -147,25 +163,20 @@ export const getUserById = async (userId) => {
 
   const user = await cursor.next();
 
-  // Normalize MongoDB _id to id for consistency with the rest of the codebase
-  if (user) {
-    user.id = user._id;
-  }
-
   return user;
 };
 
 export const updateUserPasswordInDB = async (userId, newPassword) => {
-  const updatePasswordQuery = await prisma.user.update({
-    where: { id: userId },
-    data: {
-      password: newPassword,
+  await collections.user.bulkWrite([
+    {
+      updateOne: {
+        filter: { _id: new ObjectId(userId) },
+        update: { $set: { password: newPassword } },
+      },
     },
-  });
+  ]);
 
   logInfo(`Password updated successfully for User ${userId}`);
-
-  return updatePasswordQuery;
 };
 
 export const getAllUsersInDb = async (filters = {}) => {

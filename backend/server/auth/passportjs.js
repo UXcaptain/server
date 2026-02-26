@@ -9,10 +9,7 @@ passport.use(localStrategy);
 //*  Serialize and deserialize the user
 //* This is necessary to keep the user logged in on localStrategy
 export const serializeUser = passport.serializeUser((user, done) => {
-  // Convert ObjectId to string for session storage
-  const userIdString = String(user._id);
-
-  done(null, userIdString);
+  done(null, user._id);
 });
 
 export const deserializeUser = passport.deserializeUser(async (id, done) => {
@@ -23,9 +20,9 @@ export const deserializeUser = passport.deserializeUser(async (id, done) => {
       return done(new Error('User not found in database during deserialization'), null);
     }
 
-    done(null, user);
+    return done(null, user);
   } catch (err) {
-    done(err);
+    return done(err);
   }
 });
 

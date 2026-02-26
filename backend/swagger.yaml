@@ -271,8 +271,8 @@ paths:
                           examples: [
                             "Session is valid"
                           ]
-                              id:
-                                $ref: '#/components/schemas/UserId'
+                        id:
+                          $ref: '#/components/schemas/UserId'
         401:
           description: Session is not valid
           content:
