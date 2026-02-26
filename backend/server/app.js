@@ -12,6 +12,7 @@ import { slowLimiter } from './middlewares/express-slow-down.js';
 import { startCronJobs } from './cron/jobsContainer.js';
 import { globalErrorHandler } from './middlewares/globalErrorHandler.js';
 import { webhookRouter } from './webhooks/webhooksRouter.js';
+import { initializeMongoDB } from './db/mongodb.js';
 
 const app = express();
 const server = createServer(app);
@@ -50,6 +51,7 @@ server.listen(process.env.PORT, () => {
 });
 
 startCronJobs();
+initializeMongoDB();
 
 const gracefulShutdown = () => {
   console.log('Received shutdown signal, closing server...');
