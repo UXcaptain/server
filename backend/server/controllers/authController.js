@@ -6,7 +6,7 @@ import {
   getUserByEmail,
   updateUserPasswordInDB,
   createCustomerInDB,
-  getUserPassword,
+  getUserAuthDetails,
   updateUserLastLoginDate,
   createParticipantInDb,
 } from '../models/userModel.js';
@@ -308,7 +308,7 @@ export const updateUserPassword = async (req, res) => {
   try {
     const { id: userId } = req.user;
 
-    const currentHashedPasswordQuery = await getUserPassword(userId);
+    const currentHashedPasswordQuery = await getUserAuthDetails(userId);
 
     if (!currentHashedPasswordQuery) {
       return res.status(404).json({

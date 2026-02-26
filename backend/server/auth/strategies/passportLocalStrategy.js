@@ -1,10 +1,10 @@
 import LocalStrategy from 'passport-local';
 import bcrypt from 'bcryptjs';
-import { getUserByEmail } from '../../models/userModel.js';
+import { getUserAuthDetails } from '../../models/userModel.js';
 
-export const localStrategy = new LocalStrategy(async (userEmail, password, done) => {
+export const localStrategy = new LocalStrategy(async (email, password, done) => {
   try {
-    const user = await getUserByEmail(userEmail);
+    const user = await getUserAuthDetails(email);
 
     if (!user) {
       return done(null, false, { message: 'User does not exist' });

@@ -101,19 +101,30 @@ export const updateUserLastLoginDate = async (userId) => {
   }
 };
 
-export const getUserPassword = async (userId) => {
-  const whereClause = {
-    id: userId,
-  };
-
-  const getUserPasswordQuery = await prisma.user.findUnique({
-    where: whereClause,
-    select: {
-      password: true,
+export const getUserAuthDetails = async (email) => {
+  const cursor = collections.user.aggregate([
+    {
+      $match: {
+        email: email,
+      },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        password: 1,
+      },
+    },
+  ]);
 
-  return getUserPasswordQuery;
+  const user = await cursor.next(); // Gets single doc or null
+
+  // Normalize MongoDB _id to id for consistency
+  if (user) {
+    user.id = user._id;
+  }
+
+  return user;
 };
 
 export const getUserById = async (userId) => {
