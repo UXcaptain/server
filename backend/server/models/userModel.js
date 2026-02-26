@@ -122,11 +122,6 @@ export const getUserAuthDetails = async (email) => {
 
   const user = await cursor.next(); // Gets single doc or null
 
-  // Normalize MongoDB _id to id for consistency
-  if (user) {
-    user.id = user._id;
-  }
-
   return user;
 };
 

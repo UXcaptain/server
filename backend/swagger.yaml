@@ -667,8 +667,6 @@ paths:
                       schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
                                 example: Password updated successfully  
@@ -679,13 +677,9 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: Current password is incorrect
-             
-        
         404:
               description: User not found
               content:
@@ -697,9 +691,7 @@ paths:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
-                                example: User not found
-             
-        
+                                example: User not found  
         422:
                 description: Validation error
                 content:

@@ -19,7 +19,6 @@ import { createCompanyInDb } from '../models/companyModel.js';
 export const requestPasswordResetToken = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'New password could not be requested due to validation errors',
       errors: req.sanitizedErrors,
     });
@@ -100,7 +99,6 @@ export const checkPasswordResetTokenValidity = async (req, res) => {
 export const updateRecoveredUserPassword = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: req.sanitizedErrors,
     });
   }
@@ -291,7 +289,6 @@ export const createParticipant = async (req, res) => {
 export const updateUserPassword = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: req.sanitizedErrors,
     });
   }
@@ -302,25 +299,23 @@ export const updateUserPassword = async (req, res) => {
   } = req.body;
 
   try {
-    const { id: userId } = req.user;
+    const { _id: userId } = req.user;
 
-    const currentHashedPasswordQuery = await getUserAuthDetails(userId);
+    const user = await getUserAuthDetails(userId.toString());
 
-    if (!currentHashedPasswordQuery) {
+    if (!user) {
       return res.status(404).json({
-        success: false,
         message: 'User not found',
       });
     }
 
-    const { password: currentHashedPassword } = currentHashedPasswordQuery;
+    const { password: currentHashedPassword } = user;
 
     // Compare current password with stored hash
     const isMatch = await bcrypt.compare(currentPassword, currentHashedPassword);
 
     if (!isMatch) {
       return res.status(400).json({
-        success: false,
         message: 'Current password is incorrect',
       });
     }
@@ -332,14 +327,12 @@ export const updateUserPassword = async (req, res) => {
     const updatedUser = await updateUserPasswordInDB(userId, newHashedPassword);
 
     return res.status(200).json({
-      success: true,
       message: 'Password updated successfully',
       userId: updatedUser.id,
     });
   } catch (error) {
     logError('Password update failed', error);
     return res.status(500).json({
-      success: false,
       message: 'Password update failed',
     });
   }

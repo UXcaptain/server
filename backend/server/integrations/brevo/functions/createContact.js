@@ -5,7 +5,6 @@ import { sendInfoLogsToTelegram } from '../../telegram/sendLogsToTelegram.js';
 export const createContactInBrevo = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'User could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
