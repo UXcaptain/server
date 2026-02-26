@@ -9,7 +9,6 @@ import {
   getUserPassword,
   updateUserLastLoginDate,
   createParticipantInDb,
-  createAdminInDB,
 } from '../models/userModel.js';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.js';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.js';
@@ -297,38 +296,6 @@ export const createParticipant = async (req, res) => {
   return res.status(201).json({
     message: 'participant created successfully',
     userId: user.insertedId,
-  });
-};
-
-export const createAdmin = async (req, res) => {
-  if (req.sanitizedErrors) {
-    return res.status(422).json({
-      success: false,
-      message: 'User could not be created due to validation errors',
-      errors: req.sanitizedErrors,
-    });
-  }
-
-  const userData = {
-    username: req.body.username,
-    password: await bcrypt.hash(req.body.password, 10),
-    role: req.body.role,
-  };
-
-  const isExistingUser = await getUserByEmail(userData.username);
-
-  if (isExistingUser !== null) {
-    return res.status(409).json({
-      success: false,
-      message: 'User creation failed - User already exists',
-    });
-  }
-
-  const createdUser = await createAdminInDB(userData);
-  return res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    userId: createdUser.id,
   });
 };
 

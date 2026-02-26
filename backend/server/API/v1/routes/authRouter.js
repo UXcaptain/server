@@ -29,8 +29,6 @@ authRouter.post('/register/local/participant', checkSchema(createUserValidationS
 
 authRouter.post('/register/local/customer', checkSchema(createUserValidationSchema), sanitizerResult, createCustomer);
 
-// authRouter.post('/register/local/admin', checkSchema(createUserValidationSchema), sanitizerResult, createAdmin); //* Admin registration is not publicly available
-
 authRouter.get('/password-reset', checkPasswordResetTokenValidity);
 
 authRouter.post('/password-reset', checkSchema(requestNewPasswordSchema), sanitizerResult, requestPasswordResetToken);

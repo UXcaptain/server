@@ -38,19 +38,6 @@ export const createCustomerInDB = async (userData) => {
   return user;
 };
 
-export const createAdminInDB = async (userData) => {
-  const createUserInDbQuery = await prisma.user.create({
-    data: {
-      email: userData.username,
-      password: userData.password,
-      role: userData.role,
-    },
-  });
-
-  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
-
-  return createUserInDbQuery;
-};
 
 export const createParticipantInDb = async (userData) => {
   const date = new Date();
