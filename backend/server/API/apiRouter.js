@@ -1,6 +1,4 @@
 import { Router } from 'express';
-
-import { checkSchema } from 'express-validator';
 import { userRouter } from './v1/routes/userRouter.js';
 
 import { authRouter } from './v1/routes/authRouter.js';
@@ -10,9 +8,6 @@ import { analysisRouter } from './v1/routes/analysisRouter.js';
 import { checkAuthentication } from '../middlewares/authenticationChecker.js';
 import { checkPermissionByRole } from '../middlewares/permissionByRoleChecker.js';
 import { analysisEntryRouter } from './v1/routes/analysisEntryRouter.js';
-import { createContactInBrevo } from '../integrations/brevo/functions/createContact.js';
-import { waitlistValidationSchema } from '../utils/validators/waitlistValidationSchema.js';
-import { sanitizerResult } from '../middlewares/sanitizerResult.js';
 
 export const apiRouter = Router();
 
@@ -20,8 +15,6 @@ const customerRole = 'customer';
 const adminRole = 'admin';
 
 apiRouter.use('/v1/auth', authRouter);
-
-apiRouter.use('/v1/waitlist', checkSchema(waitlistValidationSchema), sanitizerResult, createContactInBrevo);
 
 apiRouter.use(
   '/v1/billing',
