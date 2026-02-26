@@ -13,8 +13,9 @@ import {
 } from '../models/userModel.js';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.js';
 import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.js';
-import { createFreeTrialSubscription } from '../models/subscriptionModel.js';
+
 import { createCompanyBillingId } from './billingController.js';
+import { createCompanyInDb } from '../models/companyModel.js';
 
 export const requestPasswordResetToken = async (req, res) => {
   if (req.sanitizedErrors) {
@@ -222,84 +223,80 @@ export const loginLocal = async (req, res, next) => {
 export const createCustomer = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'User could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
 
+  // First Create company
+
+  const company = await createCompanyInDb();
+
+  // Then create user
+
   const userData = {
-    username: req.body.username,
+    email: req.body.username,
+    companyId: company.insertedId,
     password: await bcrypt.hash(req.body.password, 10),
     role: req.body.role,
-    utm_source: req.body.utm_source,
-    utm_medium: req.body.utm_medium,
-    utm_campaign: req.body.utm_campaign,
-    utm_content: req.body.utm_content,
-    utm_term: req.body.utm_term,
+    utmSource: req.body.utmSource,
+    utmMedium: req.body.utmMedium,
+    utmCampaign: req.body.utmCampaign,
+    utmContent: req.body.utmContent,
+    utmTerm: req.body.utmTerm,
     gclid: req.body.gclid,
     fbclid: req.body.fbclid,
   };
 
-  const isExistingUser = await getUserByEmail(userData.username);
+  const isExistingUser = await getUserByEmail(userData.email);
 
   if (isExistingUser !== null) {
     return res.status(409).json({
-      success: false,
       message: 'User creation failed - User already exists',
     });
   }
 
-  const createdUser = await createCustomerInDB(userData);
-
-  try { // ? Unsure if this error should interrupt registration flow - I think its not a good idea since we rather have the user register and then fix the issue manually that the other way around
-    await createFreeTrialSubscription(createdUser.company_id);
-  } catch (error) {
-    logError('Error creating free trial subscription', error);
-  }
-
-  try {
-    await createCompanyBillingId(createdUser);
-  } catch (error) {
-    logError('Error creating stripe billing Id', error);
-  }
+  const user = await createCustomerInDB(userData);
 
   return res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    userId: createdUser.id,
+    message: 'Customer created successfully',
+    userId: user.insertedId,
   });
 };
 
 export const createParticipant = async (req, res) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      success: false,
       message: 'User could not be created due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
 
   const userData = {
-    username: req.body.username,
+    email: req.body.username,
     password: await bcrypt.hash(req.body.password, 10),
     role: req.body.role,
+    utmSource: req.body.utmSource,
+    utmMedium: req.body.utmMedium,
+    utmCampaign: req.body.utmCampaign,
+    utmContent: req.body.utmContent,
+    utmTerm: req.body.utmTerm,
+    gclid: req.body.gclid,
+    fbclid: req.body.fbclid,
   };
 
-  const isExistingUser = await getUserByEmail(userData.username);
+  const isExistingUser = await getUserByEmail(userData.email);
 
   if (isExistingUser !== null) {
     return res.status(409).json({
-      success: false,
       message: 'User creation failed - User already exists',
     });
   }
 
-  const createdUser = await createParticipantInDb(userData);
+  const user = await createParticipantInDb(userData);
   return res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    userId: createdUser.id,
+    message: 'participant created successfully',
+    userId: user.insertedId,
   });
 };
 

@@ -1,41 +1,41 @@
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { posthogUserDeleteAccount, posthogUserSignedUp } from './posthogModel.js';
+import { posthogUserDeleteAccount, posthogCustomerSignedUp, posthogParticipantSignedUp } from './posthogModel.js';
 import {
   logError,
   logInfo,
 } from '../config/loggerFunctions.js';
+import { initializeMongoDB } from '../db/mongodb.js';
 
 const prisma = new PrismaClient();
 
+const collections = await initializeMongoDB();
+
 export const createCustomerInDB = async (userData) => {
-  const createUserInDbQuery = await prisma.user.create({
-    data: {
-      email: userData.username,
-      password: userData.password,
-      role: userData.role,
-      utm_source: userData.utm_source,
-      utm_medium: userData.utm_medium,
-      utm_campaign: userData.utm_campaign,
-      utm_content: userData.utm_content,
-      utm_term: userData.utm_term,
+  const date = new Date();
+
+  const user = await collections.user.insertOne({
+    email: userData.email,
+    companyId: userData.companyId,
+    password: userData.password,
+    role: userData.role,
+    attribution: {
+      utmSource: userData.utmSource,
+      utmMedium: userData.utmMedium,
+      utmCampaign: userData.utmCampaign,
+      utmContent: userData.utmContent,
+      utmTerm: userData.utmTerm,
       gclid: userData.gclid,
       fbclid: userData.fbclid,
-      CustomerProfile: {
-        create: {
-        },
-      },
-      Company: {
-        create: {
-        },
-      },
     },
+    createdAt: date,
+    updatedAt: date,
   });
 
-  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+  logInfo(`${userData.role} ${user.insertedId} created in DB`);
 
-  posthogUserSignedUp(createUserInDbQuery); // Fire-and-forget
+  posthogCustomerSignedUp(user.insertedId, userData); // Fire-and-forget
 
-  return createUserInDbQuery;
+  return user;
 };
 
 export const createAdminInDB = async (userData) => {
@@ -53,35 +53,50 @@ export const createAdminInDB = async (userData) => {
 };
 
 export const createParticipantInDb = async (userData) => {
-  const createUserInDbQuery = await prisma.user.create({
-    data: {
-      email: userData.username,
-      password: userData.password,
-      role: userData.role,
-      ParticipantProfile: {
-        create: {
-        },
-      },
+  const date = new Date();
+
+  const user = await collections.user.insertOne({
+    email: userData.email,
+    companyId: userData.companyId,
+    password: userData.password,
+    demographics: {},
+    role: userData.role,
+    attribution: {
+      utmSource: userData.utmSource,
+      utmMedium: userData.utmMedium,
+      utmCampaign: userData.utmCampaign,
+      utmContent: userData.utmContent,
+      utmTerm: userData.utmTerm,
+      gclid: userData.gclid,
+      fbclid: userData.fbclid,
     },
+    createdAt: date,
+    updatedAt: date,
   });
 
-  logInfo(`${userData.role} ${createUserInDbQuery.id} created in DB`, createUserInDbQuery);
+  logInfo(`${userData.role} ${user.insertedId} created in DB`);
 
-  // posthogUserSignedUp(createUserInDbQuery); // TODO - convert into participant
+  posthogParticipantSignedUp(user.insertedId, userData); // Fire-and-forget
 
-  return createUserInDbQuery;
+  return user;
 };
 
-export const getUserByEmail = async (userEmail) => {
-  const whereClause = {
-    email: userEmail,
-  };
+export const getUserByEmail = async (username) => {
+  const cursor = collections.user.aggregate([ // No await here
+    {
+      $match: {
+        email: username,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+      },
+    },
+  ]);
 
-  const getUserByEmailQuery = await prisma.user.findUnique({
-    where: whereClause,
-  });
-
-  return getUserByEmailQuery;
+  const user = await cursor.next(); // Gets single doc or null
+  return user;
 };
 
 export const updateUserLastLoginDate = async (userId) => {

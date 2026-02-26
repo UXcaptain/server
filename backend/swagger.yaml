@@ -354,10 +354,10 @@ paths:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 
 
-  /v1/auth/register/local:
+  /v1/auth/register/local/customer:
     post:
-        summary: Register a new user
-        description: Registers one user
+        summary: Register a new customer
+        description: Registers one customer
         tags: ["auth"]
         requestBody:
             required: true
@@ -366,25 +366,25 @@ paths:
                     schema:
                         type: object
                         required:
-                          - email
+                          - username
                           - password
                           - role
                         properties:
-                            email:
+                            username:
                                 $ref: "#/components/schemas/UserEmail"
                             password:
                                 $ref: "#/components/schemas/UserPassword"
                             role:
                                 $ref: "#/components/schemas/UserRoles"
-                            utm_source:
+                            utmSource:
                                 $ref: "#/components/schemas/UtmSource"
-                            utm_medium:
+                            utmMedium:
                                 $ref: "#/components/schemas/UtmMedium"
-                            utm_campaign:
+                            utmCampaign:
                                 $ref: "#/components/schemas/UtmCampaign"
-                            utm_content:
+                            utmContent:
                                 $ref: "#/components/schemas/UtmContent"
-                            utm_term:
+                            utmTerm:
                                 $ref: "#/components/schemas/UtmTerm"
                             gclid:
                                 $ref: "#/components/schemas/Gclid"
@@ -392,17 +392,15 @@ paths:
                                 $ref: "#/components/schemas/Fbclid"
         responses:
             201:
-                description: Success
+                description: Successfuly created User
                 content:
                   application/json:
                       schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessTrueStatus"
                               message:
                                 type: string
-                                example: User created successfully
+                                example: Customer created successfully
                               userId:
                                 $ref: "#/components/schemas/UserId"
             409:
@@ -424,8 +422,6 @@ paths:
                     schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 example: User could not be created due to validation errors
@@ -440,11 +436,95 @@ paths:
                     schema:
                           type: object
                           properties:
+                              message:
+                                $ref: '#/components/schemas/InternalErrorMessage'
+
+  /v1/auth/register/local/participant:
+    post:
+        summary: Register a new participant
+        description: Registers one participant
+        tags: ["auth"]
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        required:
+                          - username
+                          - password
+                          - role
+                        properties:
+                            username:
+                                $ref: "#/components/schemas/UserEmail"
+                            password:
+                                $ref: "#/components/schemas/UserPassword"
+                            role:
+                                $ref: "#/components/schemas/UserRoles"
+                            utmSource:
+                                $ref: "#/components/schemas/UtmSource"
+                            utmMedium:
+                                $ref: "#/components/schemas/UtmMedium"
+                            utmCampaign:
+                                $ref: "#/components/schemas/UtmCampaign"
+                            utmContent:
+                                $ref: "#/components/schemas/UtmContent"
+                            utmTerm:
+                                $ref: "#/components/schemas/UtmTerm"
+                            gclid:
+                                $ref: "#/components/schemas/Gclid"
+                            fbclid:
+                                $ref: "#/components/schemas/Fbclid"
+        responses:
+            201:
+                description: Successfuly created User
+                content:
+                  application/json:
+                      schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: participant created successfully
+                              userId:
+                                $ref: "#/components/schemas/UserId"
+            409:
+              description: User already exists
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
                               success:
                                   $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
+                                type: string
+                                example: User creation failed - User already exists
+            422:
+              description: Validation error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
+                                type: string
+                                example: User could not be created due to validation errors
+                              errors:
+                                type: array
+                                items:
+                                  $ref: "#/components/schemas/ValidationErrors"
+            500:
+              description: Unexpected error
+              content:
+                application/json:
+                    schema:
+                          type: object
+                          properties:
+                              message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
-                
+  
+
   /v1/auth/login/local:
     post:
         summary: Local strategy login route

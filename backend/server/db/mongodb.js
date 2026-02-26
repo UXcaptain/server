@@ -36,6 +36,6 @@ export const initializeMongoDB = async () => {
     company: db.collection('company'),
   };
 
-  console.log('Collections initialized with validators');
+  console.log('Collections created');
   return collections;
 };

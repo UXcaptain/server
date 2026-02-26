@@ -1,31 +1,48 @@
 import { client } from '../config/posthog-node.js';
 import { logError } from '../config/loggerFunctions.js';
 
-export const posthogUserSignedUp = async (user) => {
+export const posthogCustomerSignedUp = async (userId, userData) => {
   try {
     client.groupIdentify({
       groupType: 'company',
-      groupKey: user.company_id, // Sending ID until we have a name for the company
+      groupKey: userData.companyId,
       properties: {
-        name: 'unknown',
-        subscription: 'free trial',
+        name: userData.companyId, // Sending ID until we have a name for the company
+        signUpDate: new Date().toISOString(),
       },
     });
 
     client.capture({
-      distinctId: user.id,
-      event: 'userSignedUp',
+      distinctId: userId,
+      event: 'CustomerSignedUp',
       properties: {
         $set_once: {
-          email: user.email,
-          role: user.role,
-          company: user.company_id,
+          email: userData.email,
+          role: userData.role,
+          company: userData.companyId,
         },
       },
-      groups: { company: user.company_id },
+      groups: { company: userData.companyId },
     });
   } catch (error) {
-    logError('error sending posthogUserSignedUp event to posthog', error, 'userSignedUp');
+    logError('error sending posthogCustomerSignedUp event to posthog', error, 'CustomerSignedUp');
+  }
+};
+
+export const posthogParticipantSignedUp = async (userId, userData) => {
+  try {
+    client.capture({
+      distinctId: userId,
+      event: 'ParticipantSignedUp',
+      properties: {
+        $set_once: {
+          email: userData.email,
+          role: userData.role,
+        },
+      },
+    });
+  } catch (error) {
+    logError('error sending posthogParticipantSignedUp event to posthog', error, 'ParticipantSignedUp');
   }
 };
 
