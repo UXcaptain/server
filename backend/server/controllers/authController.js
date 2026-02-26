@@ -172,7 +172,7 @@ export const checkSession = async (req, res) => {
 export const loginLocal = async (req, res, next) => {
   if (req.sanitizedErrors) {
     return res.status(422).json({
-      message: 'User could not be created due to validation errors',
+      message: 'User could not be logged in due to validation errors',
       errors: req.sanitizedErrors,
     });
   }
@@ -188,17 +188,10 @@ export const loginLocal = async (req, res, next) => {
       });
     }
 
-    // if (user.role === 'participant') {
-    //   return res.status(403).json({
-    //     message: 'Participant login is disabled',
-    //   });
-    // }
-
     // Log the user in and establish a session
     return req.login(user, (loginErr) => {
       if (loginErr) { //* Will trigger if password is incorrect
         return res.status(401).json({
-          success: false,
           message: 'The combination of email and password is incorrect',
         });
       }

@@ -524,7 +524,6 @@ paths:
                               message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
   
-
   /v1/auth/login/local:
     post:
         summary: Local strategy login route
@@ -572,7 +571,6 @@ paths:
                               message:
                                 type: string
                                 example: The combination of email and password is incorrect
-             
             403:
               description: Participant login is disabled
               content:
@@ -592,7 +590,7 @@ paths:
                           properties:
                               message:
                                 type: string
-                                example: User could not be created due to validation errors
+                                example: User could not be logged in due to validation errors
                               errors:
                                 type: array
                                 items:
