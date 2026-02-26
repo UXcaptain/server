@@ -38,7 +38,6 @@ export const createCustomerInDB = async (userData) => {
   return user;
 };
 
-
 export const createParticipantInDb = async (userData) => {
   const date = new Date();
 

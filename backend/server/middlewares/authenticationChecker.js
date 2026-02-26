@@ -1,10 +1,9 @@
 export const checkAuthentication = () => (req, res, next) => {
-  // return next(); //* Enable for debugging
+  // return next(); //* Enable for running unathed while debugging
 
   if (!req.isAuthenticated()) {
     return res.status(401).json(
       {
-        success: false,
         message: 'The user is not authenticated',
       },
     );

@@ -260,23 +260,17 @@ paths:
 
       responses:
         200:
-          description: Success
+          description: Session is valid
           content:
             application/json:
                 schema:
                     type: object
                     properties:
-                        success:
-                            $ref: "#/components/schemas/SuccessTrueStatus"
                         message:
-                          description: message related to the requestBody - Appends "- cache" or "- DB" depending where the data is obtained from
                           type: string
                           examples: [
                             "Session is valid"
                           ]
-                        user:
-                            type: object
-                            properties:
                               id:
                                 $ref: '#/components/schemas/UserId'
         401:
@@ -286,8 +280,6 @@ paths:
               schema:
                           type: object
                           properties:
-                              success:
-                                  $ref: "#/components/schemas/SuccessFalseStatus"
                               message:
                                 type: string
                                 examples: [
