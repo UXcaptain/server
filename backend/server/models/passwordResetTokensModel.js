@@ -1,19 +1,25 @@
+import { ObjectId } from 'mongodb';
 import { PrismaClient } from '../config/generated/prisma/client/index.js';
-import { logError, logPasswordResetTokenCreated } from '../config/loggerFunctions.js';
+
+import { logError, logInfo } from '../config/loggerFunctions.js';
+import { initializeMongoDB } from '../db/mongodb.js';
 
 const prisma = new PrismaClient();
 
+const collections = await initializeMongoDB();
+
 export const createPasswordResetToken = async (userId) => {
-  const createPasswordResetTokenQuery = await prisma.passwordResetTokens.create({
-    data: {
-      user_id: userId,
-      token_expires: new Date(Date.now() + 3600000),
+  const passwordResetToken = await collections.passwordResetToken.bulkWrite([{
+    insertOne: {
+      userId: new ObjectId(userId),
+      tokenExpirationDate: new Date(Date.now() + 3600000), // 60 minutes expiration
+      createdAt: new Date(),
     },
-  });
+  }]);
 
-  logPasswordResetTokenCreated(userId);
+  logInfo(`password reset token created for user ${userId}`);
 
-  return createPasswordResetTokenQuery;
+  return passwordResetToken.insertedIds[0];
 };
 
 export const getPasswordResetTokenData = async (token) => {

@@ -1,5 +1,5 @@
 export const requestNewPasswordSchema = {
-  email: {
+  username: {
     notEmpty: {
       errorMessage: 'Username is required',
     },

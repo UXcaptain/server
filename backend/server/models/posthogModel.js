@@ -135,3 +135,17 @@ export const posthogAnalysisCreated = async (analysisData, analysisId) => {
     logError('error sending posthogAnalysisCreated event to posthog', error, 'analysisCreated');
   }
 };
+
+export const posthogPasswordRequestTokenRequested = async (distinctId, passwordResetToken) => {
+  try {
+    client.capture({
+      distinctId: distinctId,
+      event: 'passwordResetTokenRequested',
+      properties: {
+        passwordResetToken: passwordResetToken,
+      },
+    });
+  } catch (error) {
+    logError('error sending posthogPasswordRequestTokenRequested event to posthog', error, 'passwordResetTokenRequested');
+  }
+};

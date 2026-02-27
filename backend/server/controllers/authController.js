@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { logError } from '../config/loggerFunctions.js';
 import passport from '../auth/passportjs.js';
-import { posthogUserSuccessLoggedIn } from '../models/posthogModel.js';
+import { posthogPasswordRequestTokenRequested, posthogUserSuccessLoggedIn } from '../models/posthogModel.js';
 import {
   getUserByEmail,
   updateUserPasswordInDB,
@@ -11,7 +11,6 @@ import {
   getUserAuthDetailsById,
 } from '../models/userModel.js';
 import { createPasswordResetToken, getPasswordResetTokenData, deletePasswordResetTokens } from '../models/passwordResetTokensModel.js';
-import { sendResetPasswordTokenToUser } from '../integrations/brevo/transactionalEmails/sendResetPasswordTokenToUser.js';
 
 import { createCompanyBillingId } from './billingController.js';
 import { createCompanyInDb } from '../models/companyModel.js';
@@ -24,31 +23,20 @@ export const requestPasswordResetToken = async (req, res) => {
     });
   }
 
-  try {
-    const { email } = req.body;
+  const { username: email } = req.body;
 
-    const user = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
 
-    if (user) {
-      const tokenCreation = await createPasswordResetToken(user.id);
+  if (user) {
+    const passwordResetToken = await createPasswordResetToken(user._id);
 
-      await sendResetPasswordTokenToUser(email, tokenCreation.id);
-    }
-
-    //* Not checking / notifying for user existence to prevent security leaks
-
-    return res.status(200).json({
-      success: true,
-      message: 'If this email exists, a reset link will be sent',
-    });
-  } catch (error) {
-    logError('Error in forgotPasswordRequest function', error);
-    return res.status(500).json({
-      success: false,
-      message: 'An error occurred, please try again later',
-      error: error,
-    });
+    posthogPasswordRequestTokenRequested(user._id, passwordResetToken.toString()); // fire-and-forget // Convert ObjectId to string so it can be sent to posthog
   }
+
+  return res.status(200).json({
+    message: 'If this email exists, a reset link will be sent',
+  });
+  //* Not checking / notifying for user existence to prevent security leaks
 };
 
 export const checkPasswordResetTokenValidity = async (req, res) => {

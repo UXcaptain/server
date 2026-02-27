@@ -57,17 +57,6 @@ export const logUserLoggedInSuccessfully = (userId, loginMethod) => {
   });
 };
 
-export const logPasswordResetTokenCreated = (userId) => {
-  logger.info({
-    message: 'User password reset token succesfully created in database',
-    context: {
-      userData: {
-        userId: userId,
-      },
-    },
-  });
-};
-
 export const logUserLoggedOut = (userId) => {
   logger.info({
     message: 'User logged out successfully',

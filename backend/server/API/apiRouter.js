@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { userRouter } from './v1/routes/userRouter.js';
-
 import { authRouter } from './v1/routes/authRouter.js';
 import { adminRouter } from './v1/routes/adminRouter.js';
 import { billingRouter } from './v1/routes/billingRouter.js';

@@ -717,8 +717,6 @@ paths:
                 properties:
                       email:
                         $ref: '#/components/schemas/UserEmail'
-      
-
       responses:
         200:
           description: Success
@@ -727,8 +725,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
-                    $ref: "#/components/schemas/SuccessTrueStatus"
                   message:
                     type: string
                     example: If this email exists, a reset link will be sent
@@ -739,8 +735,6 @@ paths:
                 schema:
                       type: object
                       properties:
-                          success:
-                              $ref: "#/components/schemas/SuccessFalseStatus"
                           message:
                                 $ref: '#/components/schemas/InternalErrorMessage'
 

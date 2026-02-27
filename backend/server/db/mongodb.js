@@ -30,10 +30,14 @@ export const initializeMongoDB = async () => {
   await db.createCollection('company', {
   });
 
+  await db.createCollection('passwordResetToken', {
+  });
+
   collections = {
     user: db.collection('user'),
     analysis: db.collection('analysis'),
     company: db.collection('company'),
+    passwordResetToken: db.collection('passwordResetToken'),
   };
 
   console.log('Collections created');
