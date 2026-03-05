@@ -1,19 +1,18 @@
 import { ObjectId } from 'mongodb';
-import { PrismaClient } from '../config/generated/prisma/client/index.js';
 
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { initializeMongoDB } from '../db/mongodb.js';
-
-const prisma = new PrismaClient();
 
 const collections = await initializeMongoDB();
 
 export const createPasswordResetToken = async (userId) => {
   const passwordResetToken = await collections.passwordResetToken.bulkWrite([{
     insertOne: {
-      userId: new ObjectId(userId),
-      tokenExpirationDate: new Date(Date.now() + 3600000), // 60 minutes expiration
-      createdAt: new Date(),
+      document: {
+        userId: new ObjectId(userId),
+        tokenExpirationDate: new Date(Date.now() + 3600000), // 60 minutes expiration
+        createdAt: new Date(),
+      },
     },
   }]);
 
@@ -23,30 +22,29 @@ export const createPasswordResetToken = async (userId) => {
 };
 
 export const getPasswordResetTokenData = async (token) => {
-  const whereClause = {
-    id: token,
-  };
+  const passwordResetTokenData = await collections.passwordResetToken.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(token),
+      },
+    },
+    {
+      $limit: 1,
+    },
+  ]).toArray();
 
-  const getPasswordResetTokenDataQuery = await prisma.passwordResetTokens.findFirst({
-    where: whereClause,
-  });
-
-  return getPasswordResetTokenDataQuery;
+  return passwordResetTokenData[0] || null;
 };
 
 export const deletePasswordResetTokens = async (userId) => {
   try {
-    const whereClause = {
-      user_id: userId,
-    };
-
-    const deleteResult = await prisma.passwordResetTokens.deleteMany({
-      where: whereClause,
+    const deleteResult = await collections.passwordResetToken.deleteMany({
+      userId: new ObjectId(userId),
     });
 
     return {
       success: true,
-      deletedCount: deleteResult.count,
+      deletedCount: deleteResult.deletedCount,
     };
   } catch (error) {
     return logError(`Token for user ID ${userId} deletion failed`, error);
@@ -56,13 +54,7 @@ export const deletePasswordResetTokens = async (userId) => {
 };
 
 export const deleteExpiredPasswordResetTokens = async () => {
-  const whereClause = {
-    token_expires: {
-      lt: new Date(),
-    },
-  };
-
-  await prisma.passwordResetTokens.deleteMany({
-    where: whereClause,
+  await collections.passwordResetToken.deleteMany({
+    tokenExpirationDate: { $lt: new Date() },
   });
 };
