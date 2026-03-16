@@ -14,7 +14,8 @@ export const logError = (errorMessage, error, additionalInfo = 'N/A') => {
       },
     });
 
-    sendErrorLogsToTelegram(errorMessage, error);
+    // Fire-and-forget - don't await, use .catch() to prevent unhandled rejections
+    sendErrorLogsToTelegram(errorMessage, error).catch(() => {});
   } catch (err) {
     return; // Fail silently
   }
@@ -40,7 +41,8 @@ export const logInfo = async (message, context = 'no context') => {
       context: context,
     });
 
-    sendInfoLogsToTelegram(message);
+    // Fire-and-forget - don't await, use .catch() to prevent unhandled rejections
+    sendInfoLogsToTelegram(message).catch(() => {});
   } catch (error) {
     logError(`error in storing INFO logs for: ${message}`, error);
   }

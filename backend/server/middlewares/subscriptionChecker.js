@@ -1,16 +1,49 @@
-import { getSubscriptionDataInDb } from '../models/subscriptionModel.mjs';
+import { getSubscriptionDataInDb } from '../models/subscriptionModel.js';
 
-export const subscriptionChecker = (planName) => async (req, res, next) => {
-  const { id } = req.user;
+const isSubscriptionActive = (subscription) => {
+  if (!subscription) {
+    return false;
+  }
 
-  const subscriptionData = getSubscriptionDataInDb(id);
+  const { status, currentPeriodEnd, cancelAtPeriodEnd } = subscription;
+  const now = new Date();
+  const periodEndDate = new Date(currentPeriodEnd);
 
-  if (subscriptionData.plan_name !== planName) {
-    res.status(401).json({
-      success: false,
-      message: 'This feature is not included in your plan',
+  const statusesGrantingAccess = ['active', 'trialing', 'past_due'];
+
+  if (!statusesGrantingAccess.includes(status)) {
+    return false;
+  }
+
+  if (periodEndDate <= now) {
+    return false;
+  }
+
+  if (status === 'canceled' && cancelAtPeriodEnd) {
+    return periodEndDate > now;
+  }
+
+  return true;
+};
+
+export const subscriptionChecker = async (req, res, next) => {
+  const { companyId } = req.user;
+
+  const subscriptionData = await getSubscriptionDataInDb(companyId);
+
+  if (!subscriptionData) {
+    return res.status(401).json({
+      message: 'You need an active subscription to access this resource',
+    });
+  }
+
+  if (!isSubscriptionActive(subscriptionData)) {
+    return res.status(401).json({
+      message: 'You need an active subscription to access this resource',
     });
   }
 
   next();
 };
+
+export { isSubscriptionActive };

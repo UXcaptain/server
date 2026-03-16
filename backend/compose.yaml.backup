@@ -1,0 +1,124 @@
+name: uxcaptain
+
+networks:
+  uxcaptain-network:
+    name: uxcaptain-network
+    driver: bridge
+
+volumes:
+  uxcaptain-database:
+    name: uxcaptain-database
+
+  whisper-transcription-models:
+    name: whisper-transcription-models
+
+
+services:
+  # server:
+  #   container_name: server
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV}
+  #     DEPLOY_ENVIRONMENT: ${DEPLOY_ENVIRONMENT}
+  #     POSTHOG_API_KEY: ${POSTHOG_API_KEY}
+  #     SESSION_SECRET: ${SESSION_SECRET}
+  #     BREVO_API_KEY: ${BREVO_API_KEY}
+  #     TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
+  #     FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
+  #     STRIPE_API_KEY: ${STRIPE_API_KEY}
+  #     STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+  #     PORT: ${PORT}
+  #     S3_BUCKET: dev-analysis-entry-storage
+  #     S3_REGION: ${S3_REGION}
+  #     S3_EXTERNAL_ENDPOINT: ${S3_EXTERNAL_ENDPOINT}
+#       S3_INTERNAL_ENDPOINT: ${S3_EXTERNAL_ENDPOINT} # Has to be internal to allow in-server communication
+  #     MINIO_ROOT_USER=${MINIO_ROOT_USER}
+  #     MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+  #     TRANSCRIPTION_ENDPOINT= ${TRANSCRIPTION_ENDPOINT}
+
+  #   ports:
+  #     - 3000:3000
+  #   develop:
+  #     watch:
+  #       - path: .
+  #         action: sync+restart #* Synchronize code changes and restart the server
+  #         target: /usr/src/app/
+  #   depends_on: #* References the SERVICE name - NOT the container_name
+  #     database:
+  #       condition: service_started
+  #     minio:
+          # condition: service_started
+  #   networks:
+  #     - uxcaptain-network
+
+  #   deploy:
+  #       resources:
+  #         limits:
+  #           cpus: '1.0'
+  #           memory: 512M
+  #         reservations:
+  #           cpus: '0.5'
+  #           memory: 256M
+  
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: on-failure
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - /Users/martaperezsanchez/repos/minio:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: server /data --console-address ":9001"
+    networks:
+      - uxcaptain-network
+  
+  database:
+    image: postgres:17.5
+    restart: on-failure
+    container_name: postgresDB
+    user: 
+      postgres
+    volumes:
+      - uxcaptain-database:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - 5432:5432
+    networks:
+      - uxcaptain-network 
+
+  faster-whisper-transcribe:
+      image: onerahmet/openai-whisper-asr-webservice:latest
+      container_name: faster-whisper-asr
+      ports:
+        - 9007:9000
+      volumes:
+        - whisper-transcription-models:/root/.cache  # Model persistence (~2-5GB)
+      environment:
+        - ASR_MODEL=medium  # tiny,base,small,medium,large https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-the-model
+        - ASR_DEVICE=cpu # https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-device-and-quantization
+        - ASR_ENGINE=faster_whisper # openai_whisper, faster_whisper, whisperx -- https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#whisperx
+        - MODEL_IDLE_TIMEOUT=0  # in Seconds - Keep model loaded - https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-the-model-unloading-timeout
+        - ASR_QUANTIZATION=int8 # https://ahmetoner.com/whisper-asr-webservice/environmental-variables/#configuring-device-and-quantization
+      restart: unless-stopped
+      depends_on:
+        - minio
+      networks:
+        - uxcaptain-network  # Same as MinIO/monolith
+      deploy:
+        resources:
+          limits:
+            cpus: '4.0'
+            memory: 5000M
+
+
+
+

@@ -1,5 +1,5 @@
 import apiClient from "../../config/API/axiosConfig.mjs"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router";
 import { getUTMParameters } from "../../utils/utmTracker.js"
 import {
@@ -23,6 +23,27 @@ const [registerError, setRegisterError] = useState(null)
 const [countdown, setCountdown] = useState(null)
     const navigate = useNavigate();
 
+    // Handle countdown and navigation in useEffect
+    useEffect(() => {
+        if (countdown !== null && countdown > 0) {
+            const timer = setInterval(() => {
+                setCountdown(prevCountdown => {
+                    if (prevCountdown <= 1) {
+                        return 0;
+                    }
+                    return prevCountdown - 1;
+                });
+            }, 1000);
+
+            // Navigate when countdown reaches 0
+            if (countdown === 0) {
+                navigate('/auth/login');
+            }
+
+            return () => clearInterval(timer);
+        }
+    }, [countdown, navigate]);
+
 
 const handleRegister = async (e) => {
     e.preventDefault()
@@ -45,16 +66,6 @@ const handleRegister = async (e) => {
         setRegisterError(null)
 
         setCountdown(3);
-            const timer = setInterval(() => {
-                setCountdown(prevCountdown => {
-                    if (prevCountdown <= 1) {
-                        clearInterval(timer);
-                        navigate('/auth/login');
-                        return 0;
-                    }
-                    return prevCountdown - 1;
-                });
-            }, 1000);
 
         
         

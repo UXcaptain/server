@@ -44,31 +44,31 @@ export const createUserValidationSchema = {
     trim: true,
     escape: true,
   },
-  utm_source: {
+  utmSource: {
     optional: true,
     isString: true,
     trim: true,
     escape: true,
   },
-  utm_medium: {
+  utmMedium: {
     optional: true,
     isString: true,
     trim: true,
     escape: true,
   },
-  utm_campaign: {
+  utmCampaign: {
     optional: true,
     isString: true,
     trim: true,
     escape: true,
   },
-  utm_content: {
+  utmContent: {
     optional: true,
     isString: true,
     trim: true,
     escape: true,
   },
-  utm_term: {
+  utmTerm: {
     optional: true,
     isString: true,
     trim: true,

@@ -1,80 +1,37 @@
 import { Outlet } from "react-router";
-import  NavbarSimple  from "../../components/partials/UserNavBar";
-import { useNavigate } from "react-router";
-import { useState, useEffect } from "react";
-import apiClient from "../../config/API/axiosConfig.mjs";
-import { usePostHog } from 'posthog-js/react'
-import { AppShell, Burger } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import NavbarSimple from "../../components/partials/UserNavBar";
+import { useState } from "react";
+import { AppShell, Box } from '@mantine/core';
 import { SubscriptionProvider } from "../../contexts/SubscriptionContext.jsx";
 
 
 const UserWrapper = () => {
 
-    const posthog = usePostHog()
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    const [opened, { toggle }] = useDisclosure();
-    const [userId, setUserId] = useState(null);
-
-    
-    useEffect(() => {
-        const checkSession = async () => {
-            try {
-                const response = await apiClient.get(`/api/v1/auth/session`);
-                setUserId(response.data.user.id)
-                setLoading(false);
-
-            } catch (error) {
-                navigate('/auth/login');
-            }
-        };
-
-        checkSession();
-    }, [navigate]);
-
-
-    useEffect( () => {
-
-      if (userId) {
-        posthog?.identify(userId, {
-        })
-      }
-    }, [userId])
+    const [loading, setLoading] = useState(false);
 
 
   return (
     <SubscriptionProvider>
       <AppShell
         header={{ height: 60 }}
-        navbar={{
-          width: 300,
-          breakpoint: 'sm',
-          collapsed: { mobile: !opened },
-        }}
         padding="md"
       >
         <AppShell.Header>
-          <Burger
-            opened={opened}
-            onClick={toggle}
-            hiddenFrom="sm"
-            size="sm"
-          />
+          <Box sx={{ maxWidth: 1400, margin: '0 auto', width: '100%', padding: '0 var(--mantine-spacing-md)' }}>
+            <NavbarSimple />
+          </Box>
         </AppShell.Header>
 
-        <AppShell.Navbar p="md">
-          <NavbarSimple />
-        </AppShell.Navbar>
-
         <AppShell.Main>
-          {loading ? (
-            <div>Cargando...</div>
-          ) : (
-            <>
-              <Outlet />
-            </>
-          )}
+          <Box sx={{ maxWidth: 1400, margin: '0 auto' }}>
+            {loading ? (
+              <div>Cargando...</div>
+            ) : (
+              <>
+                <Outlet />
+              </>
+            )}
+          </Box>
         </AppShell.Main>
       </AppShell>
     </SubscriptionProvider>
@@ -82,8 +39,5 @@ const UserWrapper = () => {
 
 }
 
+
 export default UserWrapper;
-
-
-
-

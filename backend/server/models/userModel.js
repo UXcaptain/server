@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-import { PrismaClient } from '../config/generated/prisma/client/index.js';
 import { posthogUserDeleteAccount, posthogCustomerSignedUp, posthogParticipantSignedUp } from './posthogModel.js';
 import {
   logError,
@@ -7,65 +6,47 @@ import {
 } from '../config/loggerFunctions.js';
 import { initializeMongoDB } from '../db/mongodb.js';
 
-const prisma = new PrismaClient();
-
 const collections = await initializeMongoDB();
 
 export const createCustomerInDB = async (userData) => {
   const date = new Date();
 
-  const user = await collections.user.insertOne({
+  const result = await collections.user.bulkWrite([{ insertOne: { document: {
     email: userData.email,
     companyId: userData.companyId,
     password: userData.password,
     role: userData.role,
-    attribution: {
-      utmSource: userData.utmSource,
-      utmMedium: userData.utmMedium,
-      utmCampaign: userData.utmCampaign,
-      utmContent: userData.utmContent,
-      utmTerm: userData.utmTerm,
-      gclid: userData.gclid,
-      fbclid: userData.fbclid,
-    },
     createdAt: date,
     updatedAt: date,
-  });
+  } } }]);
 
-  logInfo(`${userData.role} ${user.insertedId} created in DB`);
+  const insertedId = result.insertedIds[0];
+  logInfo(`${userData.role} ${insertedId} created in DB`);
 
-  posthogCustomerSignedUp(user.insertedId, userData); // Fire-and-forget
+  posthogCustomerSignedUp(insertedId, userData); // Fire-and-forget
 
-  return user;
+  return result;
 };
 
 export const createParticipantInDb = async (userData) => {
   const date = new Date();
 
-  const user = await collections.user.insertOne({
+  const result = await collections.user.bulkWrite([{ insertOne: { document: {
     email: userData.email,
     companyId: userData.companyId,
     password: userData.password,
     demographics: {},
     role: userData.role,
-    attribution: {
-      utmSource: userData.utmSource,
-      utmMedium: userData.utmMedium,
-      utmCampaign: userData.utmCampaign,
-      utmContent: userData.utmContent,
-      utmTerm: userData.utmTerm,
-      gclid: userData.gclid,
-      fbclid: userData.fbclid,
-    },
     createdAt: date,
     updatedAt: date,
-  });
+  } } }]);
 
-  logInfo(`${userData.role} ${user.insertedId} created in DB`);
+  const insertedId = result.insertedIds[0];
+  logInfo(`${userData.role} ${insertedId} created in DB`);
 
-  posthogParticipantSignedUp(user.insertedId, userData); // Fire-and-forget
+  posthogParticipantSignedUp(insertedId, userData); // Fire-and-forget
 
-  return user;
+  return result;
 };
 
 export const getUserByEmail = async (username) => {
@@ -116,6 +97,7 @@ export const getUserAuthDetailsByEmail = async (email) => {
         email: 1,
         password: 1,
         role: 1,
+        companyId: 1,
       },
     },
   ]);
@@ -156,7 +138,7 @@ export const getUserById = async (userId) => {
         _id: 1,
         email: 1,
         role: 1,
-        // Exclude password from result
+        companyId: { $cond: { if: { $eq: ['$companyId', null] }, then: null, else: '$companyId' } },
       },
     },
   ]);
@@ -180,62 +162,128 @@ export const updateUserPasswordInDB = async (userId, newPassword) => {
 };
 
 export const getAllUsersInDb = async (filters = {}) => {
-  const getAllUsersQuery = await prisma.user.findMany({
-    where: filters,
-    omit: {
-      password: true,
+  const cursor = collections.user.aggregate([
+    {
+      $match: filters,
     },
-    orderBy: {
-      created_at: 'desc',
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        role: 1,
+        companyId: 1,
+        createdAt: '$createdAt',
+        updatedAt: '$updatedAt',
+        lastLoginAt: 1,
+        attribution: 1,
+        demographics: 1,
+      },
     },
-  });
+    {
+      $sort: { createdAt: -1 },
+    },
+  ]);
 
-  return getAllUsersQuery;
+  const users = await cursor.toArray();
+  return users;
 };
 
 export const deleteUserInDb = async (userId) => {
-  const deleteUserQuery = await prisma.user.delete({
-    where: {
-      id: userId,
-    },
-  });
+  const result = await collections.user.bulkWrite([{ deleteOne: { filter: {
+    _id: new ObjectId(userId),
+  } } }]);
 
   logInfo(`User ${userId} succesfully deleted`);
 
   posthogUserDeleteAccount(userId);
 
-  return deleteUserQuery;
+  return result;
 };
 
 export const getUserByStripeCustomerId = async (stripeCustomerId) => {
-  const whereClause = {
-    stripe_customer_id: stripeCustomerId,
-  };
+  const cursor = collections.user.aggregate([
+    {
+      $match: {
+        stripeCustomerId: stripeCustomerId,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        role: 1,
+        companyId: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        lastLoginAt: 1,
+        attribution: 1,
+        demographics: 1,
+        stripeCustomerId: 1,
+      },
+    },
+  ]);
 
-  const user = await prisma.user.findUnique({
-    where: whereClause,
-  });
+  const user = await cursor.next();
 
   return user;
 };
 
 export const getCustomerProfile = async (customerId) => {
-  const whereClause = {
-    id: customerId,
-  };
-
-  const customerProfile = await prisma.user.findUnique({
-    where: whereClause,
-    select: {
-      email: true,
-      role: true,
-      // CustomerProfile: { //* No point in returning this until we set up the companies model
-      //   select: {
-      //     company_name: true,
-      //   },
-      // },
+  const cursor = collections.user.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(customerId),
+      },
     },
-  });
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        role: 1,
+      },
+    },
+  ]);
+
+  const customerProfile = await cursor.next();
 
   return customerProfile;
+};
+
+export const getUserWithAcquisition = async (userId) => {
+  const collections = await initializeMongoDB();
+
+  const result = await collections.user.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(userId),
+      },
+    },
+    {
+      $lookup: {
+        from: 'company',
+        localField: 'companyId',
+        foreignField: '_id',
+        as: 'company',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        role: 1,
+        companyId: 1,
+        'company.acquisition.utmSource': 1,
+        'company.acquisition.utmMedium': 1,
+        'company.acquisition.utmCampaign': 1,
+        'company.acquisition.utmContent': 1,
+        'company.acquisition.utmTerm': 1,
+        'company.acquisition.gclid': 1,
+        'company.acquisition.fbclid': 1,
+      },
+    },
+  ]).toArray();
+
+  const user = result[0] || null;
+
+  return user;
 };

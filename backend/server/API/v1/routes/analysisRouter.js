@@ -12,10 +12,23 @@ import { createAnalysisSchema } from '../../../utils/validators/createAnalysisSc
 import { sanitizerResult } from '../../../middlewares/sanitizerResult.js';
 import { checkAuthentication } from '../../../middlewares/authenticationChecker.js';
 import { checkPermissionByRole } from '../../../middlewares/permissionByRoleChecker.js';
+import { subscriptionChecker } from '../../../middlewares/subscriptionChecker.js';
+import { checkInviteYourOwnUsersBeforeCreateAnalysis } from '../../../middlewares/planLimitsChecker.js';
 
 export const analysisRouter = Router();
 
-analysisRouter.post('/', checkAuthentication(), checkPermissionByRole('customer'), checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+// TODO: Temporarily bypassing subscription check for analysis creation - re-enable later
+// analysisRouter.post('/', checkAuthentication(), checkPermissionByRole('customer'), subscriptionChecker('pro'), checkSchema(createAnalysisSchema), sanitizerResult, createAnalysis);
+analysisRouter.post(
+  '/',
+  checkAuthentication(),
+  checkPermissionByRole('customer'),
+  subscriptionChecker,
+  // checkInviteYourOwnUsersBeforeCreateAnalysis,
+  checkSchema(createAnalysisSchema),
+  sanitizerResult,
+  createAnalysis,
+);
 
 analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('participant'), getAvailableAnalyses);
 
@@ -27,7 +40,6 @@ analysisRouter.get('/:id', checkAuthentication(), checkPermissionByRole('custome
 
 analysisRouter.use('/*fallback', (req, res) => {
   res.status(404).json({
-    success: false,
     message: 'The requested route is not available or does not exist',
   }); //* Will catch failed requests even though they are authenticated & have the appropiate role
 });

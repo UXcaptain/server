@@ -23,10 +23,11 @@ UXcaptain is a video-based user research platform designed for UX, marketing and
 
 The platform addresses critical gaps in traditional user research by providing:
 
-- Automated participant recruitment and management (not yet implemented)
-- Remote video-based testing capabilities
-- AI-powered transcription and insight extraction (not yet implemented)
-- Comprehensive analytics and reporting (not yet implemented)
+- Remote video-based testing capabilities ✅ **IMPLEMENTED**
+- Automatic transcription ✅ **IMPLEMENTED**
+- Automated participant recruitment and management (not yet implemented - planned)
+- AI-powered insight extraction from transcriptions (not yet implemented - highest demand feature)
+- Comprehensive analytics and reporting (not yet implemented - planned)
 
 ### Primary Users
 
@@ -95,17 +96,29 @@ Building UXcaptain, a video-based user research platform for UX, marketing and p
 - **Enterprise out of scope (early plans)**: enterprise-specific needs (SSO, complex procurement, bespoke contracts) are explicitly **out of scope** for early pricing/plans.
 - **Market focus**: Small teams (2-5 people), sub-€1,000 annual budgets (35% of Spanish market), European market (GDPR compliance).
 
-### Project Status: Active Development - Backend MVP Implementation
+### Project Status: Production-Ready MVP - Full-Stack Implementation
+
+#### Overall Status
+
+- ✅ **Frontend**: Fully built with React + Vite, production-ready, deployed
+- ✅ **Backend**: Complete REST API with all core features
+- ✅ **Database**: MongoDB with full schema and operations
+- ✅ **Authentication**: Session-based with role-based access control
+- ✅ **Video Recording**: Full participant flow with media permissions
+- ✅ **Transcription**: Automatic Whisper ASR integration
+- ✅ **Billing**: Stripe checkout and subscription management
+- ✅ **Deployment**: Docker-based, CI/CD configured, Koyeb deployment
 
 #### Backend Implementation Status
 
 **Core Infrastructure (✅ Completed)**:
 
 - ✅ **Express.js Server**: RESTful API with security middleware (Helmet, CORS, rate limiting)
-- ✅ **PostgreSQL Database**: Prisma ORM with comprehensive schema (11 models, 8 migrations)
+- ✅ **MongoDB Database**: Native MongoDB driver with collections (user, analysis, company, passwordResetToken, transcriptionJob, plan, session)
+
 - ✅ **Authentication System**: Passport.js Local Strategy with session-based auth
 - ✅ **Authorization**: Role-based access control (customer, admin, participant)
-- ✅ **Docker Compose Setup**: PostgreSQL, MinIO, Whisper ASR services
+- ✅ **Docker Compose Setup**: MongoDB, MinIO, Whisper ASR services
 
 **Implemented Features (✅ Completed)**:
 
@@ -157,19 +170,24 @@ Building UXcaptain, a video-based user research platform for UX, marketing and p
 
 ### Next Steps
 
-**Immediate (P0)**:
+**Current Phase: Customer Acquisition & Product Validation**
 
-1. **Frontend Development**: Build React frontend to connect with existing backend API
-2. **Participant Matching Enhancement**: Complete demographic filtering implementation (commented out in `analysisModel.js:145-173`)
-3. **Analysis Entry Workflow**: Add accept/reject functionality for submitted analysis entries
+The platform is now in production-ready state with full-stack implementation. Focus has shifted from feature development to:
 
-**Short-term (P1)**:
+1. **Customer Acquisition**: Onboard first 5-10 beta customers
+2. **Product Validation**: Gather real-world feedback from actual usage
+3. **Data-Driven Roadmap**: Prioritize features based on customer needs, not survey speculation
 
-1. **AI Video Insights Extraction**: Implement AI-powered insight extraction from transcriptions (highest demand: 30+ requests)
-2. **Analytics Dashboard**: Create comprehensive analytics dashboard with metrics (Time-on-task, Success rates, Task completion)
-3. **Participant Recruitment Enhancement**: Complete participant matching with full demographic criteria
-4. **Subscription Checker**: Complete subscription middleware implementation
-5. **Testing Coverage**: Add comprehensive test coverage (Jest framework present but minimal tests)
+**Potential Enhancements (Post-Validation)**:
+
+After gathering customer feedback, consider building:
+
+1. **AI Video Insights Extraction** (42 survey requests) - Implement AI-powered insight extraction from transcriptions
+2. **Analytics Dashboard** (39 survey requests) - Comprehensive metrics (Time-on-task, Success rates, Task completion)
+3. **Participant Matching Enhancement** - Complete demographic filtering implementation
+4. **Analysis Entry Accept/Reject** - Add accept/reject functionality for submitted analysis entries
+5. **Subscription Enforcement** - Complete subscription middleware implementation
+6. **External Participant Pool** - Build participant recruitment system (address #1 pain point)
 
 **Medium-term (P2)**:
 
@@ -185,9 +203,11 @@ Building UXcaptain, a video-based user research platform for UX, marketing and p
 
 ### System Overview
 
-UXcaptain backend is a RESTful API server built with Node.js/Express following an MVC-inspired architecture pattern. The system handles user research video sessions, automated transcription, subscription management, and participant coordination.
+UXcaptain is a full-stack application with a React frontend and Node.js/Express backend following an MVC-inspired architecture pattern. The system handles user research video sessions, automated transcription, subscription management, and participant coordination.
 
-**Core Architecture Pattern**: HTTP Request → Router → Middleware Chain → Controller → Model → Database/External Services
+**Core Architecture Pattern**: 
+- **Frontend**: React SPA → HTTP/HTTPS → Backend API
+- **Backend**: HTTP Request → Router → Middleware Chain → Controller → Model → Database/External Services
 
 ### High-Level Architecture
 
@@ -230,8 +250,9 @@ UXcaptain backend is a RESTful API server built with Node.js/Express following a
         │               │
         ↓               ↓
 ┌───────────────┐  ┌──────────────────┐
-│   PostgreSQL  │  │ External Services│
-│   (Prisma)    │  │ (S3, Stripe, etc)│
+│    MongoDB    │  │ External Services│
+│ (Application) │  │ (S3, Stripe, etc)│
+│ (Sessions)    │  │                  │
 └───────────────┘  └──────────────────┘
 ```
 
@@ -271,6 +292,8 @@ backend/
 │   │   ├── analysisEntryModel.js       # Analysis entry CRUD operations
 │   │   ├── transcriptionModel.js       # Transcription job operations
 │   │   ├── subscriptionModel.js        # Subscription management
+│   │   ├── planModel.js              # Plan and limit checking operations
+│   │   ├── usageModel.js             # Usage tracking and reset operations
 │   │   ├── participantModel.js         # Participant profile operations
 │   │   ├── posthogModel.js             # Product analytics events
 │   │   └── passwordResetTokensModel.js # Password reset token management
@@ -278,6 +301,7 @@ backend/
 │   │   ├── authenticationChecker.js    # Verify user authentication
 │   │   ├── permissionByRoleChecker.js  # Role-based access control
 │   │   ├── subscriptionChecker.js      # Verify subscription status
+│   │   ├── planLimitsChecker.js        # Check plan limits and usage
 │   │   ├── cors.js                     # CORS configuration
 │   │   ├── helmet.js                   # Security headers
 │   │   ├── express-rate-limiter.js     # Rate limiting
@@ -314,7 +338,8 @@ backend/
 │   │   ├── jobsContainer.js            # Cron job orchestration
 │   │   ├── getPendingTranscriptionJobScheduler.js
 │   │   ├── deletePasswordResetTokensScheduler.js
-│   │   └── markAsCancelledAnalysisEntriesScheduler.js
+│   │   ├── markAsCancelledAnalysisEntriesScheduler.js
+│   │   └── resetUsageScheduler.js       # Monthly usage reset for all companies
 │   ├── utils/
 │   │   ├── validators/                 # Express-validator schemas
 │   │   └── transcription/
@@ -325,16 +350,13 @@ backend/
 │   │   ├── stripe.js                   # Stripe client initialization
 │   │   ├── posthog-node.js             # PostHog client configuration
 │   │   ├── telegramBotConfig.js        # Telegram bot configuration
-│   │   └── generated/prisma/client/    # Prisma generated client
+│   ├── db/
+│   │   └── mongodb.js                   # MongoDB connection and collection setup
 │   └── routers/
 │       └── indexRouter.js              # Root path handler
-├── prisma/
-│   ├── schema.prisma                   # Database schema definition
-│   └── migrations/                     # Database migration history
 ├── package.json
 ├── tsconfig.json
 ├── Dockerfile                          # Production Docker image
-├── Dockerfile.dev                      # Development Docker image
 └── compose.yaml                        # Docker Compose configuration
 ```
 
@@ -375,7 +397,7 @@ Routes are organized by version and domain:
 4. **Slow Down** (`backend/server/middlewares/express-slow-down.js`) - Progressive delays
 
 **Authentication Middleware**:
-- **Session Store** (`backend/server/middlewares/storeExpressSessions.js`) - Session persistence in PostgreSQL
+- **Session Store** (`backend/server/middlewares/storeExpressSessions.js`) - Session persistence in MongoDB
 - **Authentication Checker** (`backend/server/middlewares/authenticationChecker.js`) - Verify authentication status
 - **Role-Based Access Control** (`backend/server/middlewares/permissionByRoleChecker.js`) - Check user roles (customer, admin, participant)
 - **Subscription Checker** (`backend/server/middlewares/subscriptionChecker.js`) - Validate subscription status (planned)
@@ -397,7 +419,7 @@ Routes are organized by version and domain:
 
 #### 5. Model Layer
 
-**Pattern**: Models encapsulate database operations using Prisma ORM.
+**Pattern**: Models encapsulate database operations using native MongoDB driver.
 
 **Key Models**:
 - `userModel.js` - User CRUD, role management
@@ -411,12 +433,14 @@ Routes are organized by version and domain:
 **Strategy**: Session-based authentication using Passport.js Local Strategy
 
 ```
-Registration → Hash Password (bcrypt) → Create User → Create Company → Create Subscription → Return User ID
+Registration → Hash Password (bcrypt) → Create Stripe Customer → Create User → Create Company → Create Subscription → Return User ID
 ```
 
-**Session Management**: PostgreSQL via `@quixo3/prisma-session-store`, `Session` model in Prisma schema.
+**Stripe Customer Creation**: During customer registration, a Stripe customer is created immediately via `stripe.customers.create()` and the customer ID is stored in the `company` collection (`stripeId` field). This ensures all billing operations have a valid Stripe customer reference.
 
-**User Roles** (in `backend/prisma/schema.prisma`):
+**Session Management**: MongoDB via `connect-mongo` (v6.0.0), session collection in `uxcaptain-next` database.
+
+**User Roles** (stored in `user` collection):
 - `customer` - UX researchers who create analyses
 - `admin` - Platform administrators
 - `participant` - Users who complete research sessions
@@ -431,10 +455,14 @@ apiRouter.use('/v1/admin', checkAuthentication(), checkPermissionByRole('admin')
 analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('participant'), getAvailableAnalyses);
 ```
 
+**Security Note - Admin User Creation**:
+Admin users cannot be created through public API endpoints. Admin role assignment is now a manual database-only operation. This security measure prevents privilege escalation through registration endpoints. Registration endpoints (`/api/v1/auth/register/local/customer` and `/api/v1/auth/register/local/participant`) only create `customer` and `participant` roles respectively. Admin users must be created by directly updating the `user` collection in MongoDB with `role: 'admin'`.
+
 ### Database Schema (Core Models)
 
 - **User**: Authentication (email, password), role, acquisition tracking (UTM), relationships to Company, CustomerProfile, ParticipantProfile, Analysis
-- **Company**: Organization entity for billing, Stripe customer ID
+- **Company**: Organization entity for billing, Stripe customer ID, subscription details, usage tracking (transcription, inviteYourOwnUsers, panelParticipants)
+- **Plan**: Subscription plan configuration with feature limits (transcription, inviteYourOwnUsers, panelParticipants)
 - **ParticipantProfile**: Demographics, screening data, approval status
 - **ParticipantRating**: Quality score tracking
 - **CustomerProfile**: Company info for UX researchers
@@ -444,11 +472,195 @@ analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('p
 - **Subscription**: Company subscription tracking via Stripe webhooks
 - **PasswordResetTokens**: Temporary reset tokens with expiration
 
+
+### Acquisition Data Management
+
+**Purpose**: Track user acquisition channels and campaign attribution using UTM parameters.
+
+**Storage**: Acquisition data is stored in the `company` collection (not user collection).
+
+**Schema** (in `company` collection):
+```javascript
+{
+  acquisition: {
+    utmSource: String,      // Campaign source (utm_source)
+    utmMedium: String,       // Campaign medium (utm_medium)
+    utmCampaign: String,     // Campaign name (utm_campaign)
+    utmContent: String,      // Campaign content (utm_content)
+    utmTerm: String,         // Campaign term (utm_term)
+    gclid: String,           // Google Click ID
+    fbclid: String,          // Facebook Click ID
+  }
+}
+```
+
+**Naming Convention**: All acquisition fields use **camelCase** throughout the platform.
+
+**Data Flow**:
+1. **Frontend**: Captures UTM parameters from URL (supports both snake_case and camelCase)
+2. **Frontend to Backend**: Sends acquisition data in registration (camelCase)
+3. **Backend**: Stores in `company.acquisition` field
+4. **PostHog**: Includes acquisition data in signup events
+5. **Admin**: Returns acquisition data when listing users
+
+**Transactional Integrity**: Customer creation now validates user existence BEFORE creating company, Stripe resources, preventing orphaned companies.
+
+
+### Plan & Usage Management System
+
+**Purpose**: Track and enforce subscription plan limits for company resources.
+
+**Key Components**:
+
+1. **Plan Collection** (`backend/server/models/planModel.js`):
+   - Defines subscription tiers (free, starter, pro)
+   - Contains feature limits (transcription, inviteYourOwnUsers, panelParticipants)
+   - Manually edited, not written via code
+   - Schema:
+     ```javascript
+     {
+       "planId": "free",
+       "features": {
+         "transcription": { "included": true, "limit": 1000, "type": "metered" },
+         "inviteYourOwnUsers": { "included": true, "limit": 100, "type": "metered" },
+         "panelParticipants": { "included": true, "limit": 500, "type": "metered" }
+       }
+     }
+     ```
+
+2. **Company Usage Tracking** (`backend/server/models/usageModel.js`):
+   - Stored in `company` collection under `usage` field
+   - Tracks current usage per feature with monthly reset dates
+   - Schema:
+     ```javascript
+     {
+       "usage": {
+         "transcription": { "used": 450, "resetDate": "2023-11-01" },
+         "inviteYourOwnUsers": { "used": 50, "resetDate": "2023-11-01" },
+         "panelParticipants": { "used": 120, "resetDate": "2023-11-01" }
+       }
+     }
+     ```
+
+3. **Usage Enforcement**:
+   - **Analysis Creation**: Checks `inviteYourOwnUsers` usage before allowing creation
+   - **Transcription Creation**: Checks `transcription` usage before creating job
+   - **Middleware**: `planLimitsChecker.js` enforces limits before operations
+   - **Auto-Reset**: Usage automatically resets on check if `resetDate` has passed
+
+4. **Usage Reset Mechanisms**:
+   - **Proactive**: Cron job (`resetUsageScheduler.js`) runs daily at 2 AM
+   - **Reactive**: Auto-reset occurs on any usage check if needed
+   - Reset Date: 1st of each month for all features
+
+**Key Functions**:
+- `checkInviteYourOwnUsersLimit(companyId)` - Returns allowed status with usage info
+- `checkTranscriptionLimit(companyId)` - Returns allowed status with usage info
+- `checkPanelParticipantsLimit(companyId)` - Returns allowed status with usage info
+- `incrementFeatureUsage(companyId, featureName)` - Increments usage counter
+- `resetFeatureUsage(companyId, featureName)` - Resets usage and updates reset date
+- `getAvailableUsage(companyId, featureName, limit)` - Gets available usage with auto-reset
+
+**Error Responses** (403 Forbidden):
+```json
+{
+  "message": "You have reached your plan limit of 100 analyses. Your usage will reset on November 1, 2026.",
+  "currentCount": 100,
+  "maxAllowed": 100,
+  "resetDate": "2023-11-01T00:00:00.000Z"
+}
+```
+
+### MongoDB Operations Guidelines
+### MongoDB Operations Guidelines
+
+**CRITICAL**: All MongoDB operations in the backend must follow these patterns for performance, consistency, and maintainability:
+
+**Write Operations**: Use `bulkWrite()` for all write operations
+
+**Read Operations**: Use `.aggregate()` for all read operations
+
+**Transactions**: Use MongoDB 7.x `withTransaction()` for ACID guarantees
+
+When using `withTransaction`, all operations within the callback are atomic. If any operation fails, MongoDB automatically rolls back all changes. This prevents orphaned data and ensures data consistency.
+
+**Example** (customer creation):
+\`\`\`javascript
+const db = await initializeMongoDB();
+await db.withTransaction(async (session) => {
+  // Create company
+  await db.collection('company').insertOne({...}, transactionOptions);
+  // Create Stripe customer
+  await db.collection('company').updateOne({...}, transactionOptions);
+  // Create Stripe subscription
+  await db.collection('company').updateOne({...}, transactionOptions);
+  // Create user
+  await db.collection('user').insertOne({...}, transactionOptions);
+  // All operations commit together or roll back together
+}, transactionOptions);\`\`\`
+
+- All write operations (insertOne, updateOne, deleteOne, etc.) MUST be performed using `collection.bulkWrite()`
+- Batch multiple operations together when possible to reduce round trips to the database
+- Use appropriate operations: `insertOne`, `updateOne`, `deleteOne`, `replaceOne` within the bulkWrite array
+- Example pattern:
+  ```javascript
+  await userCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: { _id: userId },
+        update: { $set: { updatedAt: new Date() } },
+      },
+    },
+  ]);
+  ```
+
+**Read Operations**: Use `.aggregate()` for all read operations
+
+- All read operations (find, findOne, etc.) MUST be performed using `collection.aggregate()`
+- Even simple queries should use an aggregation pipeline with a `$match` stage
+- Aggregation provides more flexibility and consistency across the codebase
+- Example pattern:
+  ```javascript
+  const users = await userCollection.aggregate([
+    {
+      $match: {
+        companyId: companyId,
+        role: "customer",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        createdAt: 1,
+      },
+    },
+  ]).toArray();
+  ```
+
+**Rationale**:
+- `bulkWrite()` provides atomic operations at the document level, better performance for batches, and ordered/unordered execution options
+- `.aggregate()` offers consistent query patterns, powerful transformation capabilities, and better optimization opportunities for complex queries
+- These patterns ensure code consistency, easier debugging, and better performance as the application scales
+
 ### External Integrations
 
 1. **S3/MinIO Storage** (`backend/server/integrations/s3-client/s3.js`): Video recording storage with dual S3 clients (external for presigned URLs, internal for transcription). Storage pattern: `analysis/{analysisId}/{analysisEntryId}/recording.mp4`
 
-2. **Stripe Billing** (`backend/server/integrations/stripe/`): Subscription management, checkout sessions, customer portal, webhook handling (checkout.session.completed, customer.subscription.deleted)
+2. **Stripe Billing** (`backend/server/integrations/stripe/`): Complete subscription management including:
+   - Customer creation during registration (`customerId.js`)
+   - Checkout session creation for subscription upgrades (`checkoutSession.js`)
+   - Customer portal access for subscription management (`customerPortalSession.js`)
+   - Webhook handlers for subscription lifecycle events
+   - Subscription data retrieved from Stripe API (not stored locally except `stripeId` in company collection)
+   - PostHog integration for subscription event tracking
+
+   **Handled Webhook Events**:
+   - `checkout.session.completed` - Initial checkout completion
+   - `customer.subscription.updated` - Subscription changes (plan upgrades, trial ends, etc.)
+   - `customer.subscription.deleted` - Subscription cancellation
+   - `invoice.payment_succeeded` - Successful payment
+   - `invoice.payment_failed` - Payment failure (triggering dunning)
 
 3. **Whisper ASR Transcription** (`backend/server/integrations/whisper-asr-webservice/transcribe.js`): Async job queue → cron picks PENDING → fetch video from MinIO → POST to Whisper → normalize → store. Model: medium, engine: faster_whisper, language: Spanish
 
@@ -458,6 +670,41 @@ analysisRouter.get('/available', checkAuthentication(), checkPermissionByRole('p
 
 6. **Telegram Logging** (`backend/server/integrations/telegram/sendLogsToTelegram.js`): Real-time error/info notifications, separate channels per environment
 
+### Stripe Subscription Flow
+
+**Subscription Data Strategy**: Stripe is the single source of truth for subscription data. Only the Stripe customer ID is stored in the `company` collection (`stripeId` field). All subscription details (status, plan, periods) are retrieved from the Stripe API in real-time.
+
+**Complete Flow**:
+
+1. **Customer Registration**:
+   - User creates account via `/api/v1/auth/register/local/customer`
+   - Stripe customer created immediately via `stripe.customers.create()`
+   - Customer ID stored in `company` collection
+   - Free trial subscription created via Stripe API
+
+2. **Subscription Lifecycle**:
+   - All subscription state changes handled via Stripe webhooks
+   - Webhooks update system state but do not store subscription data locally
+   - Subscription status always fetched from Stripe API when needed
+
+3. **Webhook Event Handlers** (`backend/server/webhooks/stripe/stripeEventHandler.js`):
+   - `checkout.session.completed`: Confirms initial checkout, links customer
+   - `customer.subscription.created`: New subscription created
+   - `customer.subscription.updated`: Plan changes, trial periods ending, renewals
+   - `customer.subscription.deleted`: Subscription cancelled by customer
+   - `invoice.payment_succeeded`: Successful payment (renewals, upgrades)
+   - `invoice.payment_failed`: Payment failure (triggers dunning workflow)
+
+4. **PostHog Integration**:
+   - All subscription events tracked in PostHog
+   - Events: `subscription_created`, `subscription_updated`, `subscription_cancelled`, `payment_succeeded`, `payment_failed`
+   - Enables analytics on subscription lifecycle and conversion
+
+5. **API Response**:
+   - `/api/v1/billing/subscription` fetches live subscription data from Stripe
+   - Returns: subscription ID, status, plan name, expiration date, next charge date
+   - All dates are retrieved from Stripe API (subscription current_period_end)
+
 ### Background Processing (Cron Jobs)
 
 Orchestrated in `backend/server/cron/jobsContainer.js`:
@@ -465,12 +712,13 @@ Orchestrated in `backend/server/cron/jobsContainer.js`:
 1. **Transcription Job Processor**: Picks PENDING jobs, processes one at a time
 2. **Password Reset Token Cleaner**: Removes expired tokens
 3. **Analysis Entry Cancellation**: Marks incomplete entries as cancelled
+4. **Usage Reset**: Resets monthly usage for all companies (runs daily at 2 AM, auto-resets on check)
 
 ### Critical Implementation Paths
 
-1. **User Registration**: POST /api/v1/auth/register/local/customer → validation → create User + Company + CustomerProfile (transaction) → create free trial subscription → create Stripe customer → PostHog event
-2. **Create Analysis**: POST /api/v1/analysis → auth middleware → validation → create Analysis → PostHog event
-3. **Participant Video Submission**: POST /api/v1/analysis/participate → check spots → create AnalysisEntry → generate presigned URL → [frontend uploads] → POST /api/v1/analysisEntry → mark submitted → create TranscriptionJob
+1. **User Registration**: POST /api/v1/auth/register/local/customer → validation → create Stripe customer → create User + Company (with `stripeId`, `usage`) + CustomerProfile (transaction) → create Stripe subscription with trial → PostHog event
+2. **Create Analysis**: POST /api/v1/analysis → auth middleware → plan limits check (inviteYourOwnUsers usage) → validation → create Analysis → increment usage → PostHog event
+3. **Participant Video Submission**: POST /api/v1/analysis/participate → check spots → create AnalysisEntry → generate presigned URL → [frontend uploads] → POST /api/v1/analysisEntry → mark submitted → check transcription limits → create TranscriptionJob → increment usage
 4. **Transcription Processing**: Cron → check no IN_PROGRESS → fetch PENDING → update to IN_PROGRESS → fetch video → Whisper ASR → normalize → store → COMPLETED
 5. **Stripe Webhook**: POST /webhooks/v1/stripe → verify signature → handle event → update subscription
 
@@ -494,6 +742,18 @@ Orchestrated in `backend/server/cron/jobsContainer.js`:
 
 ## Technology Stack
 
+### Frontend Technologies
+
+- **React**: 19.0.0
+- **Build Tool**: Vite 7.0.5
+- **UI Framework**: Mantine Core 8.2.1 (components, form, hooks)
+- **Icons**: Tabler Icons React 3.31.0
+- **HTTP Client**: Axios 1.7.9
+- **Routing**: React Router 7.1.3
+- **Authentication Cookies**: js-cookie 3.0.5
+- **Analytics**: PostHog JS 1.257.2
+- **Styling**: PostCSS 8.5.3 with Mantine presets
+
 ### Core Technologies
 
 - **Node.js**: 24.x
@@ -503,15 +763,15 @@ Orchestrated in `backend/server/cron/jobsContainer.js`:
 
 ### Database
 
-- **Prisma**: ^6.19.0 (client generated to `backend/server/config/generated/prisma/client`)
-- **PostgreSQL**: 17.5 (Docker image: `postgres:17.5`)
-- **Schema**: `backend/prisma/schema.prisma`
+- **MongoDB**: 7.x (native driver, not ORM)
+- **Collections**: user, analysis, company, passwordResetToken, transcriptionJob, plan, session (via connect-mongo)
+- **Connection**: `backend/server/db/mongodb.js`
 
 ### Authentication
 
 - **passport**: ^0.7.0 with **passport-local**: ^1.0.0
 - **bcryptjs**: ^3.0.3 (10 rounds)
-- **express-session**: ^1.18.2 with **@quixo3/prisma-session-store**: ^3.1.13
+- **express-session**: ^1.18.2 with **connect-mongo**: ^6.0.0 (MongoDB for session storage)
 
 ### Security
 
@@ -547,15 +807,16 @@ Orchestrated in `backend/server/cron/jobsContainer.js`:
 - **jest**: ^30.2.0 (minimal test coverage)
 - **tsx**: ^4.19.2
 
+
 ### Docker Services (`backend/compose.yaml`)
 
 1. `server` - Node.js app (commented out in dev)
-2. `database` - PostgreSQL 17.5 (port 5432)
+2. `database` - MongoDB 7.x (port 27017)
 3. `minio` - S3-compatible storage (ports 9000/9001)
 4. `faster-whisper-transcribe` - Transcription (port 9007, 4 CPU, 5GB mem)
 - **Network**: `uxcaptain-network` (bridge)
 
-### NPM Scripts
+### Backend NPM Scripts
 
 - `npm start` - Production start
 - `npm run start:local` - Dev with hot reload (`--watch`) and env file
@@ -563,18 +824,47 @@ Orchestrated in `backend/server/cron/jobsContainer.js`:
 - `npm run stripe:listen` - Stripe CLI webhook forwarding
 - `npm test` - Jest tests
 
+### Frontend NPM Scripts
+
+(See `frontend/package.json` for complete frontend scripts)
+
 ### Key Technical Decisions
 
 1. ESM over CommonJS
-2. Prisma over raw SQL
+2. Native MongoDB driver over ORM
 3. Session-based auth over JWT (for web apps)
-4. PostgreSQL over NoSQL
+4. MongoDB over PostgreSQL (NoSQL for flexibility)
 5. MinIO for dev over AWS S3
 6. Docker Compose over Kubernetes
 7. Pino over Winston
 8. Express 5.x
 9. Bcrypt over Argon2
 10. Presigned URLs over proxying
+11. camelCase for all attribute names (API responses and frontend)
+
+
+### Naming Conventions
+
+- **camelCase**: All attribute names use camelCase for consistency across the entire stack
+- **API Responses**: Backend always returns camelCase attribute names to frontend
+- **Database**: MongoDB fields use camelCase
+- **Frontend**: All state and props use camelCase
+- **Exception**: Legacy code may use snake_case; new code should always use camelCase
+
+#### Subscription API Response Example
+
+```json
+{
+  "id": "stripe_subscription_id",
+  "expiresAt": "2027-03-06T00:00:00.000Z",
+  "nextChargeAt": "2027-03-06T00:00:00.000Z",
+   "planName": "basic",
+  "status": "trialing",
+  "company": {
+    "stripeId": "cus_xxx"
+  }
+}
+```
 
 ---
 

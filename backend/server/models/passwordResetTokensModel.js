@@ -1,60 +1,120 @@
 import { ObjectId } from 'mongodb';
-
+import { initializeMongoDB, collections } from '../db/mongodb.js';
 import { logError, logInfo } from '../config/loggerFunctions.js';
-import { initializeMongoDB } from '../db/mongodb.js';
 
-const collections = await initializeMongoDB();
+const getCollection = async () => {
+  if (!collections) {
+    await initializeMongoDB();
+  }
+  return collections.passwordResetToken;
+};
 
 export const createPasswordResetToken = async (userId) => {
-  const passwordResetToken = await collections.passwordResetToken.bulkWrite([{
-    insertOne: {
-      document: {
-        userId: new ObjectId(userId),
-        tokenExpirationDate: new Date(Date.now() + 3600000), // 60 minutes expiration
-        createdAt: new Date(),
+  const collection = await getCollection();
+
+  const tokenExpires = new Date(Date.now() + 3600000);
+  const now = new Date();
+
+  const result = await collection.bulkWrite([
+    {
+      insertOne: {
+        document: {
+          userId: userId,
+          tokenExpires: tokenExpires,
+          createdAt: now,
+          updatedAt: now,
+        },
       },
     },
-  }]);
+  ]);
+
+  const insertedId = result.insertedIds[0];
 
   logInfo(`password reset token created for user ${userId}`);
 
-  return passwordResetToken.insertedIds[0];
+  return insertedId;
 };
 
 export const getPasswordResetTokenData = async (token) => {
-  const passwordResetTokenData = await collections.passwordResetToken.aggregate([
+  const collection = await getCollection();
+
+  const pipeline = [
     {
       $match: {
         _id: new ObjectId(token),
       },
     },
     {
-      $limit: 1,
+      $lookup: {
+        from: 'user',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'User',
+      },
     },
-  ]).toArray();
+    {
+      $unwind: {
+        path: '$User',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ];
 
-  return passwordResetTokenData[0] || null;
+  const [passwordResetTokenData] = await collection.aggregate(pipeline).toArray();
+
+  return passwordResetTokenData || null;
 };
 
 export const deletePasswordResetTokens = async (userId) => {
   try {
-    const deleteResult = await collections.passwordResetToken.deleteMany({
-      userId: new ObjectId(userId),
-    });
+    const collection = await getCollection();
+
+    const result = await collection.bulkWrite([
+      {
+        deleteMany: {
+          filter: {
+            userId: userId,
+          },
+        },
+      },
+    ]);
 
     return {
-      success: true,
-      deletedCount: deleteResult.deletedCount,
+      deletedCount: result.deletedCount,
     };
   } catch (error) {
     return logError(`Token for user ID ${userId} deletion failed`, error);
-    // throw error //* NOT throwing an error since req-res
-    //*  flow should not be interrupted with this cleanup operation
   }
 };
 
 export const deleteExpiredPasswordResetTokens = async () => {
-  await collections.passwordResetToken.deleteMany({
-    tokenExpirationDate: { $lt: new Date() },
-  });
+  const collection = await getCollection();
+
+  const now = new Date();
+
+  const expiredTokens = await collection
+    .aggregate([
+      {
+        $match: {
+          tokenExpires: {
+            $lt: now,
+          },
+        },
+      },
+    ])
+    .toArray();
+
+  if (expiredTokens.length === 0) {
+    return;
+  }
+
+  const bulkOperations = expiredTokens.map((token) => ({
+    deleteOne: {
+      filter: {
+        _id: token._id,
+      },
+    },
+  }));
+
+  await collection.bulkWrite(bulkOperations);
 };

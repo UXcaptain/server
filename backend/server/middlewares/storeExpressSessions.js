@@ -6,7 +6,8 @@ const mongoSessionStore = new MongoDBStore({
   dbName: 'uxcaptain-next',
   collectionName: 'session',
   // ttl: 14 * 24 * 60 * 60, // 14 days - Reads maxAge from the cookie - No need to set it
-  autoRemove: 'native', // Default
+  autoRemove: 'interval', // Changed from 'native' to avoid $size aggregation error with null fields
+  autoRemoveInterval: 10, // Run cleanup every 10 minutes
 });
 
 export const storeSessions = session({

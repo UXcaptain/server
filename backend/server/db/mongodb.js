@@ -2,15 +2,15 @@ import { MongoClient } from 'mongodb';
 
 // Connection URL
 const url = process.env.MONGODB_URI;
-const client = new MongoClient(url);
+export const client = new MongoClient(url);
 
 // Database Name
 const dbName = 'uxcaptain-next';
 
 // Create Collections
 
-let db;
-let collections;
+export let db;
+export let collections;
 
 export const initializeMongoDB = async () => {
   if (collections) {
@@ -24,8 +24,7 @@ export const initializeMongoDB = async () => {
   await db.createCollection('user', {
   });
 
-  await db.createCollection('analysis', {
-  });
+  await db.createCollection('analysis');
 
   await db.createCollection('company', {
   });
@@ -33,12 +32,22 @@ export const initializeMongoDB = async () => {
   await db.createCollection('passwordResetToken', {
   });
 
+  await db.createCollection('transcriptionJob', {
+  });
+
+  await db.createCollection('plan', {
+  });
+
   collections = {
     user: db.collection('user'),
     analysis: db.collection('analysis'),
     company: db.collection('company'),
     passwordResetToken: db.collection('passwordResetToken'),
+    transcriptionJob: db.collection('transcriptionJob'),
+    plan: db.collection('plan'),
   };
+
+  await collections.company.createIndex({ stripeId: 1 }, { sparse: true });
 
   console.log('Collections created');
   return collections;

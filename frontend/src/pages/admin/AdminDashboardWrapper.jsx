@@ -1,38 +1,11 @@
 import { Outlet } from 'react-router'
 import AdminNavBar from '../../components/partials/AdminNavBar.jsx'
-import { useNavigate } from 'react-router';
-import { useState, useEffect } from "react";
-import apiClient from '../../config/API/axiosConfig.mjs';
+import { useState } from "react";
 import { SiteFooter } from '../../components/partials/SiteFooter';
 
 export const AdminDashboardWrapper = () => {
     
-    
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
-    
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                await apiClient.get(`/api/v1/auth/session`);
-                
-                setLoading(false);
-
-
-
-
-            } catch (error) {
-                setLoading(false);
-                navigate('/auth/login');
-            }
-        };
-
-        checkAuth();
-    }, [navigate]);
-
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    const [loading, setLoading] = useState(false);
     
     
     return (

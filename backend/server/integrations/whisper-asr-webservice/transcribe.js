@@ -5,7 +5,7 @@ import { getInternalS3Object } from '../s3-client/s3.js';
 export const transcribeRecording = async (transcriptionJob) => {
   // need to use S3 because S3 client (minIO) stores data in a compressed format and cant be accesed directly via bind mount
 
-  const key = `analysis/${transcriptionJob.AnalysisEntry.analysis_id}/${transcriptionJob.analysis_entry_id}/recording.mp4`;
+  const key = `analysis/${transcriptionJob.analysisId}/${transcriptionJob.analysisEntryId}/recording.mp4`;
 
   const fileBuffer = await getInternalS3Object(key);
 

@@ -3,11 +3,13 @@ import { useState } from 'react';
 import {
   IconHomeFilled,
   IconUserCircle,
-  IconCreditCardFilled
+  IconCreditCardFilled,
+  IconDotsVertical
 } from '@tabler/icons-react';
 import classes from './NavbarSimple.module.css';
 import { CreateNewAnalysisButton } from '../../pages/user/CreateNewAnalysisButton';
 import LogOutButton from '../navBarElements/LogOutButton';
+import { Menu, ActionIcon } from '@mantine/core';
 
 
 const UserNavBar = () => {
@@ -29,19 +31,33 @@ const UserNavBar = () => {
 
   return (
     <nav className={classes.navbar}>
-      <div className={classes.navbarMain}>
-        <div style={{ padding: '0 16px 16px 16px' }}>
-          <CreateNewAnalysisButton fullWidth />
+      <div className={classes.navbarLeft}>
+        <div className={classes.linksContainer}>
+          {links}
         </div>
-        {links}
       </div>
 
-      <div className={classes.footer}>
-        <LogOutButton />
+      <div className={classes.navbarRight}>
+        <div className={classes.buttonContainer}>
+          <CreateNewAnalysisButton />
+        </div>
+        <Menu shadow="md" width={200} position="bottom-end">
+          <Menu.Target>
+            <ActionIcon variant="subtle" size="lg" radius="md">
+              <IconDotsVertical size={20} stroke={1.5} />
+            </ActionIcon>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+            <Menu.Item>
+              <LogOutButton />
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
       </div>
     </nav>
-  );  
-  
+  );
+
 };
 
 export default UserNavBar;

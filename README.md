@@ -1,112 +1,90 @@
-# UXcaptain server
+# UXcaptain Server
 
-# Description
+## Description
 
-This is a template for an Express.js application. It includes a basic setup for a REST API with a user model and authentication.
+UXcaptain is a video-based user research platform for UX, marketing, and product teams. The platform enables:
 
-This template uses .ejs for the front end
+- Remote video-based usability testing
+- Automated transcription via Whisper ASR
+- Subscription-based plan management
+- Usage tracking with monthly limits and automatic reset
+- Participant management and recruitment
 
-# Features
+## Features
 
-- Analytics (Posthog)
-- User Authentication (PassportJS)
-- Database (PostgreSQL)
-- Payments (Stripe)
-- Logging (Pinojs)
+- **Analytics**: PostHog for product analytics
+- **User Authentication**: PassportJS with role-based access control
+- **Database**: MongoDB with native driver
+- **Payments**: Stripe integration for subscription management
+- **Logging**: Pino.js + Telegram notifications
+- **Plan Management**: Tiered subscription system (Free, Starter, Pro)
+- **Usage Tracking**: Monthly limits per feature with automatic reset
+- **Automatic Transcription**: Whisper ASR integration
+- **Cron Jobs**: Usage reset, transcription processing, token cleanup, analysis entry cancellation
 
-# Code stuff
+## Code stuff
 
-- testing - Playwright?
+- Testing: Playwright
 
+## Technology Stack
 
-# Analytics
+### Backend
+- **Node.js**: 24.x
+- **Express.js**: 5.1.0
+- **Passport.js**: 0.7.0
+- **MongoDB**: 7.x (native driver)
+- **TypeScript**: ^5.7.3 (ESM modules)
 
-Product Analytics
+### Infrastructure
+- **Docker**: Multi-container setup
+- **Nginx**: 1.27.4-alpine (frontend)
+- **MinIO**: S3-compatible storage
+- **Whisper ASR**: onerahmet/openai-whisper-asr-webservice
+- **Koyeb**: Deployment platform
 
-- Front end
- - Posthog
- - Google Analytics
- - Google Tag Manager
- - Openreplay
+## Deployment
 
-- Back end
-    - Posthog
+### Docker
 
-# Logging & Visualizing logs
+The web app is containerized and available on [Docker Hub](https://hub.docker.com/repository/docker/sergion14/uxcaptain/general)
 
-Logging is done with [Telegram](https://telegram.com)
+### Local Development
 
-Visualizing logs is done in telegram chat
+Run the server using:
 
-# Deployment
+- `npm run start:local` - Starts Node.js server with `.env` file
+- `npm run start:docker` - Runs Docker Compose with all services
 
-- Recomended is Koyeb - Has a free instance
+Docker Compose auto-rebuilds on code changes for hot reloading.
 
-# Database
+**Note**: Frontend is not included in compose; run it from its own repository.
 
-PostgreSQL
+### CI/CD
 
-# Build & Deployment
+Deployments are triggered by pushing to `next` or `latest` branches:
 
-## Docker
+1. GitHub Actions builds Docker image
+2. Uploads to Docker Hub
+3. Updates secrets in [Koyeb](https://koyeb.com)
+4. Deploys to Koyeb infrastructure
 
-The web app is contained and can be built from a Docker image and hosting it in [Docker Hub](https://hub.docker.com/repository/docker/sergion14/uxcaptain/general)
+**Deployment URLs**:
+- Latest: `server.latest.uxcaptain.com/api`
+- Next: `server.next.uxcaptain.com/api`
 
-## Local deployments
+### Environment Variables
 
-The server can be run either via:
+Injected at runtime by Koyeb per-service. See `.env.example` for reference.
 
-- Docker compose config from the server directory
-- Standalone app via own npm command
+## Stripe Debugging
 
-- `npm run start:local` Will start the nodejs server outside of docker using the `.env` file
+Start Stripe CLI listener: `npm run stripe:listen`
 
-- `npm run start:docker` will run `Docker compose` using the  command and spawn the server + associated services (eg: Database) using the `compose.yaml` file
+## API Documentation
 
-Docker compose is configured so the server will auto rebuild on code changes, so there is no need to close and reopen the server manually
+Complete API documentation: `backend/swagger.yaml`
 
-**NOTE:**
-Currently the web app is not included in compose, so the front end has to be spawned from its own repository
+## AWS Permissions
 
-## LATEST & NEXT deployments
+Strict permissions managed via AWS IAM Console.
 
-Deployments are triggered by pushing or merging to `next` and `latest` branches.
-
-When new code is pushed to either branch, Github Actions will:
-
-- Build a the Docker image for the LATEST branch
-- Upload the build image to Docker Hub
-- Create or update the secrets in [Koyeb](https://koyeb.com) using Github Secrets
-- Run & deploy the Docker image in [Koyeb](https://koyeb.com)'s Infrastructure
-
-[Koyeb](https://koyeb.com) - easy to configure & serverless infrastructure running on AWS under the hood
-
-### Making the server available publicly
-
-The publicly available branches - `next` & `latest` - are served using [ExpressJS](https://expressjs.com/)
-
-### Environmental Variables
-
-Environmental variables are injected at runtime by [Koyeb](https://koyeb.com), and they are set per-service (eg: `next`, `latest`) in [Koyeb Project Configuration Environmental Variables configuration](https://app.koyeb.com/services/8a026356-e93c-4908-8757-7a2462d8f0e6/settings)
-
-Direct access to services in Koyeb:
-
-- [latest]()
-- [next](https://app.koyeb.com/services/001b2ced-2b56-4170-a7f2-fc990546f7b8?deploymentId=80bd9e5b-ffd0-48ce-83c4-779c0e38c6f7)
-
-An example list of env variables can be found in `.env.example` in the root directory
-
-
-# Stripe - Payment provider 
-
-Stripe client for debugging can be started with `npm` command `npm run stripe:listen`
-
-
-# API documentation
-
-All the up-to-date documentation can be found in the `swagger.yaml` file
-
-
-# AWS Permissions
-
-- All permissions are strict and handled via users and groups in [AWS IAM Console](https://us-east-1.console.aws.amazon.com/iam/home)

@@ -2135,4 +2135,11 @@ components:
         YES_CHILDREN,
         NO_CHILDREN,
         ANY
-      ]
+      ]# NOTE: 403 responses for plan limits should be added to:
+# - POST /v1/analysis (after line ~803): Plan limit exceeded response
+# - PATCH /v1/analysis-entry/ (after line ~1500): Transcription limit exceeded response
+# Example response structure:
+#   message: "You have reached your plan limit of X [feature]. Your usage will reset on [date]."
+#   currentCount: number
+#   maxAllowed: number
+#   resetDate: date-time

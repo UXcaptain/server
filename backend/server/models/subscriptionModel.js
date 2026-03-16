@@ -1,76 +1,192 @@
-import { PrismaClient } from '../config/generated/prisma/client/index.js';
-// import { posthogUserSubscriptionCreated, posthogUserSubscriptionEnded } from './posthogModel.js';
-
-const prisma = new PrismaClient();
+import { ObjectId } from 'mongodb';
+import { initializeMongoDB } from '../db/mongodb.js';
+import { stripeInstance } from '../config/stripe.js';
 
 export const updateSubscriptionInDb = async (checkoutSessionData) => {
-  const whereClause = {
-    company_id: checkoutSessionData.companyId,
-  };
+  const { companyId, userId, subscriptionId, planName, planBillingCycle } = checkoutSessionData;
 
-  await prisma.subscription.update({
-    where: whereClause,
-    data: {
-      id: checkoutSessionData.subscriptionId,
-      isTrial: false,
-    },
-  });
+  const collections = await initializeMongoDB();
+  const companyCollection = collections.company;
 
-  // posthogUserSubscriptionCreated(checkoutSessionData);// TODO -- fix the associated of the event
+  const currentDate = new Date();
+
+  let status, currentPeriodStart, currentPeriodEnd, cancelAtPeriodEnd, canceledAt;
+
+  try {
+    const stripeSubscription = await stripeInstance.subscriptions.retrieve(subscriptionId);
+
+    status = stripeSubscription.status;
+    currentPeriodStart = new Date(stripeSubscription.current_period_start * 1000);
+    currentPeriodEnd = new Date(stripeSubscription.current_period_end * 1000);
+    cancelAtPeriodEnd = stripeSubscription.cancel_at_period_end;
+    canceledAt = stripeSubscription.canceled_at ? new Date(stripeSubscription.canceled_at * 1000) : null;
+  } catch (error) {
+    throw new Error(`Failed to fetch subscription from Stripe: ${error.message}`);
+  }
+
+  const updateResult = await companyCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: { _id: new ObjectId(companyId) },
+        update: {
+          $set: {
+            subscription: {
+              stripeSubscriptionId: subscriptionId,
+              status: status,
+              planName: planName,
+              planBillingCycle: planBillingCycle,
+              currentPeriodStart: currentPeriodStart,
+              currentPeriodEnd: currentPeriodEnd,
+              createdAt: currentDate,
+              updatedAt: currentDate,
+              cancelAtPeriodEnd: cancelAtPeriodEnd,
+              canceledAt: canceledAt
+            },
+            updatedAt: currentDate
+          }
+        }
+      }
+    }
+  ]);
+
+  return updateResult;
 };
 
 export const storeBillingCompanyIdInDb = async (companyId, stripeCustomerId) => {
-  const whereClause = {
-    id: companyId,
-  };
+  const collections = await initializeMongoDB();
+  const companyCollection = collections.company;
 
-  const user = await prisma.company.update({
-    where: whereClause,
-    data: {
-      stripe_id: stripeCustomerId,
-    },
-  });
+  await companyCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: { _id: new ObjectId(companyId) },
+        update: {
+          $set: {
+            stripeId: stripeCustomerId,
+            updatedAt: new Date()
+          }
+        }
+      }
+    }
+  ]);
 
-  return user;
+  const updateResult = await companyCollection.aggregate([
+    { $match: { _id: new ObjectId(companyId) } },
+    { $project: { stripeId: 1, updatedAt: 1 } }
+  ]).toArray();
+
+  return updateResult[0];
 };
 
 export const deleteSubscriptionInDb = async (subscriptionDeletionData) => {
-  const whereClause = {
-    id: subscriptionDeletionData.subscriptionId,
-  };
+  const { customerId } = subscriptionDeletionData;
 
-  await prisma.subscription.delete({
-    where: whereClause,
-  });
+  const collections = await initializeMongoDB();
+  const companyCollection = collections.company;
 
-  // posthogUserSubscriptionEnded(subscriptionDeletionData);
+  await companyCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: { stripeId: customerId },
+        update: {
+          $unset: {
+            subscription: 1
+          },
+          $set: {
+            updatedAt: new Date()
+          }
+        }
+      }
+    }
+  ]);
+
+  const updateResult = await companyCollection.aggregate([
+    { $match: { stripeId: customerId } },
+    { $project: { stripeId: 1, subscription: 1, updatedAt: 1 } }
+  ]).toArray();
+
+  return updateResult[0];
 };
 
 export const getSubscriptionDataInDb = async (companyId) => {
-  const whereClause = {
-    company_id: companyId,
+  const collections = await initializeMongoDB();
+  const companyCollection = collections.company;
+
+  const companyData = await companyCollection.aggregate([
+    { $match: { _id: new ObjectId(companyId) } },
+    { $project: { stripeId: 1, subscription: 1 } }
+  ]).toArray();
+
+  if (!companyData || companyData.length === 0) {
+    return null;
+  }
+
+  const data = companyData[0];
+
+  return {
+    id: data.subscription?.stripeSubscriptionId || null,
+    expiresAt: data.subscription?.currentPeriodEnd || null,
+    nextChargeAt: data.subscription?.currentPeriodEnd || null,
+    planName: data.subscription?.planName || 'free',
+    status: data.subscription?.status || 'trialing',
+    cancelAtPeriodEnd: data.subscription?.cancelAtPeriodEnd || false,
+    canceledAt: data.subscription?.canceledAt || null,
+    company: {
+      stripeId: data.stripeId
+    }
   };
-
-  const subscriptionData = await prisma.subscription.findUnique({
-    where: whereClause,
-    select: {
-      id: true,
-      expires_at: true,
-      Company: true, // TODO - improve this query to return only stripe_id
-    },
-  });
-
-  return subscriptionData;
 };
 
-export const createFreeTrialSubscription = async (companyId) => {
-  const createCustomerSubscriptionQuery = await prisma.subscription.create({
-    data: {
-      company_id: companyId,
-      // expires_at: new Date(Date.now() + 604800000), // TODO - ENABLE after open beta finishes
-      expires_at: new Date('3000-01-01T23:59:59.999Z'), // TODO - REMOVE after open beta finishes
+export const updateSubscriptionFromStripeInDb = async (subscriptionId, stripeSubscriptionData) => {
+  const collections = await initializeMongoDB();
+  const companyCollection = collections.company;
 
-    },
-  });
-  return createCustomerSubscriptionQuery;
+  const currentDate = new Date();
+
+  const companyData = await companyCollection.aggregate([
+    { $match: { 'subscription.stripeSubscriptionId': subscriptionId } },
+    { $project: { 'subscription.planName': 1, 'subscription.planBillingCycle': 1 } }
+  ]).toArray();
+
+  if (!companyData || companyData.length === 0) {
+    return null;
+  }
+
+  const existingPlanName = companyData[0].subscription?.planName || 'free';
+  const existingPlanBillingCycle = companyData[0].subscription?.planBillingCycle || 'monthly';
+
+  const canceledAt = stripeSubscriptionData.canceled_at
+    ? new Date(stripeSubscriptionData.canceled_at * 1000)
+    : null;
+
+  await companyCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: { 'subscription.stripeSubscriptionId': subscriptionId },
+        update: {
+          $set: {
+            subscription: {
+              stripeSubscriptionId: stripeSubscriptionData.id,
+              status: stripeSubscriptionData.status,
+              planName: existingPlanName,
+              planBillingCycle: existingPlanBillingCycle,
+              currentPeriodStart: new Date(stripeSubscriptionData.current_period_start * 1000),
+              currentPeriodEnd: new Date(stripeSubscriptionData.current_period_end * 1000),
+              cancelAtPeriodEnd: stripeSubscriptionData.cancel_at_period_end,
+              canceledAt: canceledAt,
+              updatedAt: currentDate
+            },
+            updatedAt: currentDate
+          }
+        }
+      }
+    }
+  ]);
+
+  const updatedData = await companyCollection.aggregate([
+    { $match: { 'subscription.stripeSubscriptionId': subscriptionId } },
+    { $project: { stripeId: 1, subscription: 1, updatedAt: 1 } }
+  ]).toArray();
+
+  return updatedData[0];
 };

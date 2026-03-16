@@ -42,7 +42,10 @@ export const SubscriptionProvider = ({ children }) => {
   
 
   const hasActiveSubscription = Boolean(
-    subscription?.id && subscription?.expires_at && new Date(subscription.expires_at) > new Date()
+    subscription && 
+    (subscription.status === 'active' || subscription.status === 'trialing') &&
+    subscription?.expiresAt && 
+    new Date(subscription.expiresAt) > new Date()
   );
 
   const value = {

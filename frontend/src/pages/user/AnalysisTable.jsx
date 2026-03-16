@@ -60,24 +60,24 @@ export const AnalysisTable = () => {
 
 
     const rows = analysesArray.map((item) => (
-        <Table.Tr key={item.id}>
+        <Table.Tr key={item._id}>
             <Table.Td>
                 <Text fw={500}>{item.name}</Text>
             </Table.Td>
             <Table.Td>
-                <Text c="dimmed" size="sm">{item.url}</Text>
+                <Text c="dimmed" size="sm">{item.generalDetails?.url}</Text>
             </Table.Td>
-            <Table.Td>{item.device === 'computer' ? 'Ordenador': 'Móvil'}</Table.Td>
+            <Table.Td>{item.generalDetails?.device === 'computer' ? 'Ordenador': 'Móvil'}</Table.Td>
             <Table.Td>
-                {item._count.AnalysisEntry} / {item.max_number_of_participants}
+                {item._count?.analysisEntry || 0} / {item.generalDetails?.maxNumberOfParticipants}
             </Table.Td>
             <Table.Td>
                 <Text c={item.status === 'active' ? 'green' : 'dimmed'}>
-                    {item.status === 'published' ? 'publicado' : 'completado '}
+                    {item.status === 'published' ? 'Publicado' : 'Completado'}
                 </Text>
             </Table.Td>
             <Table.Td>
-                {new Date(item.created_at).toLocaleDateString('es-ES', {
+                {new Date(item.createdAt).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric'
@@ -87,12 +87,12 @@ export const AnalysisTable = () => {
                 <Button
                     variant="subtle"
                     size="sm"
-                    onClick={() => item?.id && navigate(`/analysis/${item.id}`)}
+                    onClick={() => item?._id && navigate(`/analysis/${item._id}`)}
                 >
                     Ver detalles
                 </Button>
                 <CopyInviteLinkButton
-                    analysisId={item.id}
+                    analysisId={item._id}
                     size="sm"
                     ml="xs"
                 />

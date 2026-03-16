@@ -70,9 +70,9 @@ const UserBilling = () => {
               <Text fw={500}>
                 <b>Estado de la suscripción:</b> {hasActiveSubscription ? 'Activa' : 'Inactiva'}
               </Text>
-              {subscription.next_charge_at && (
+              {subscription.nextChargeAt && (
                 <Text fw={500}>
-                  <b>Próxima fecha de cobro:</b> {new Date(subscription.next_charge_at).toLocaleDateString('es-ES', {
+                  <b>Próxima fecha de cobro:</b> {new Date(subscription.nextChargeAt).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
@@ -81,9 +81,9 @@ const UserBilling = () => {
                   })}
                 </Text>
               )}
-              {subscription.expires_at && (
+              {subscription.expiresAt && (
                 <Text fw={500}>
-                  <b>Finaliza el:</b> {new Date(subscription.expires_at).toLocaleDateString('es-ES', {
+                  <b>Finaliza el:</b> {new Date(subscription.expiresAt).toLocaleDateString('es-ES', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',

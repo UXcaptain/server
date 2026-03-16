@@ -79,9 +79,7 @@ createRoot(document.getElementById('root')).render(
           <Route path=":id" element={<ViewAnalysisPage />} />
         </Route>
         
-        <Route path="/analysis/:analysisId/:entryId/player" element={<VideoPlayerWrapper />}>
-          <Route index element={<VideoPlayerPage />} />
-        </Route>
+        <Route path="/analysis/:analysisId/:entryId/player" element={<VideoPlayerWrapper />} />
 
 
         <Route path="/entry" element={<UserWrapper />}>

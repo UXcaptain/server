@@ -6,12 +6,12 @@ import { getSubscriptionDataInDb, storeBillingCompanyIdInDb } from '../models/su
 export const createCompanyBillingId = async (createdUser) => {
   const {
     email,
-    company_id: companyId,
+    companyId,
   } = createdUser;
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = subcriptionData;
+  const { stripeId: companyStripeId } = subcriptionData.company;
 
   if (companyStripeId) {
     throw new Error(`Company ${companyId} already has a billing Id`);
@@ -27,19 +27,18 @@ export const createCompanyBillingId = async (createdUser) => {
 
 export const getBillingCustomerPortalUrl = async (req, res) => {
   const {
-    company_id: companyId,
+    companyId,
   } = req.user;
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = subcriptionData.Company;
+  const { stripeId: companyStripeId } = subcriptionData.company;
 
   const customerPortalCreationQuery = await createStripeCustomerPortalSession(companyStripeId);
 
   const { url } = customerPortalCreationQuery;
 
   return res.status(200).json({
-    success: 'success',
     message: 'Customer portal URL retrieved successfully',
     customerPortalUrl: url,
   });
@@ -47,13 +46,13 @@ export const getBillingCustomerPortalUrl = async (req, res) => {
 
 export const getBillingCheckoutSessionUrl = async (req, res) => {
   const {
-    company_id: companyId,
-    id: userId,
+    companyId,
+    _id: userId,
   } = req.user;
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
-  const { stripe_id: companyStripeId } = subcriptionData.Company;
+  const { stripeId: companyStripeId } = subcriptionData.company;
 
   const { planName, planBillingCycle } = req.body;
 
@@ -68,19 +67,17 @@ export const getBillingCheckoutSessionUrl = async (req, res) => {
   const { url } = checkoutSession;
 
   return res.status(200).json({
-    success: true,
     message: 'Billing checkout session generated successfully',
     checkoutSessionUrl: url,
   });
 };
 
 export const getCompanySubscriptionData = async (req, res) => {
-  const { company_id: companyId } = req.user;
+  const { companyId } = req.user;
 
   const subcriptionData = await getSubscriptionDataInDb(companyId);
 
   return res.status(200).json({
-    success: true,
     message: 'Billing data retrieved successfully - DB',
     subscriptionData: subcriptionData,
   });

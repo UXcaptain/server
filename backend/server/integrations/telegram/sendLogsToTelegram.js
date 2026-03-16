@@ -8,8 +8,9 @@ const chatIds = {
 };
 
 export const sendErrorLogsToTelegram = async (errorMessage, error) => {
-  const chatId = process.env.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_errors : chatIds.next_errors;
-  const telegramMessage = `
+  try {
+    const chatId = process.env.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_errors : chatIds.next_errors;
+    const telegramMessage = `
   🚨 <b>New error logged at ${new Date()}</b> 🚨
   \n<b>Error Name</b>: ${error.name}
   \n<b>Error Message</b>: ${errorMessage}
@@ -17,16 +18,23 @@ export const sendErrorLogsToTelegram = async (errorMessage, error) => {
   \n<b>Additional Info</b>: ${error.additionalInfo}
   `;
 
-  await sendTelegramMessage(chatId, telegramMessage);
+    await sendTelegramMessage(chatId, telegramMessage);
+  } catch (err) {
+    // Fail silently - Telegram logging is optional and should not crash the application
+  }
 };
 
 export const sendInfoLogsToTelegram = async (message) => {
-  const chatId = process.env.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_info : chatIds.next_info;
+  try {
+    const chatId = process.env.DEPLOY_ENVIRONMENT === 'latest' ? chatIds.latest_info : chatIds.next_info;
 
-  const telegramMessage = `
+    const telegramMessage = `
   ✅ <b>New event logged at ${new Date()}</b> ✅
   \n<b>event Name</b>: ${message}
   `;
 
-  await sendTelegramMessage(chatId, telegramMessage);
+    await sendTelegramMessage(chatId, telegramMessage);
+  } catch (err) {
+    // Fail silently - Telegram logging is optional and should not crash the application
+  }
 };

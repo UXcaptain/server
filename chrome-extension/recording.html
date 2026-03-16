@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UXcaptain - Recording</title>
+  <link rel="stylesheet" href="recording.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Recording Status Bar -->
+    <div class="recording-status" id="recording-status">
+      <div class="recording-indicator">
+        <div class="recording-dot"></div>
+        <span class="recording-text">Grabando</span>
+      </div>
+      <div class="timer" id="timer">00:00</div>
+      <button id="exit-btn" class="exit-btn">Salir del análisis</button>
+    </div>
+
+    <!-- Security Modal -->
+    <div id="security-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <h2>Confirmación de Seguridad</h2>
+        <p>Estás a punto de participar en una sesión de análisis grabada. Ten en cuenta:</p>
+        <ul class="security-list">
+          <li>Tu pantalla y audio serán grabados durante esta sesión</li>
+          <li>La grabación se utilizará únicamente con fines de investigación</li>
+          <li>Cualquier información que se muestre en pantalla quedará grabada - Procura no mostrar información confidencial</li>
+          <li>Puedes dejar de participar en el análisis en cualquier momento pulsando sobre "Salir del análisis"</li>
+        </ul>
+        <p class="security-question">¿Aceptas estos términos y deseas continuar?</p>
+        <div class="modal-actions">
+          <button id="accept-security" class="btn btn-green">Aceptar y Continuar</button>
+          <button id="decline-security" class="btn btn-red-outline">Rechazar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Permissions Step -->
+    <div id="permissions-step" class="step" style="display: none;">
+      <div class="card">
+        <h2>Configuración de Permisos</h2>
+        <p class="subtitle">Para participar en el análisis, es necesario que compartas tu pantalla y tu micrófono</p>
+
+        <div class="permission-cards">
+          <div class="permission-card" id="screen-card">
+            <div class="permission-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            </div>
+            <div class="permission-info">
+              <h3>Pantalla</h3>
+              <div class="status-badge" id="screen-status">
+                <span class="status-icon pending">✗</span>
+                <span class="status-text">Pendiente</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="permission-card" id="audio-card">
+            <div class="permission-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </div>
+            <div class="permission-info">
+              <h3>Micrófono</h3>
+              <div class="status-badge" id="audio-status">
+                <span class="status-icon pending">✗</span>
+                <span class="status-text">Pendiente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="permission-error" class="error-message" style="display: none;"></div>
+
+        <div class="step-actions">
+          <button id="request-permissions-btn" class="btn btn-primary">
+            <span class="btn-text">Compartir pantalla y micrófono</span>
+            <span class="btn-loading" style="display: none;">Solicitando...</span>
+          </button>
+          <button id="exit-permissions-btn" class="btn btn-outline-danger">Salir del análisis</button>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <h3>Instrucciones</h3>
+        <ul>
+          <li>Introduce el ID del análisis que has recibido</li>
+          <li>Comparte toda tu pantalla y tu micrófono</li>
+          <li>Comparte tu feedback - positivo y negativo - de manera constante y en voz alta</li>
+          <li>Completa cada tarea lo mejor que puedas</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Analysis Step -->
+    <div id="analysis-step" class="step" style="display: none;">
+      <div class="instructions-panel">
+        <div class="card">
+          <h2>Cómo debo completar el análisis</h2>
+          <ul class="instructions-list">
+            <li>Vuelve a esta pestaña si necesitas recordar la tarea o continuar a la siguiente</li>
+            <li>Adopta el escenario mostrado en el campo "escenario" durante el análisis</li>
+            <li>Completa cada tarea lo mejor que puedas, si no puedes completar una, continúa a la siguiente</li>
+            <li>Comparte tu feedback - positivo y negativo - de manera constante y en voz alta</li>
+            <li>No pases a la siguiente tarea hasta haber completado la tarea anterior</li>
+          </ul>
+
+          <div class="warnings">
+            <h3>Recordatorios importantes</h3>
+            <ul>
+              <li>Asegúrate que tu micrófono funciona correctamente</li>
+              <li>Recuerda que se compartirá toda tu pantalla</li>
+              <li>Si la grabación se detiene, se perderá la grabación y tu participación no será registrada</li>
+              <li>No cierres esta ventana o dejes de compartir hasta que el análisis haya sido finalizado</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="analysis-content">
+        <div class="card">
+          <div class="progress-bar">
+            <div class="progress-info">
+              <span id="step-number">Tarea 1 de 1</span>
+              <span id="progress-percent">0% Completado</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div class="step-content">
+            <h2 id="step-title">Título</h2>
+            <div id="step-content" class="content-text">Contenido</div>
+          </div>
+
+          <div class="step-navigation">
+            <button id="previous-btn" class="btn btn-secondary" disabled>Anterior</button>
+            <button id="next-btn" class="btn btn-primary">Siguiente</button>
+            <button id="finish-btn" class="btn btn-success" style="display: none;">Finalizar análisis</button>
+          </div>
+
+          <div id="upload-progress" class="upload-progress" style="display: none;">
+            <div class="upload-info">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <div class="upload-details">
+                <span class="upload-label">Guardando grabación...</span>
+                <span class="upload-percent" id="upload-percent">0%</span>
+              </div>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill upload-fill" id="upload-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          <div id="error-message" class="error-message" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal" style="display: none;">
+      <div class="modal-content success-content">
+        <div class="success-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+        </div>
+        <h2>¡Hecho!</h2>
+        <p>Tu análisis ha sido registrado correctamente. Muchas gracias por tu participación.</p>
+        <p class="redirect-text">Redirigiendo...</p>
+      </div>
+    </div>
+
+    <!-- Recording Stopped Modal -->
+    <div id="stopped-modal" class="modal" style="display: none;">
+      <div class="modal-content warning-content">
+        <div class="warning-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+        </div>
+        <h2>La grabación se ha detenido</h2>
+        <p>Se ha detenido el uso compartido de pantalla o el acceso al micrófono. El análisis no puede continuar sin grabación.</p>
+        <p>Tu análisis y los datos asociados han sido eliminados.</p>
+        <button id="stopped-ok-btn" class="btn btn-danger">Salir del Análisis</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="recording.js"></script>
+</body>
+</html>

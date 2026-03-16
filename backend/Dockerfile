@@ -17,18 +17,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit-dev --force
 
-# Copy Prisma schema files into the container
-COPY prisma ./prisma/
-
-# Generate Prisma client with npm cache mount
-RUN --mount=type=cache,target=/root/.npm npx prisma generate
-
 # Copy all remaining source files into the container
 COPY . .
-
-# Copy and make executable the production startup script
-COPY start.sh .
-RUN chmod +x start.sh
 
 # Switch to non-root user for better security
 USER node
@@ -37,4 +27,4 @@ USER node
 EXPOSE 3000
 
 # Set the default command to run the local startup script
-CMD ["./start.sh"] 
+CMD ["npm", "run", "start"] 

@@ -5,7 +5,6 @@ export const updateParticipantProfile = async (req, res) => {
 
   if (role !== 'participant') {
     return res.status(403).json({
-      success: false,
       message: 'Only participants can update their profile',
     });
   }
@@ -13,7 +12,6 @@ export const updateParticipantProfile = async (req, res) => {
   const updatedProfile = await updateParticipantProfileInDB(userId, req.body);
 
   return res.status(200).json({
-    success: true,
     message: 'Participant profile updated successfully',
     profile: updatedProfile,
   });

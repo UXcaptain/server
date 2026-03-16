@@ -1,36 +1,94 @@
 import { logError, logInfo } from '../config/loggerFunctions.js';
 import { generateS3GetPresignedUrl } from '../integrations/s3-client/s3.js';
 import {
-  createAnalysisEntryInDb, findExpiredAnalysisEntriesInDb, getAnalysisEntryDetailsById, markAnalysisEntriesAsCancelledInDb, markAnalysisEntryAsSubmitted,
-} from '../models/analysisEntryModel.js';
+  createAnalysisEntryInDb, getAnalysisEntryDetailsById, markAnalysisEntryAsSubmittedById, findExpiredAnalysisEntriesInDb, markAnalysisEntriesAsCancelledInDb,
+  getAnalysisDataById,
+} from '../models/analysisModel.js';
 import { insertTranscriptionJobInDb } from '../models/transcriptionModel.js';
+import { checkTranscriptionLimit } from '../models/planModel.js';
+import { incrementFeatureUsage } from '../models/usageModel.js';
 
 export const createAnalysisEntry = async (req, res) => {
-  const { analysisId } = req.body;
+  const { analysisId, demographics } = req.body;
 
-  const analysisEntry = await createAnalysisEntryInDb(analysisId);
+  try {
+    const analysisEntry = await createAnalysisEntryInDb(analysisId, null, demographics);
 
-  return res.status(201).json({
-    success: true,
-    message: 'Analysis entry created successfully',
-    analysisEntryid: analysisEntry.id,
-  });
+    return res.status(201).json({
+      message: 'Analysis entry created successfully',
+      analysisEntryId: analysisEntry._id,
+    });
+  } catch (error) {
+    if (error.message === 'Maximum number of participants (20) reached for this analysis') {
+      return res.status(403).json({
+        message: error.message,
+      });
+    }
+    if (error.message === 'Analysis not found') {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+    return res.status(500).json({
+      message: 'Error creating analysis entry',
+      error: error.message,
+    });
+  }
 };
 
 export const updateAnalysisEntry = async (req, res) => {
   const { analysisEntryId } = req.body;
 
-  const updatedAnalysisEntry = await markAnalysisEntryAsSubmitted(analysisEntryId);
+  const updatedAnalysisEntry = await markAnalysisEntryAsSubmittedById(analysisEntryId);
+
+  if (!updatedAnalysisEntry) {
+    return res.status(404).json({
+      message: 'Analysis entry not found',
+    });
+  }
+
+  const { analysisId } = updatedAnalysisEntry;
+
+  // Check transcription limit before creating transcription job
+  const analysisData = await getAnalysisDataById(analysisId);
+
+  if (!analysisData) {
+    return res.status(404).json({
+      message: 'Analysis not found',
+    });
+  }
+
+  const ownerCompanyId = analysisData.ownerCompanyId.toString();
+  const transcriptionCheck = await checkTranscriptionLimit(ownerCompanyId);
+
+  if (!transcriptionCheck.allowed) {
+    logError(`Transcription limit check failed for company ${ownerCompanyId}`, new Error(transcriptionCheck.message));
+
+    // Still mark the analysis entry as submitted, but don't create a transcription job
+    return res.status(200).json({
+      message: 'Analysis entry updated successfully (transcription skipped due to plan limit)',
+      transcriptionSkipped: true,
+      transcriptionLimitMessage: transcriptionCheck.message,
+    });
+  }
 
   const transcriptionJob = {
     analysisEntryId: analysisEntryId,
-    analysisId: updatedAnalysisEntry.analysis_id,
+    analysisId: analysisId,
     languageCode: 'es',
   };
 
   try {
     await insertTranscriptionJobInDb(transcriptionJob);
     logInfo(`Transcription job for ${transcriptionJob.analysisEntryId} stored in DB`, transcriptionJob);
+
+    // Increment usage for transcription
+    try {
+      await incrementFeatureUsage(ownerCompanyId, 'transcription');
+    } catch (error) {
+      console.error('Error incrementing usage for transcription:', error);
+      // Don't fail the transcription job creation if usage tracking fails
+    }
   } catch (error) {
     logError(`error inserting ${transcriptionJob.analysisEntryId} analysisEntry's transcription request`, error);
   }
@@ -41,40 +99,37 @@ export const updateAnalysisEntry = async (req, res) => {
 };
 
 export const getAnalysisEntryDetails = async (req, res) => {
-  const companyId = req.user.company_id; // Authenticated user from middleware
-  const { id: analysisEntryId } = req.params;
+  const { companyId } = req.user;
+  const { analysisId, entryId } = req.params;
 
-  if (!analysisEntryId) {
+  if (!analysisId || !entryId) {
     return res.status(400).json({
-      success: false,
-      message: 'Analysis entry ID has not been provided',
+      message: 'Analysis ID and entry ID have not been provided',
     });
   }
 
-  const analysisEntryDetails = await getAnalysisEntryDetailsById(analysisEntryId);
+  const analysisEntryDetails = await getAnalysisEntryDetailsById(analysisId, entryId);
 
   if (!analysisEntryDetails) {
     return res.status(404).json({
-      success: false,
-      message: 'Analysis not found',
+      message: 'Analysis entry not found',
     });
   }
 
-  if (analysisEntryDetails.Analysis.owner_company_id !== companyId) {
+  if (!analysisEntryDetails.ownerCompanyId.equals(companyId)) {
     return res.status(403).json({
-      success: false,
       message: 'Access denied',
     });
   }
 
-  const key = `analysis/${analysisEntryDetails.Analysis.id}/${analysisEntryDetails.id}`;
+  const key = `analysis/${analysisId}/${entryId}`;
 
   const analysisEntryRecordingPresignedUrl = await generateS3GetPresignedUrl(`${key}/recording.mp4`);
 
   return res.status(200).json({
     message: 'recording & transcription links retrieved successfully',
     analysisEntryGetRecordingPresignedUrl: analysisEntryRecordingPresignedUrl,
-    transcriptionSegments: analysisEntryDetails.transcription_segments,
+    transcriptionSegments: analysisEntryDetails.analysisEntries.transcriptionSegments,
   });
 };
 
@@ -82,32 +137,8 @@ export const markAnalysisEntriesAsCancelled = async () => {
   const expiredAnalysisEntries = await findExpiredAnalysisEntriesInDb();
 
   if (expiredAnalysisEntries.length === 0) {
-    console.log('No expired analysis entries found');
     return;
   }
 
-  // Helper function to group entries by analysis_id - returns array of [analysisId, count] pairs
-  const groupEntriesByAnalysisId = (entries) => {
-    const grouped = entries.reduce((acc, entry) => {
-      acc[entry.analysis_id] = (acc[entry.analysis_id] || 0) + 1;
-      return acc;
-    }, {});
-
-    // Convert object to array of [key, value] pairs
-    // analysis_id is a String (UUID), not a number
-    return Object.entries(grouped).map(([analysisId, count]) => [
-      analysisId,
-      count,
-    ]);
-  };
-
-  const groupedEntries = groupEntriesByAnalysisId(expiredAnalysisEntries);
-
-  console.log(groupedEntries);
-
-  const markedAnalysisEntries = await markAnalysisEntriesAsCancelledInDb(expiredAnalysisEntries, groupedEntries);
-
-  if (markedAnalysisEntries.count > 0) {
-    console.log(`Marked ${markedAnalysisEntries.count} analysis entries as cancelled automatically`);
-  }
+  const markedAnalysisEntries = await markAnalysisEntriesAsCancelledInDb(expiredAnalysisEntries);
 };

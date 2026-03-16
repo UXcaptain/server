@@ -25,8 +25,6 @@ services:
   #     POSTHOG_API_KEY: ${POSTHOG_API_KEY}
   #     SESSION_SECRET: ${SESSION_SECRET}
   #     BREVO_API_KEY: ${BREVO_API_KEY}
-  #     PRISMA_POSTGRES_DIRECT_URL: ${PRISMA_POSTGRES_DIRECT_URL}
-  #     PRISMA_POSTGRES_CONNECTION_STRING: ${PRISMA_POSTGRES_CONNECTION_STRING}
   #     TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY}
   #     FRONT_WEB_APP_ORIGIN_URL: ${FRONT_WEB_APP_ORIGIN_URL}
   #     STRIPE_API_KEY: ${STRIPE_API_KEY}
@@ -81,19 +79,19 @@ services:
       - uxcaptain-network
   
   database:
-    image: postgres:17.5
+    image: mongo:7.5
     restart: on-failure
-    container_name: postgresDB
+    container_name: mongoDB
     user: 
-      postgres
+      mongodb
     volumes:
-      - uxcaptain-database:/var/lib/postgresql/data
+      - uxcaptain-database:/data/db
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - 5432:5432
+      - 27017:27017
     networks:
       - uxcaptain-network 
 

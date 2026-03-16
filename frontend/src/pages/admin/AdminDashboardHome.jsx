@@ -46,10 +46,10 @@ const AdminDashboard = () => {
         </Anchor>
       </Table.Td>
       <Table.Td>
-        <Text fz="sm">{user.last_login_at}</Text>
+        <Text fz="sm">{user.lastLoginAt}</Text>
       </Table.Td>
       <Table.Td>
-        <Text fz="sm">{user.created_at}</Text>
+        <Text fz="sm">{user.createdAt}</Text>
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="flex-end">

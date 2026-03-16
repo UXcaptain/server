@@ -45,8 +45,8 @@ export const ViewAnalysisPage = () => {
   )
 
   // Calculate statistics
-  const participantCount = analysisData.AnalysisEntry?.length || 0;
-  const maxParticipants = analysisData.max_number_of_participants || 0;
+  const participantCount = analysisData.analysisEntry?.length || 0;  // Fixed: AnalysisEntry -> analysisEntry (camelCase)
+  const maxParticipants = analysisData.generalDetails?.maxNumberOfParticipants || 0;  // Fixed: use nested path
 
   return (
     <Container size="lg">
@@ -55,26 +55,26 @@ export const ViewAnalysisPage = () => {
       <Card shadow="sm" padding="sm" radius="md" withBorder mb="lg">
         <Stack spacing="xs">
           <Text size="sm"><strong>Nombre del análisis:</strong> {analysisData.name}</Text>
-          <Text size="sm"><strong>URL:</strong> <Anchor href={analysisData.url} target="_blank" size="sm">{analysisData.url}</Anchor></Text>
+          <Text size="sm"><strong>URL:</strong> <Anchor href={analysisData.generalDetails?.url} target="_blank" size="sm">{analysisData.generalDetails?.url}</Anchor></Text>
           <Group spacing="xs" align="center">
             <Text size="sm" component="span"><strong>Dispositivo:</strong></Text>
-            <Badge color={analysisData.device === 'computer' ? 'blue' : 'green'} size="sm">{analysisData.device === 'computer' ? 'Ordenador' : 'Móvil'}</Badge>
+            <Badge color={analysisData.generalDetails?.device === 'computer' ? 'blue' : 'green'} size="sm">{analysisData.generalDetails?.device === 'computer' ? 'Ordenador' : 'Móvil'}</Badge>
           </Group>
-          <Text size="sm"><strong>Fecha de Creación:</strong> {new Date(analysisData.created_at).toLocaleDateString('es-ES', { 
+          <Text size="sm"><strong>Fecha de Creación:</strong> {new Date(analysisData.createdAt).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
             hour: '2-digit',
-            minute: '2-digit' 
-            })
-          }</Text>
-          
-          {analysisData.scenario && (
-            <Text size="sm"><strong>Escenario:</strong> {analysisData.scenario}</Text>
+            minute: '2-digit'
+            })}
+          </Text>
+
+          {analysisData.generalDetails?.scenario && (
+            <Text size="sm"><strong>Escenario:</strong> {analysisData.generalDetails?.scenario}</Text>
           )}
-          
+
           <Divider my="xs" />
-          
+
           <Group position="apart">
             <Text size="sm"><strong>Participantes:</strong> {participantCount} de {maxParticipants}</Text>
             <CopyInviteLinkButton analysisId={id} size="xs" />
@@ -85,17 +85,17 @@ export const ViewAnalysisPage = () => {
       <Card shadow="sm" padding="sm" radius="md" withBorder mb="lg">
         <Text size="md" fw={700} mb="xs">Tareas</Text>
         <List type="ordered" spacing="xs" size="sm">
-          {analysisData.tasks.map((task, index) => (
+          {(analysisData.tasks || []).map((task, index) => (
             <ListItem key={index} py="xs">
               <Text size="sm">{task.taskContent}</Text>
             </ListItem>
           ))}
         </List>
       </Card>
-      
+
       <Card shadow="sm" padding="sm" radius="md" withBorder>
         <Text size="md" fw={700} mb="xs">Participantes</Text>
-        <AnalysisEntriesTable AnalysisEntries={analysisData.AnalysisEntry} analysisId={id} />
+        <AnalysisEntriesTable AnalysisEntries={analysisData.analysisEntry || []} analysisId={id} />
       </Card>
     </Container>
   );

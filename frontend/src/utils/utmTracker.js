@@ -3,35 +3,52 @@
  * 
  * Captures and stores UTM parameters from URL query strings in localStorage.
  * Preserves original values on subsequent visits if they already exist.
+ * 
+ * All fields use camelCase for consistency across the platform.
  */
 
 const UTM_STORAGE_KEY = 'utm_parameters';
 
 /**
- * List of UTM and tracking parameters to capture
+ * List of UTM and tracking parameters to capture (camelCase)
  */
 const UTM_PARAMETERS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_content',
-  'utm_term',
+  'utmSource',
+  'utmMedium',
+  'utmCampaign',
+  'utmContent',
+  'utmTerm',
   'gclid',
   'fbclid'
 ];
 
 /**
+ * Maps snake_case URL parameter names to camelCase property names
+ */
+const PARAMETER_MAPPING = {
+  'utm_source': 'utmSource',
+  'utm_medium': 'utmMedium',
+  'utm_campaign': 'utmCampaign',
+  'utm_content': 'utmContent',
+  'utm_term': 'utmTerm',
+  'gclid': 'gclid',
+  'fbclid': 'fbclid'
+};
+
+/**
  * Extract UTM parameters from URL query string
  * @param {URLSearchParams} searchParams - URL search params object
- * @returns {Object} Object containing found UTM parameters
+ * @returns {Object} Object containing found UTM parameters (camelCase)
  */
 function extractUTMParameters(searchParams) {
   const utmParams = {};
   
-  UTM_PARAMETERS.forEach(param => {
-    const value = searchParams.get(param);
+  // Iterate over camelCase parameter names
+  UTM_PARAMETERS.forEach(paramName => {
+    // Check both camelCase and snake_case versions
+    const value = searchParams.get(paramName) || searchParams.get(paramName.toLowerCase());
     if (value) {
-      utmParams[param] = value;
+      utmParams[paramName] = value;
     }
   });
   
@@ -54,13 +71,13 @@ function getStoredUTMParameters() {
 
 /**
  * Store UTM parameters in localStorage
- * @param {Object} utmParams - UTM parameters to store
+ * @param {Object} utmParams - UTM parameters to store (camelCase)
  */
 function storeUTMParameters(utmParams) {
   try {
     localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmParams));
   } catch (error) {
-    console.error('Error storing UTM parameters to localStorage:', error);
+    console.error('Error storing UTM parameters in localStorage:', error);
   }
 }
 
@@ -76,10 +93,10 @@ export function initUTMTracking() {
   // Get URL search parameters
   const searchParams = new URLSearchParams(window.location.search);
   
-  // Extract UTM parameters from URL
+  // Extract UTM parameters from URL (converts to camelCase)
   const currentUTMParams = extractUTMParameters(searchParams);
   
-  // Only proceed if we have UTM parameters in the URL
+  // Only proceed if we have UTM parameters in URL
   if (Object.keys(currentUTMParams).length === 0) {
     return;
   }
@@ -97,8 +114,8 @@ export function initUTMTracking() {
 }
 
 /**
- * Get stored UTM parameters for use in the application
- * @returns {Object} Stored UTM parameters (empty object if none exist)
+ * Get stored UTM parameters for use in application
+ * @returns {Object} Stored UTM parameters (camelCase, empty object if none exist)
  */
 export function getUTMParameters() {
   return getStoredUTMParameters() || {};

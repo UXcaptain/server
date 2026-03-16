@@ -10,7 +10,6 @@ export const getUserProfile = async (req, res) => {
   const customerProfile = await getCustomerProfile(userId);
 
   return res.status(200).json({
-    success: true,
     message: 'user profile retrieved successfully - DB',
     user: customerProfile,
   });
@@ -21,7 +20,6 @@ export const deleteUser = async (req, res) => {
     await deleteUserInDb(req.user.id);
 
     return res.status(200).json({
-      success: true,
       message: 'User deleted successfully',
     });
   } catch (error) {
@@ -29,13 +27,11 @@ export const deleteUser = async (req, res) => {
 
     if (error.code === 'P2003') {
       return res.status(409).json({
-        success: false,
         message: 'User deletion failed - Related DB entries exist',
       });
     }
 
     return res.status(500).json({
-      success: false,
       message: 'User deletion failed - Please try again later',
     });
   }

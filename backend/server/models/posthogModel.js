@@ -1,13 +1,13 @@
 import { client } from '../config/posthog-node.js';
 import { logError } from '../config/loggerFunctions.js';
 
-export const posthogCustomerSignedUp = async (userId, userData) => {
+export const posthogCustomerSignedUp = async (userId, userData, companyId, acquisitionData) => {
   try {
     client.groupIdentify({
       groupType: 'company',
-      groupKey: userData.companyId,
+      groupKey: companyId,
       properties: {
-        name: userData.companyId, // Sending ID until we have a name for the company
+        name: companyId, // Sending ID until we have a name for the company
         signUpDate: new Date().toISOString(),
       },
     });
@@ -19,10 +19,17 @@ export const posthogCustomerSignedUp = async (userId, userData) => {
         $set_once: {
           email: userData.email,
           role: userData.role,
-          company: userData.companyId,
+          company: companyId,
         },
+        acquisitionSource: acquisitionData.utmSource || 'unknown',
+        acquisitionMedium: acquisitionData.utmMedium || 'unknown',
+        acquisitionCampaign: acquisitionData.utmCampaign || 'unknown',
+        acquisitionContent: acquisitionData.utmContent || 'unknown',
+        acquisitionTerm: acquisitionData.utmTerm || 'unknown',
+        googleClickId: acquisitionData.gclid || 'none',
+        facebookClickId: acquisitionData.fbclid || 'none',
       },
-      groups: { company: userData.companyId },
+      groups: { company: companyId },
     });
   } catch (error) {
     logError('error sending posthogCustomerSignedUp event to posthog', error, 'CustomerSignedUp');
@@ -120,15 +127,15 @@ export const posthogUserDeleteAccount = async (distinctId) => {
 export const posthogAnalysisCreated = async (analysisData, analysisId) => {
   try {
     client.capture({
-      distinctId: analysisData.created_by,
+      distinctId: analysisData.createdBy,
       event: 'AnalysisCreated',
       properties: {
-        company_id: analysisData.owner_company_id,
-        analysis_device: analysisData.device,
-        analysis_url: analysisData.url,
-        analysis_name: analysisData.name,
-        max_number_of_participants: analysisData.maxNumberOfParticipants,
-        analysis_id: analysisId,
+        companyId: analysisData.ownerCompanyId,
+        analysisDevice: analysisData.device,
+        analysisUrl: analysisData.url,
+        analysisName: analysisData.name,
+        maxNumberOfParticipants: analysisData.maxNumberOfParticipants,
+        analysisId: analysisId,
       },
     });
   } catch (error) {
@@ -147,5 +154,43 @@ export const posthogPasswordRequestTokenRequested = async (distinctId, passwordR
     });
   } catch (error) {
     logError('error sending posthogPasswordRequestTokenRequested event to posthog', error, 'passwordResetTokenRequested');
+  }
+};
+
+export const posthogUserSubscriptionTrialWillEnd = async (trialWillEndData) => {
+  try {
+    client.capture({
+      distinctId: trialWillEndData.userId,
+      event: 'subscriptionTrialWillEnd',
+      properties: {
+        subscriptionId: trialWillEndData.subscriptionId,
+        customerId: trialWillEndData.customerId,
+        trialEnd: trialWillEndData.trialEnd,
+      },
+      groups: trialWillEndData.companyId ? { company: trialWillEndData.companyId } : undefined,
+    });
+  } catch (error) {
+    logError('error sending posthogUserSubscriptionTrialWillEnd event to posthog', error, 'subscriptionTrialWillEnd');
+  }
+};
+
+export const posthogUserSubscriptionInvoiceUpcoming = async (invoiceUpcomingData) => {
+  try {
+    client.capture({
+      distinctId: invoiceUpcomingData.userId,
+      event: 'invoiceUpcoming',
+      properties: {
+        subscriptionId: invoiceUpcomingData.subscriptionId,
+        customerId: invoiceUpcomingData.customerId,
+        invoiceId: invoiceUpcomingData.invoiceId,
+        amount: invoiceUpcomingData.amount,
+        currency: invoiceUpcomingData.currency,
+        nextPaymentAttempt: invoiceUpcomingData.nextPaymentAttempt,
+        isTrial: invoiceUpcomingData.isTrial,
+      },
+      groups: invoiceUpcomingData.companyId ? { company: invoiceUpcomingData.companyId } : undefined,
+    });
+  } catch (error) {
+    logError('error sending posthogUserSubscriptionInvoiceUpcoming event to posthog', error, 'invoiceUpcoming');
   }
 };

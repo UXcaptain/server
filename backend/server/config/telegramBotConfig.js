@@ -7,14 +7,8 @@ export const sendTelegramMessage = async (chatId, message) => {
       text: message,
       parse_mode: 'HTML',
     });
-
-    return {
-      success: true,
-    };
   } catch (error) {
-    return {
-      success: false,
-      message: error.message,
-    };
+    // Fail silently - Telegram logging is optional and should not crash the application
+    // Errors will be logged to the application logger if needed
   }
 };

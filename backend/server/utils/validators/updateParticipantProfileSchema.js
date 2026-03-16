@@ -7,7 +7,7 @@ export const updateParticipantProfileValidationSchema = {
     trim: true,
     escape: true,
   },
-  last_name: {
+  lastName: {
     optional: true,
     isString: {
       errorMessage: 'Last name must be a string',
@@ -15,7 +15,7 @@ export const updateParticipantProfileValidationSchema = {
     trim: true,
     escape: true,
   },
-  age: { // TODO - SHOULD BE BIRTH_DATE
+  age: {
     optional: true,
     isInt: {
       options: {
@@ -48,14 +48,14 @@ export const updateParticipantProfileValidationSchema = {
     trim: true,
     toUpperCase: true,
   },
-  education_level: {
+  educationLevel: {
     optional: true,
     isIn: {
       options: [['no_education', 'primary_education', 'secondary_education', 'university_degree', 'masters_thesis']],
       errorMessage: 'Education level must be one of: no_education, primary_education, secondary_education, university_degree, masters_thesis',
     },
   },
-  yearly_income: {
+  yearlyIncome: {
     optional: true,
     isInt: {
       options: {
@@ -65,14 +65,14 @@ export const updateParticipantProfileValidationSchema = {
     },
     toInt: true,
   },
-  parental_status: {
+  parentalStatus: {
     optional: true,
     isIn: {
       options: [['kids', 'no_kids']],
       errorMessage: 'Parental status must be kids or no_kids',
     },
   },
-  technical_proficiency: {
+  technicalProficiency: {
     optional: true,
     isIn: {
       options: [['low', 'medium', 'high']],

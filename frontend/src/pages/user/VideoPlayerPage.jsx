@@ -4,13 +4,11 @@ import apiClient from '../../config/API/axiosConfig.mjs';
 import { Container, Text, Loader, Alert, Stack, Button, Group, Box } from '@mantine/core';
 import VideoPlayer from '../../components/partials/VideoPlayer';
 import { VideoPlayerSidebar } from '../../components/partials/VideoPlayerSidebar';
-import { transformTranscript } from '../../utils/transcriptTransformer';
 
 export const VideoPlayerPage = () => {
   const { analysisId, entryId } = useParams();
   const navigate = useNavigate();
   const [videoUrl, setVideoUrl] = useState(null);
-  const [transcript, setTranscript] = useState([]);
   const [participant, setParticipant] = useState({});
   const [tasks, setTasks] = useState([]);
   const [scenario, setScenario] = useState('');
@@ -21,31 +19,18 @@ export const VideoPlayerPage = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [seekToTime, setSeekToTime] = useState(null);
-  const [activeTranscriptId, setActiveTranscriptId] = useState(null);
 
   useEffect(() => {
     const fetchVideoData = async () => {
       try {
-        // Fetch video URL and transcript data
-        const videoResponse = await apiClient.get(`/api/v1/analysisEntry/${entryId}`);
+        const videoResponse = await apiClient.get(`/api/v1/analysisEntry/${analysisId}/${entryId}`);
         setVideoUrl(videoResponse.data.analysisEntryGetRecordingPresignedUrl);
-        
-        // Transform transcript data for consistent format across components
-        const rawTranscriptData = videoResponse.data.transcriptionSegments;
-        
-        if (rawTranscriptData) {
-          const transformedData = transformTranscript(rawTranscriptData);
-          setTranscript(transformedData || null);
-        } else {
-          setTranscript(null);
-        }
-        
-        // Fetch analysis data to get real tasks
-        let transformedTasks = [];
-        
+
         const analysisResponse = await apiClient.get(`/api/v1/analysis/${analysisId}`);
         const analysisTasks = analysisResponse?.data?.analysisData?.tasks || [];
         const fetchedScenario = analysisResponse?.data?.analysisData?.scenario || '';
+        
+        let transformedTasks = [];
         
         // Transform analysis tasks to match the expected format
         transformedTasks = analysisTasks.map((task, index) => ({
@@ -68,24 +53,8 @@ export const VideoPlayerPage = () => {
     fetchVideoData();
   }, [entryId, analysisId]);
 
-  const handleTranscriptClick = (startTime) => {
-    setSeekToTime(startTime);
-  };
-
   const handleTimeUpdate = (time) => {
     setCurrentTime(time);
-    
-    // Find active transcript segment
-    // Since transcript is always transformed, we can use simplified logic
-    if (transcript && Array.isArray(transcript)) {
-      const currentSegment = transcript.find(segment =>
-        time >= segment.start && time <= segment.end_time
-      );
-      
-      if (currentSegment) {
-        setActiveTranscriptId(currentSegment.id);
-      }
-    }
   };
 
   const handleDurationChange = (duration) => {
@@ -147,9 +116,6 @@ export const VideoPlayerPage = () => {
           onSeekComplete={() => setSeekToTime(null)}
         />
         <VideoPlayerSidebar
-          transcript={transcript}
-          activeTranscriptId={activeTranscriptId}
-          onTranscriptClick={handleTranscriptClick}
           formatTime={formatTime}
           participant={participant}
           tasks={tasks}

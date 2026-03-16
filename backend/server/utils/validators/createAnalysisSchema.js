@@ -7,7 +7,7 @@ export const createAnalysisSchema = {
     trim: true,
     escape: true,
   },
-  device: {
+  'generalDetails.device': {
     notEmpty: {
       errorMessage: 'Device information is required',
     },
@@ -15,7 +15,7 @@ export const createAnalysisSchema = {
     trim: true,
     escape: true,
   },
-  url: {
+  'generalDetails.url': {
     notEmpty: {
       errorMessage: 'Analysis URL is required',
     },
@@ -23,7 +23,6 @@ export const createAnalysisSchema = {
       errorMessage: 'Please enter a valid URL',
     },
     trim: true,
-    // escape: true,
   },
   tasks: {
     notEmpty: {
@@ -41,7 +40,7 @@ export const createAnalysisSchema = {
       },
     },
   },
-  maxNumberOfParticipants: {
+  'generalDetails.maxNumberOfParticipants': {
     notEmpty: {
       errorMessage: 'Max number of participants is required',
     },
@@ -57,17 +56,18 @@ export const createAnalysisSchema = {
       },
     },
   },
-  scenario: {
+  'generalDetails.scenario': {
     trim: true,
     escape: true,
   },
-  recruitmentType: {
+  'generalDetails.recruitmentType': {
     isIn: {
-      options: [['USER_PROVIDED', 'PANEL_PROVIDED']],
-      errorMessage: 'Recruitment type must be USER_PROVIDED or PANEL_PROVIDED',
+      options: [['userProvided', 'panelProvided']],
+      errorMessage: 'Recruitment type must be userProvided or panelProvided',
     },
   },
-  minAge: {
+  'demographicFilters.minAge': {
+    optional: true,
     isInt: {
       errorMessage: 'Min age must be an integer',
     },
@@ -80,7 +80,8 @@ export const createAnalysisSchema = {
       },
     },
   },
-  maxAge: {
+  'demographicFilters.maxAge': {
+    optional: true,
     isInt: {
       errorMessage: 'Max age must be an integer',
     },
@@ -89,32 +90,36 @@ export const createAnalysisSchema = {
         if (value > 100) {
           throw new Error('Max age must be less than or equal to 100');
         }
-        if (req.body.minAge && value < req.body.minAge) {
+        if (req.body.demographicFilters?.minAge && value < req.body.demographicFilters.minAge) {
           throw new Error('Max age must be greater than or equal to min age');
         }
         return true;
       },
     },
   },
-  gender: {
+  'demographicFilters.gender': {
+    optional: true,
     isIn: {
-      options: [['MALE', 'FEMALE', 'ANY']],
-      errorMessage: 'Gender must be MALE, FEMALE, or ANY',
+      options: [['male', 'female', 'any']],
+      errorMessage: 'Gender must be male, female, or any',
     },
   },
-  country: {
+  'demographicFilters.country': {
+    optional: true,
     isIn: {
-      options: [['ES']],
-      errorMessage: 'Country must be ES',
+      options: [['any', 'es']],
+      errorMessage: 'Country must be any or es',
     },
   },
-  educationLevel: {
+  'demographicFilters.educationLevel': {
+    optional: true,
     isIn: {
-      options: [['NO_EDUCATION', 'PRIMARY_EDUCATION', 'SECONDARY_EDUCATION', 'UNIVERSITY_DEGREE', 'MASTERS_THESIS', 'ANY']],
-      errorMessage: 'Education level must be NO_EDUCATION, PRIMARY_EDUCATION, SECONDARY_EDUCATION, UNIVERSITY_DEGREE, MASTERS_THESIS or ANY',
+      options: [['noEducation', 'primaryEducation', 'secondaryEducation', 'universityDegree', 'mastersThesis', 'any']],
+      errorMessage: 'Education level must be noEducation, primaryEducation, secondaryEducation, universityDegree, mastersThesis or any',
     },
   },
-  minYearlyIncome: {
+  'demographicFilters.minYearlyIncome': {
+    optional: true,
     isInt: {
       errorMessage: 'Min yearly income must be an integer',
     },
@@ -127,7 +132,8 @@ export const createAnalysisSchema = {
       },
     },
   },
-  maxYearlyIncome: {
+  'demographicFilters.maxYearlyIncome': {
+    optional: true,
     isInt: {
       errorMessage: 'Max yearly income must be an integer',
     },
@@ -136,24 +142,26 @@ export const createAnalysisSchema = {
         if (value < 0) {
           throw new Error('Max yearly income must be greater than or equal to 0');
         }
-        if (req.body.minYearlyIncome && value < req.body.minYearlyIncome) {
+        if (req.body.demographicFilters?.minYearlyIncome && value < req.body.demographicFilters.minYearlyIncome) {
           throw new Error('Max yearly income must be greater than or equal to min yearly income');
         }
         return true;
       },
     },
   },
-  technicalProficiency: {
+  'demographicFilters.technicalProficiency': {
+    optional: true,
     isIn: {
-      options: [['BASIC', 'INTERMEDIATE', 'EXPERT', 'ANY']],
-      errorMessage: 'Technical proficiency must be BASIC, INTERMEDIATE, EXPERT or ANY',
+      options: [['basic', 'intermediate', 'expert', 'any']],
+      errorMessage: 'Technical proficiency must be basic, intermediate, expert or any',
     },
   },
-  parentalStatus: {
+  'demographicFilters.parentalStatus': {
+    optional: true,
     isIn: {
-      options: [['YES_CHILDREN', 'NO_CHILDREN', 'ANY']],
-      errorMessage: 'Parental status must be YES_CHILDREN, NO_CHILDREN or ANY',
+      options: [['yesChildren', 'noChildren', 'any']],
+      errorMessage: 'Parental status must be yesChildren, noChildren or any',
     },
   },
-
 };
+

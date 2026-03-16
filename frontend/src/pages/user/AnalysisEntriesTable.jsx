@@ -45,12 +45,12 @@ export const AnalysisEntriesTable = ({ AnalysisEntries = [], analysisId }) => {
     }
 
     const rows = AnalysisEntries.map((item) => (
-        <Table.Tr key={item.id}>
+        <Table.Tr key={item._id}>
             <Table.Td>
-                <Text fw={500}>{item.id || 'N/A'}</Text>
+                <Text fw={500}>{item._id || 'N/A'}</Text>
             </Table.Td>
             <Table.Td>
-                <Text fw={500}>{item.updated_at ? new Date(item.updated_at).toLocaleString('es-ES', {
+                <Text fw={500}>{item.updatedAt ? new Date(item.updatedAt).toLocaleString('es-ES', {
                     year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
@@ -62,7 +62,7 @@ export const AnalysisEntriesTable = ({ AnalysisEntries = [], analysisId }) => {
                 <Text fw={500}>{itemAnalysisEntryProfile?.name || 'N/A'}</Text>
             </Table.Td> */}
             {/* <Table.Td>
-            {itemAnalysisEntryProfile?.last_name || 'N/A'}
+            {itemAnalysisEntryProfile?.lastName || 'N/A'}
             </Table.Td> */}
             {/* <Table.Td>
             {itemAnalysisEntryProfile?.gender || 'N/A'}
@@ -75,8 +75,8 @@ export const AnalysisEntriesTable = ({ AnalysisEntries = [], analysisId }) => {
                     variant="filled"
                     color="blue"
                     size="sm"
-                    loading={loadingEntries[item.id]}
-                    onClick={() => handleViewAnalysisEntry(item.id)}
+                    loading={loadingEntries[item._id]}
+                    onClick={() => handleViewAnalysisEntry(item._id)}
                 >
                     Ver análisis
                 </Button>
