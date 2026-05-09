@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../../config/API/axiosConfig.mjs';
 import { useParams } from 'react-router';
+import { Container } from '@mantine/core';
 
 export const ViewAnalysisEntryPage = () => {
 
@@ -27,21 +28,27 @@ export const ViewAnalysisEntryPage = () => {
     }, [id]);
 
     if (loading) return (
-        <div>Loading Analysis Entry...</div>
+        <Container size="lg">
+            <div>Loading Analysis Entry...</div>
+        </Container>
     )
     if (error) return (
-        <div>Error retrieving video entry: {error}</div>
+        <Container size="lg">
+            <div>Error retrieving video entry: {error}</div>
+        </Container>
     )
 
     return (
-        <>
-            <div>
-                <h1>Tasks</h1>
-                {/* Add your analysis view components here */}
-            </div>
-            
-            <video controls
-        src={entryUrl}></video>
-        </>
+        <Container size="lg">
+            <>
+                <div>
+                    <h1>Tasks</h1>
+                    {/* Add your analysis view components here */}
+                </div>
+
+                <video controls
+            src={entryUrl}></video>
+            </>
+        </Container>
     );
 };

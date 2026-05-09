@@ -22,7 +22,7 @@ import CreateAnalysisPage from './pages/user/CreateAnalysisPage.jsx'
 import { MantineProvider } from '@mantine/core'
 import '@mantine/core/styles.css';
 import { ViewAnalysisPage } from './pages/user/ViewAnalysisPage.jsx'
-import UserBilling from './pages/user/UserBilling.jsx'
+// import UserBilling from './pages/user/UserBilling.jsx'
 import { ViewAnalysisEntryPage } from './pages/user/ViewAnalysisEntryPage.jsx'
 import { VideoPlayerPage } from './pages/user/VideoPlayerPage.jsx'
 import { PricingPage } from './pages/index/PricingPage.jsx'
@@ -67,7 +67,7 @@ createRoot(document.getElementById('root')).render(
         <Route path='/user' element={<UserWrapper />} >
           <Route index element={<UserDashboard />} />
           <Route path='profile' element={<CustomerProfile />} />
-          <Route path="billing" element={<UserBilling />} />
+          {/* <Route path="billing" element={<UserBilling />} /> */}
         </Route>
 
         <Route path="/dashboard" element={<UserWrapper />}>

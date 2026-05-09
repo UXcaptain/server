@@ -50,7 +50,7 @@ const ParticipateContent = () => {
       // 200 status indicates success
       setAnalysisData(response.data.analysisData);
       setAnalysisEntryId(response.data.analysisEntryId);
-      setAnalysisEntryPresignedUploadUrl(response.data.analysisEntryPresignedUploadUrl);
+      setAnalysisEntryPresignedUploadUrl(response.data.s3PresignedUrl);
       setCurrentStep('permissions');
     } catch (err) {
       if (err?.response?.status === 404) {

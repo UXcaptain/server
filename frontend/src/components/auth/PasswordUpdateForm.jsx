@@ -59,7 +59,7 @@ const PasswordUpdateForm = () => {
     };
 
     return (
-        <Card shadow="sm" padding="lg" radius="md" withBorder mt="lg">
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Text size="lg" weight={600} mb="md">Cambiar contraseña</Text>
             
             {response && (

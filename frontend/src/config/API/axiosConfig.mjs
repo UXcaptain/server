@@ -13,7 +13,10 @@ apiClient.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             posthog.reset();
-            window.location.href = '/auth/login';
+            // Only redirect if not already on the login page
+            if (!window.location.pathname.startsWith('/auth/login')) {
+                window.location.href = '/auth/login';
+            }
         }
         return Promise.reject(error);
     }

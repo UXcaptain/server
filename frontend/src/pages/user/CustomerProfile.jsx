@@ -9,6 +9,7 @@ import {
   Title,
   Text,
   Alert,
+  Container,
 } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { AccountActionsForm } from './AccountActionsForm'
@@ -42,23 +43,23 @@ const CustomerProfile = () => {
 
     
     if (loading) return (
-        <Box sx={{ maxWidth: 600 }} mx="auto" mt="xl">
+        <Container size="lg" mt="xl">
             <Card shadow="sm" padding="lg" radius="md" withBorder>
                 <Text>Cargando usuario...</Text>
             </Card>
-        </Box>
+        </Container>
     );
-    
+
     if (error) return (
-        <Box sx={{ maxWidth: 600 }} mx="auto" mt="xl">
+        <Container size="lg" mt="xl">
             <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red">
                 {error}
             </Alert>
-        </Box>
+        </Container>
     );
-    
+
     return (
-        <Box sx={{ maxWidth: 600 }} mx="auto" mt="xl">
+        <Container size="lg" mt="xl">
             
             {/* <CustomerCard user={user} /> */}
             
@@ -66,7 +67,7 @@ const CustomerProfile = () => {
             
             {/* <AccountActionsForm /> */}
             
-        </Box>
+        </Container>
     )
 }
 

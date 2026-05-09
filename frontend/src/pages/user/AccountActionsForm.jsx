@@ -36,7 +36,7 @@ export const AccountActionsForm = () => {
             }
 
             if (error) return (
-        <Box sx={{ maxWidth: 600 }} mx="auto" mt="xl">
+        <Box sx={{ maxWidth: 700 }} mx="auto" mt="xl">
             <Alert icon={<IconAlertCircle size="1rem" />} title="Error" color="red">
                 {error}
             </Alert>

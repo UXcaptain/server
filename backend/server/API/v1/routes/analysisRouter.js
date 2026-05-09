@@ -24,7 +24,7 @@ analysisRouter.post(
   checkAuthentication(),
   checkPermissionByRole('customer'),
   subscriptionChecker,
-  // checkInviteYourOwnUsersBeforeCreateAnalysis,
+  // checkInviteYourOwnUsersBeforeCreateAnalysis, // TODO - fix this logic, should be flexible enough to check for each feature, not just inviteYourOwnUsers
   checkSchema(createAnalysisSchema),
   sanitizerResult,
   createAnalysis,

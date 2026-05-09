@@ -100,8 +100,8 @@ export const createCustomer = async (req, res) => {
 
   // External APIs outside transaction // TODO - fix the stripe implementation
   // try {
-    // const stripeCustomer = await createCompanyIdInStripe(email, companyId.toString());
-    // const stripeSubscription = await createSubscriptionWithTrial(stripeCustomer.id, companyId.toString());
+  // const stripeCustomer = await createCompanyIdInStripe(email, companyId.toString());
+  // const stripeSubscription = await createSubscriptionWithTrial(stripeCustomer.id, companyId.toString());
 
   //   const db = client.db('yourDatabaseName');
   //   await db.collection('company').updateOne(

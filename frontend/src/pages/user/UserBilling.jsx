@@ -37,7 +37,7 @@ const UserBilling = () => {
       const { customerPortalUrl } = response.data
       window.open(customerPortalUrl, '_blank')
     } catch (err) {
-      setActionError('Se ha producido un error obteniendo el área de usuario. Por favor, inténtalo más tarde')
+      setActionError('Se ha producido un error obteniendo el área de cliente. Por favor, inténtalo más tarde')
     }
   }
 
@@ -55,14 +55,14 @@ const UserBilling = () => {
   const combinedError = actionError || error
   if (combinedError) {
     return (
-      <Container size="sm">
+      <Container size="lg">
         <Alert color="red" title="Error">{combinedError}</Alert>
       </Container>
     )
   }
 
   return (
-    <Container size="sm">
+    <Container size="lg">
       <Stack gap="lg">
 
                   <Card withBorder p="lg" radius="md">
@@ -98,7 +98,7 @@ const UserBilling = () => {
 
         
         
-        { !hasActiveSubscription && 
+        {/* {!hasActiveSubscription && 
           <SimpleGrid cols={1} spacing="lg">
                             <Card
                               withBorder
@@ -111,21 +111,20 @@ const UserBilling = () => {
                                             <Text fw={700} size="xl">€29/mes</Text>
                                             <Text size="sm" c="dimmed">IVA incluido</Text>
                                           </Group>
-                                          {/* hidden placeholder to keep cards identical in height distribution */}
-                                                      <Text c="teal" size="sm" mt={4} style={{ visibility: 'hidden' }}>Ahorra 17%</Text>
-                                                      <Text c="dimmed" mt="xs">Utiliza la plataforma sin límites.</Text>
-                                                      <Button
+                                          <Text c="teal" size="sm" mt={4} style={{ visibility: 'hidden' }}>Ahorra 17%</Text>
+                                          <Text c="dimmed" mt="xs">Utiliza la plataforma sin límites.</Text>
+                                          <Button
                                 mt="auto"
                                 fullWidth
                                 variant= 'outline'
                                 disabled={hasActiveSubscription}
                                 onClick={() => handlePriceLink('basic', 'monthly')}
                               >
-                                { hasActiveSubscription ? 'Ya tienes una suscripción activa' : 'Elegir mensual' }
+                                {hasActiveSubscription ? 'Ya tienes una suscripción activa' : 'Elegir mensual'}
                               </Button>
                             </Card>
                           </SimpleGrid>
-        }
+        } */}
 
 
         <Card withBorder p="lg" radius="md">
